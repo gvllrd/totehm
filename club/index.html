@@ -46,12 +46,15 @@ button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
 /* À 390 px le coin membre et la bascule tiennent sur UNE ligne : CONNECT passe sur deux lignes avant elle. */
 #who .mc:not(.is-in){max-width:calc(62vw - 40px)!important}
 
-/* Les commandes de Map et Grid partagent les touches SELECT de Totehm. */
-#rdr-mode{position:fixed;right:13px;top:calc(12px + var(--top));z-index:95}
+/* Les commandes de Radar et Grid partagent les touches SELECT de Totehm. */
+#rdr-mode{position:fixed;left:50%;bottom:calc(48px + var(--bot));translate:-50% 0;z-index:95}
 #rdr-flt{position:fixed;top:calc(63px + var(--top));left:0;right:0;z-index:92;display:flex;justify-content:center;pointer-events:none}
 #rdr-flt button{pointer-events:auto}
 :is(#rdr-mode,#rdr-flt) .k2r{--k2r-w:31px;--k2r-h:24px;min-width:46px}
 :is(#rdr-mode,#rdr-flt) .k2l{opacity:1;color:#b5b5c3}
+#rdr-mode .k2l{display:flex;gap:8px;padding:3px 5px;background:#000}
+#rdr-mode .k2l span{color:#8a8a92}
+#rdr-select[aria-pressed="false"] .radar-label,#rdr-select[aria-pressed="true"] .grid-label{color:#fff}
 #rdr-mode .k2r[aria-pressed="true"] .k2k,#rdr-flt .k2r.is-on .k2k{background:linear-gradient(#414165,#23233c)}
 #rdr-say{position:fixed;top:calc(106px + var(--top));left:10px;right:10px;z-index:91;text-align:center;margin:0;
   font:400 9px/1.5 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--dim);pointer-events:none}
@@ -61,12 +64,15 @@ button,input,textarea,select{font:inherit;color:inherit;color-scheme:dark}
   overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .view.is-on{visibility:visible;opacity:1;transition:opacity .28s ease,visibility 0s}
 #v-grid{z-index:12}
-/* ce qui défile passe SOUS l'en-tête : un fondu noir le garde lisible (la grille et la liste sous la carte) */
+/* ce qui défile passe SOUS l'en-tête : un fondu noir le garde lisible (la grille et la liste sous le radar) */
 body::before{content:'';position:fixed;left:0;right:0;top:0;height:calc(112px + var(--top));z-index:90;pointer-events:none;
   background:linear-gradient(#000 52%,rgba(0,0,0,0));opacity:0;transition:opacity .25s ease}
 body.rdr-grid::before,body.is-scrolled::before{opacity:1}
 .rd-top{position:relative;height:100dvh;min-height:340px}
-.rd-map{position:absolute;inset:calc(132px + var(--top)) 0 calc(76px + var(--bot))}
+#canvas,.rd-map{position:absolute;inset:0;width:100%;height:100%}
+#canvas{display:block;touch-action:none}
+#rdr-choix-carte{position:fixed;inset:0;z-index:99;background:#000}
+#rdr-pique{position:absolute;top:calc(18px + var(--top));left:50%;transform:translateX(-50%);white-space:nowrap;padding:8px 14px}
 .rd-map canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #rdr-base{filter:grayscale(1) invert(1) brightness(.72);pointer-events:none}
 #rdr-map{touch-action:none;cursor:grab}
@@ -79,9 +85,18 @@ body.rdr-grid::before,body.is-scrolled::before{opacity:1}
 #rdr-loc-note:empty{display:none}
 #rdr-map-credit{position:absolute;right:6px;bottom:0;background:#000;color:#b8b8c2;padding:3px 5px;font-size:9px}
 #rdr-map-credit a{color:inherit}
-#rdr-down{position:absolute;bottom:calc(28px + var(--bot));left:50%;translate:-50% 0;min-height:37px;white-space:nowrap}
+#radar-tools{display:contents}
+#radar-tools:not(.is-placed)>*{visibility:hidden}
+#cmp,#rdr-here,#rdr-down,#rdr-zoom{position:absolute;z-index:5;translate:-50% 0}
+#cmp{font-size:8px;line-height:1.6;text-align:center;white-space:nowrap;min-height:42px}
+#rdr-here{--k2-d:43px}
+#rdr-here[aria-busy="true"] svg{opacity:.45}
+#rdr-down{min-height:37px;white-space:nowrap;text-align:center}
+#rdr-zoom{display:flex;align-items:center;gap:5px}
+#rdr-zoom button{min-width:36px;min-height:36px;font-size:14px;line-height:1;text-align:center}
+#rdr-span{min-width:62px;padding:5px 8px;text-align:center;white-space:nowrap;font:400 9px/1.4 var(--mono);letter-spacing:.07em;color:var(--lo)}
 /* 23/11 : la grille descend sous la ligne de `#rdr-say` (« nothing near me yet… ») — le « + » ne la frôle plus */
-#rdr-g-f{padding:calc(124px + var(--top)) 5px calc(24px + var(--bot))}
+#rdr-g-f{padding:calc(124px + var(--top)) 5px calc(104px + var(--bot))}
 .empty{position:absolute;left:0;right:0;top:46%;padding:0 28px;text-align:center;font-size:10px;line-height:1.7;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
 /* SOUS LE RADAR : les spots autour de moi, du plus proche au plus loin */
 #rdr-list{display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 12px calc(90px + var(--bot))}
@@ -115,16 +130,13 @@ body.rdr-grid::before,body.is-scrolled::before{opacity:1}
   color:var(--lo);font:400 26px/1 var(--mono)}
 @media(hover:hover){.tl-add:hover{color:#fff}}
 
-/* LE « + » SUR LA CARTE : en bas au centre, la place que le joystick libère — le pouce y est déjà.
-   Dans la GRID, c'est la tuile « + » en tête, comme à droite de totehm.com. */
-#rdr-plus{position:fixed;left:50%;bottom:calc(16px + var(--bot));transform:translateX(-50%);z-index:66}
-/* 23/11 (Wah) : « augmenter la taille de [add a spot] dans la vue carte » */
-#rdr-plus .tl-add{position:static;display:flex;align-items:center;gap:10px;aspect-ratio:auto;width:auto;border-radius:999px;
-  padding:16px 28px;background:rgba(21,21,26,.92);outline:1px dashed rgba(255,255,255,.34);outline-offset:-6px;
-  font:700 12.5px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:#d2d2da}
-#rdr-plus .tl-add b{font:400 22px/1 var(--mono);font-weight:400}
-@media(hover:hover){#rdr-plus .tl-add:hover{color:#fff}}
-body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-detail #rdr-plus{display:none}
+/* L'ajout garde la forme de sa première tuile dans la grille. */
+#rdr-plus{position:absolute;left:max(15px,env(safe-area-inset-left));top:calc(10px + var(--top) + 100px);z-index:6}
+#rdr-plus .tl-add{width:64px;display:flex;flex-direction:column;gap:1px;background:#0e0e13;outline-offset:-5px;
+  font:700 8px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase}
+#rdr-plus .tl-add b{font:400 22px/1 var(--mono)}
+#rdr-plus .tl-add:active{transform:translateY(2px)}
+body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-detail #rdr-plus{display:none}
 
 /* ══ LES PANNEAUX (filtre, prise) — le format de la vue de droite de totehm.com : ancrés en HAUT, sous le logo,
    une question par groupe, la puce grise ajustée à son mot, son sens en petit dessous ══ */
@@ -166,9 +178,6 @@ body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-det
 .ns-tag{display:inline-block;padding:8px 2px;font:400 11.5px/1.3 var(--mono);color:#b8b8c2}
 .ns-def{margin:0;font:400 10.5px/1.55 var(--mono);color:#8a8a92;max-width:54ch}
 .ns-note-g{color:#b8b8c2}
-/* LA DÉFINITION, mise en avant (Wah) : grande, blanche, juste sous « + spot » */
-.ns-what{width:min(92vw,420px);max-width:none;margin:2px 0 10px;font:400 14px/1.5 var(--mono);color:#fff}
-@media(min-width:700px){.ns-what{font-size:15px}}
 .ns-adr{display:flex;flex-wrap:wrap;gap:5px;align-items:center;width:100%}
 .ns-adr .ns-adrin{flex:1 1 160px;min-width:0;background:#1f1f24;border-radius:10px;padding:9px 11px}
 .ns-hits{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:4px}
@@ -180,26 +189,8 @@ body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-det
 .ns-in:focus-visible{box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
 .ns-min{width:76px}
 .ns-mot,.ns-place{width:100%;resize:none}
-/* ══ LA PRISE DE PHOTO ET DE VIDÉO — le format de la vue de droite de totehm.com, copié tel quel
-   (12/11, Wah : « reprendre le format prise de photo et vidéo comme la vue de droite de totehm.com ») :
-   trois pavés carrés de même largeur, l'icône au-dessus du mot — PHOTO · VIDEO · IMPORT. `#cap-row` et
-   `.cap-b` viennent de `com/totehm.html` ; ⚠️ `width:auto` et `text-align:center` les protègent du bloc
-   `.chip`/`.sfc` du Club, qui ajuste un bouton à son mot. ══ */
-#ns-cap{display:flex;gap:8px;width:100%}
-.cap-b{flex:1;min-width:0;width:auto;border:0;border-radius:10px;padding:14px 6px;background:#1f1f24;color:#b0b0b0;
-  cursor:pointer;font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
-  display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;-webkit-tap-highlight-color:transparent}
-.cap-b svg{width:24px;height:24px;flex:none}
-.cap-b:focus-visible{outline:1px solid #fff;outline-offset:3px}
-@media(hover:hover){.cap-b:hover{background:#2a2a30;color:#fff}}
-.ns-m{width:min(34vw,150px);aspect-ratio:9/16;background:#0b0b0d;border-radius:10px;overflow:hidden}
-.ns-m img,.ns-m video{width:100%;height:100%;object-fit:cover;display:block}
-.ns-go{border:0;border-radius:10px;padding:13px 16px;background:#3a3a42;color:#fff;cursor:pointer;
-  font:700 11px/1 var(--mono);letter-spacing:.2em;transition:background .15s}
-.ns-go:disabled{opacity:.45;cursor:default}
-.ns-go:focus-visible{outline:1px solid #fff;outline-offset:2px}
 .ns-note:empty{display:none}
-@media(hover:hover){.ns-go:not(:disabled):hover{background:#55555f}.ns-hit:hover,.sfc:hover{color:#fff}.sfb:hover .h-body{filter:brightness(1.18)}}
+@media(hover:hover){.ns-hit:hover,.sfc:hover{color:#fff}.sfb:hover .h-body{filter:brightness(1.18)}}
 
 /* ══ LA BOX D'UN SPOT — copiée telle quelle : ce qui vient du TOTEHM garde son format ══ */
 .habit{position:relative;display:flex;align-items:center;min-height:30px}
@@ -259,53 +250,90 @@ body.rdr-grid #rdr-plus,body.is-nspot #rdr-plus,body.is-sf #rdr-plus,body.is-det
 .k2.sf-close{align-self:flex-end;--k2-d:42px;color:#8585a0}
 .sf-nav{width:min(100%,470px);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 @media(max-width:500px){.sf-nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.sf-nav button,.sf-page .sfc,#detail .btn,.spot-more summary{border:0;border-bottom:2px solid #303041;border-radius:0;
+.sf-nav button,.sf-page .sfc,#detail .btn{border:0;border-bottom:2px solid #303041;border-radius:0;
   color:#c5c5d1;background:#15151e;min-height:40px;padding:6px 7px;cursor:pointer;touch-action:manipulation}
-.sf-nav button,.spot-more summary{font:700 10px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.sf-nav button{font:700 10px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase}
 .sf-nav button[aria-pressed="true"],.sf-page .sfc.is-on{background:#292943;border-color:#8585a4;color:#fff;box-shadow:none}
-.sf-nav button:active,.sf-page .sfc:active,#detail .btn:active,.spot-more summary:active{transform:translateY(2px)}
+.sf-nav button:active,.sf-page .sfc:active,#detail .btn:active{transform:translateY(2px)}
 .sf-page{display:flex;flex-direction:column;align-items:center;gap:9px;width:min(100%,470px)}
 .sf-page .sfr{justify-content:center}
 .sf-page .sfl{color:#a7a7b6}
 .sf-page .sfc{padding-inline:10px}
 .sf-page .sfi>i{border-radius:0;width:8px;height:2px}
 .sf-reset{margin-top:8px;background:none;color:#b4b4c0;border:0;padding:8px;cursor:pointer;font:400 10px/1 var(--mono);text-transform:uppercase}
-/* ══ UN SPOT OUVERT — la feuille du bas, comme COM ══ */
-#detail{position:fixed;left:0;right:0;bottom:0;z-index:80;background:#000;padding:0 16px calc(18px + var(--bot));
-  transform:translateY(104%);transition:transform .32s var(--ease),visibility 0s .32s;visibility:hidden;max-height:84dvh;
-  overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
-/* 12/11 (Wah) — ON ABAISSE UN SPOT OUVERT : « il faut qu'on puisse fermer les spots une fois agrandis ou
-   qu'on puisse les abaisser en mode glisser avec un trait en haut de la fenêtre, comme on trouve sur les
-   applications en général ». La feuille ouverte lit `--dy` : le geste n'écrit QUE ce nombre, donc la
-   version ordinateur (centrée par `translate(-50%,…)`) suit la même ligne sans un deuxième chemin. */
-#detail.is-open{transform:translateY(var(--dy,0px));visibility:visible;transition:transform .32s var(--ease),visibility 0s}
+/* ══ L'INVITATION AU SPOT — tools/spot_pass.css ══ */
+/* ══ LE PASS D'UN SPOT · 23/11 ══ une feuille noire posée au centre : le pass de l'abonné, ou les passes du créateur */
+#spass{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.82)}
+#spass[hidden]{display:none}
+#spass .sp-c{width:min(92vw,380px);max-height:86dvh;overflow-y:auto;background:#0b0b0e;border-radius:18px;padding:22px 18px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+#spass .sp-k{font:700 9px/1.3 'Space Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#8a8a92;margin:0}
+#spass .sp-n{font:400 26px/1.1 'Quantico',sans-serif;color:#fbd5ca;margin:0;word-break:break-word}
+#spass .sp-h{font:400 14px/1.4 'Quantico',sans-serif;color:#fff;margin:0}
+#spass .sp-code{font:700 34px/1 'Space Mono',monospace;letter-spacing:.3em;color:#fff;margin:4px 0 0 .3em}
+#spass .sp-p{font:400 10.5px/1.5 'Space Mono',monospace;color:#b8b8c2;margin:0}
+#spass .sp-l{width:100%;display:flex;flex-direction:column;gap:6px}
+#spass .sp-r{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#16161b;border-radius:12px;padding:8px 8px 8px 12px}
+#spass .sp-r b{font:400 15px/1.2 'Quantico',sans-serif;color:#fff;font-weight:400}
+#spass .sp-r i{font:400 10px/1 'Space Mono',monospace;font-style:normal;letter-spacing:.2em;color:#8a8a92}
+#spass .sp-f{display:flex;gap:6px;width:100%}
+#spass .sp-f input{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#fff;padding:9px 12px;font:700 14px/1.2 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase}
+#spass button:not(.side-close){border:0;border-radius:10px;background:#1f1f24;color:#fff;cursor:pointer;padding:8px 12px;font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
+#spass .side-close{position:sticky;top:0;z-index:1;flex:none;align-self:flex-end;margin:-10px -6px -8px 0}
+#spass button.is-sur{background:var(--rep);color:#fff}
+#spass button:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* ══ fin L'INVITATION AU SPOT ══ */
+/* ══ LES TOUCHES D'UN SPOT — tools/spot_card.css ══ */
+.spot-key{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-start;flex:none;gap:4px;
+  min-width:44px;padding:2px 3px;border:0;background:none;cursor:pointer;touch-action:manipulation;
+  color:#d2d2df;-webkit-tap-highlight-color:transparent}
+.spot-keycap.k2{--k2-d:36px;background:linear-gradient(#28282d,#17171b 54%,#0b0b0e);color:#9292ac;pointer-events:none}
+.spot-keycap.k2 svg{stroke-width:1.45}
+.spot-key-label{font:700 8.5px/1.25 'Space Mono',monospace;letter-spacing:.075em;text-transform:uppercase;white-space:nowrap}
+.spot-key:active .spot-keycap{transform:translateY(3px) scale(.96);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,255,255,.06)}
+.spot-key:focus-visible,.spot-loupe:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.spot-key:disabled{opacity:.45;cursor:default}
+.spot-key.is-sur .spot-keycap{box-shadow:inset 0 0 0 1px #b96995,0 2px 0 #22101d;color:#d698bb}
+.spot-actions{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:3px}
+.spot-data{position:relative;padding-right:35px}
+.spot-loupe{position:absolute;top:3px;right:3px;width:30px;height:30px;display:grid;place-items:center;
+  padding:0;border:0;background:transparent;color:#a7a7be;cursor:pointer;touch-action:manipulation}
+.spot-loupe svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.spot-loupe[aria-pressed="true"]{color:#fff}
+.spot-data.is-zoom .sd-tag{font-size:11px;letter-spacing:.08em}
+.spot-data.is-zoom .sd-say{font-size:16px}
+@media(hover:hover){.spot-key:hover .spot-keycap{filter:brightness(1.25)}.spot-loupe:hover{color:#fff}}
+/* ══ fin LES TOUCHES D'UN SPOT ══ */
+/* Une tuile ouvre le flux vertical, à la hauteur de son spot. */
+#detail{position:fixed;inset:0;z-index:110;background:#000;visibility:hidden;transform:translateY(104%);
+  transition:transform .32s var(--ease),visibility 0s .32s;overflow:hidden}
+#detail.is-open{visibility:visible;transform:translateY(var(--dy,0px));transition:transform .32s var(--ease)}
 #detail.is-drag{transition:none}
-#detail .portrait-media{width:100%;height:min(44dvh,440px);margin:8px auto 10px}
-#detail .portrait-media :is(img,video){object-fit:contain}
-#detail .sdata{border-radius:0;padding:8px 0}
-#detail .sd-say{white-space:pre-wrap;overflow-wrap:anywhere;max-height:20dvh;overflow:auto;overscroll-behavior:contain;padding:4px 0}
-#detail .btn{min-height:37px;padding-inline:9px}
-#detail .btn.is-sur{background:var(--rep)}
-#detail .btn:focus-visible,.spot-more summary:focus-visible,.sf-nav button:focus-visible{outline:1px solid #fff;outline-offset:2px}
-.dt-tools{position:sticky;top:0;z-index:4;display:flex;align-items:center;gap:6px;background:#000;padding:5px 0}
-.dt-tools .dt-grab{position:static;margin:0;flex:1;width:auto;background:transparent}
-.k2.dt-close{--k2-d:40px;color:#8585a0}
-.spot-more summary{display:flex;justify-content:space-between;align-items:center;list-style:none}
-.spot-more summary::-webkit-details-marker{display:none}
-.spot-more summary::after{content:'';width:6px;height:6px;border:solid #b9b9ca;border-width:0 1.5px 1.5px 0;rotate:45deg}
-.spot-more[open] summary::after{rotate:225deg}
-.spot-more .sd-row{padding-top:7px}
-/* LE TRAIT : collé en haut de la feuille, il tient le geste à lui seul (`touch-action:none`), donc la
-   feuille garde SON défilement dessous. Il déborde du padding pour couvrir toute la largeur. */
-.dt-grab{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:center;
-  width:calc(100% + 32px);margin:0 -16px;height:28px;border:0;padding:0;background:var(--s1);cursor:grab;
-  touch-action:none;-webkit-tap-highlight-color:transparent}
-.dt-grab i{display:block;width:38px;height:4px;border-radius:2px;background:rgba(255,255,255,.5);transition:background .15s}
+.dt-feed{position:relative;height:100%;overflow:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;
+  touch-action:pan-y;scrollbar-width:none}
+.dt-feed::-webkit-scrollbar{display:none}
+.dt-s{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden}
+#detail .portrait-media{position:absolute;inset:calc(60px + var(--top)) 0 calc(22px + var(--bot));aspect-ratio:auto}
+#detail .portrait-media :is(img,video){object-fit:contain;object-position:50% 0}
+.dt-info{position:absolute;left:50%;bottom:calc(20px + var(--bot));transform:translateX(-50%);
+  width:min(calc(100% - 26px),520px);max-height:calc(100% - 90px - var(--top) - var(--bot));overflow:auto;
+  scrollbar-width:thin;display:flex;flex-direction:column;gap:7px}
+.dt-s.is-nu .dt-info{bottom:50%;transform:translate(-50%,50%)}
+#detail .spot-data{margin:0;padding:9px 36px 9px 11px;background:rgba(0,0,0,.92)}
+#detail .sd-say{max-height:min(12em,20dvh);overflow:auto;overscroll-behavior:contain;white-space:pre-wrap;overflow-wrap:anywhere}
+#detail .sd-say:focus-visible{outline:1px solid #626286;outline-offset:2px}
+#detail .spot-actions{margin:0;align-self:center;padding:4px 8px;background:rgba(0,0,0,.9);border-radius:16px}
+#detail .by{margin:0;justify-content:center}
+#detail .acts-note{justify-content:center;text-align:center;margin:0}
+#detail .btn:focus-visible,.sf-nav button:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.k2.dt-close{position:absolute;z-index:4;right:max(12px,env(safe-area-inset-right));top:calc(11px + var(--top));--k2-d:41px;color:#8585a0}
+.dt-grab{position:absolute;z-index:4;top:calc(9px + var(--top));left:50%;transform:translateX(-50%);display:grid;place-items:center;
+  width:120px;height:32px;border:0;background:none;cursor:grab;touch-action:none;-webkit-tap-highlight-color:transparent}
+.dt-grab i{display:block;width:38px;height:4px;border-radius:2px;background:rgba(255,255,255,.55)}
 .dt-grab:active{cursor:grabbing}
 .dt-grab:active i{background:#fff}
 .dt-grab:focus-visible{outline:1px solid #fff;outline-offset:-2px}
-@media(min-width:900px){#detail{left:50%;right:auto;width:min(600px,calc(100vw - 40px));border-radius:var(--r) var(--r) 0 0;transform:translate(-50%,104%)}
-  #detail.is-open{transform:translate(-50%,var(--dy,0px))}}
 @media(prefers-reduced-motion:reduce){.view,#detail{transition:none!important}}
 body.is-detail .view{filter:brightness(.36);pointer-events:none}
 body.is-detail #rdr-flt,body.is-detail #rdr-mode,body.is-detail #who,body.is-detail #rdr-say,
@@ -674,6 +702,88 @@ body:has(.mc.is-in) #club-disc{left:auto;right:12px;transform:none;background:no
 .k2j.is-side .k2j-p{opacity:0}
 @media(prefers-reduced-motion:reduce){.k2,.k2r .k2k,.k2j .k2j-c,.k2j .k2j-p,.k2j .k2j-p i{transition:none}}
 /* ══ fin ps2 ══ */
+/* ══ LES ÉTAPES DE PRISE — copié de tools/spot_capture.css ══ */
+/* ── LA CAPTURE (PHOTO · VIDEO · IMPORT) : une feuille ancrée EN HAUT (le clavier mange le bas), qui naît de
+   l'élément (`--cx/--cy`) et y retourne. Sur ordinateur, la caméra de l'appareil (getUserMedia) ; au doigt,
+   l'appareil photo natif. ── */
+#cap{position:fixed;inset:0;z-index:240;display:flex;align-items:flex-start;justify-content:center;
+  background:rgba(0,0,0,.72);opacity:0;visibility:hidden;transition:opacity .28s ease,visibility 0s linear .32s}
+#cap.is-on{opacity:1;visibility:visible;transition:opacity .28s ease}
+#cap-in{margin-top:max(56px,9dvh);width:min(92vw,440px);display:flex;flex-direction:column;align-items:stretch;gap:12px;
+  background:#000;border-radius:14px;padding:16px;transform-origin:var(--cx,50%) var(--cy,0px);
+  transform:scale(.6);opacity:0;transition:transform .34s var(--gate-ease),opacity .25s ease}
+#cap.is-on #cap-in{transform:none;opacity:1}
+/* 27/10 — en ligne : la même feuille, DANS le panneau qui l'a demandée (la suite du geste, pas une fenêtre de plus) */
+#cap-in.is-inline{margin-top:0;width:min(92vw,420px);padding:0;background:none;border-radius:0;transform:none;opacity:1}
+#cap-row{display:flex;gap:8px}
+.cap-b{flex:1;min-width:0;min-height:66px;border:0;border-bottom:2px solid var(--rail-color);border-radius:0;padding:12px 6px;
+  background:#15151b;color:#e4e4ed;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .14s;
+  font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.cap-b:active{transform:translateY(3px);background:#262634}
+.cap-b svg{width:24px;height:24px}
+.cap-b:disabled{opacity:.45;cursor:default}
+.cap-b:focus-visible,#cap-x:focus-visible,#cap-shot:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#cap-cam{position:relative;width:100%;aspect-ratio:3/4;max-height:48dvh;background:#000;overflow:hidden}
+#cap-cam.hide{display:none}
+#cap-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#cap-shot{position:absolute;left:50%;bottom:14px;width:58px;height:58px;margin-left:-29px;border-radius:50%;border:0;
+  background:#fff;box-shadow:inset 0 0 0 4px #000,0 0 0 2px #fff;cursor:pointer}
+#cap-shot.is-rec{background:#e0453f}
+#cap-t{position:absolute;left:10px;top:10px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;color:#fff;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:10px}
+#cap-t:empty{display:none}
+#cap-x,#prise-x{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right))}
+#cap-row[hidden],#cap-back[hidden],#prise .cap-b[hidden]{display:none}
+#cap-back{align-self:center}
+#cap-note:empty{display:none}
+/* Les inscriptions et le trait reprennent le rail du Refine. Une seule étape est montée. */
+.lsh-sf:has(>.take-rail){background:#000}
+.lsh-sf:has(>.take-rail)>.side-close{margin-bottom:12px}
+.lsh-sf:has(>.take-rail)>.side-close:disabled{opacity:.4}
+.take-rail{width:min(100%,420px);flex:none}
+.take-rail.is-spot{width:min(100%,600px)}
+.take-rail button{font-size:10px;letter-spacing:.06em}
+.take-rail button[aria-current="step"]{border-color:#a7a7ba;background:#272740;color:#fff}
+.take-rail button.is-done{border-color:var(--rail-color);color:#d8d8e1}
+.take-rail button:disabled{color:#777783;cursor:default}
+@media(max-width:580px){.take-rail.is-spot{grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr))}}
+.take-stage{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(100%,460px);flex:none;padding-top:10px;outline:0}
+.take-stage h2{margin:0;color:#f6f6fa;text-align:center;
+  font:700 14px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
+.take-stage>.sfg{gap:8px}
+.take-stage :is(.sfg,.sf-cap,#cap-in.is-inline){max-width:100%}
+.lsh-sf .take-stage .sfl{color:#a6a6b3;font-size:10px}
+.take-stage .sfc.is-on{border-radius:0;background:#28283d;box-shadow:inset 0 -2px var(--rail-color)}
+.take-stage :is(.ns-hit,.ns-in,[data-ns="find"]){min-height:40px;border-radius:0}
+.take-stage>.lv-note:empty{display:none}
+.take-stage .ns-c{min-height:42px;border-radius:0}
+.take-stage .sfr{gap:7px}
+.take-stage .ns-c:active,.take-primary:active{transform:translateY(2px)}
+.take-primary{min-height:44px;width:min(100%,280px);padding:10px 13px;border:0;border-bottom:2px solid var(--rail-color);
+  border-radius:0;background:#22222e;color:#fff;cursor:pointer;touch-action:manipulation;
+  font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
+.take-primary:disabled{opacity:.4;cursor:default}
+.take-secondary{min-height:40px;padding:7px 10px;border:0;background:none;color:#c6c6d0;cursor:pointer;
+  font:700 10px/1.4 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+:is(.take-primary,.take-secondary):focus-visible{outline:1px solid #fff;outline-offset:3px}
+.take-preview{margin:0;width:min(100%,360px);display:flex;flex-direction:column;gap:7px;align-items:center}
+.take-preview :is(img,video){display:block;max-width:100%;max-height:min(35dvh,330px);object-fit:contain;background:#09090b}
+.take-preview audio{max-width:100%}
+.take-preview figcaption{color:#b0b0bd;max-width:100%;overflow-wrap:anywhere;text-align:center;font:400 10px/1.5 'Space Mono',monospace}
+.take-summary{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+.take-summary .sfr{justify-content:center;row-gap:0}
+.take-summary .ns-tag{padding:4px 6px;background:#16161f;color:#d7d7e0}
+.take-actions{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;flex-wrap:wrap}
+.take-stage.is-entering{animation:take-in .2s ease both}
+@keyframes take-in{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.take-stage.is-entering{animation:none}.cap-b{transition:none}}
+/* ══ fin LES ÉTAPES DE PRISE ══ */
+#rdr-new{--rail-color:#626286;--gate-ease:var(--ease);background:#000;padding-top:calc(14px + var(--top))}
+#rdr-new .take-rail{grid-template-columns:repeat(8,minmax(0,1fr))}
+@media(max-width:580px){#rdr-new .take-rail{grid-template-columns:repeat(4,minmax(0,1fr))}}
+#rdr-new .take-stage .sfl{color:#a6a6b3;font-size:10px}
+#rdr-new .side-close{position:sticky;top:0;align-self:flex-end;flex:none;z-index:2;margin-bottom:12px}
+#rdr-new .side-close:disabled{opacity:.4}
+#rdr-new .lv-note,#cap-note{color:#adadb8;text-align:center;font:400 11px/1.5 var(--mono)}
 /* ══ SURVOL — BLOC GÉNÉRÉ, NE PAS ÉDITER À LA MAIN (hover.py) ══ */
 /* Tout texte devient blanc sous la souris. Les dessins, surfaces
    et contrôles désactivés gardent leur apparence. */
@@ -684,15 +794,16 @@ div:not(:has(> :not(br,wbr))):hover,
 #terms:hover,
 #member:hover,
 :is(#rdr-mode,#rdr-flt) .k2l:hover,
+#rdr-mode .k2l span:hover,
 #rdr-say:hover,
 #rdr-locate:hover,
 #rdr-loc-note:hover,
 #rdr-map-credit:hover,
+#rdr-span:hover,
 .empty:hover,
 .tl-kin:hover,
 .tl-time:hover,
 .tl-add:hover,
-#rdr-plus .tl-add:hover,
 .sfl:hover,
 .sfc:hover,
 .ns-c small:hover,
@@ -701,7 +812,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .ns-def:hover,
 .ns-note-g:hover,
 .ns-hit:hover,
-.cap-b:hover,
 .v-sub:hover,
 .mg-l:hover,
 .sd-tag:hover,
@@ -716,9 +826,16 @@ div:not(:has(> :not(br,wbr))):hover,
 .sf-nav button:hover,
 .sf-page .sfc:hover,
 #detail .btn:hover,
-.spot-more summary:hover,
 .sf-page .sfl:hover,
 .sf-reset:hover,
+#spass .sp-k:hover,
+#spass .sp-n:hover,
+#spass .sp-p:hover,
+#spass .sp-r i:hover,
+.spot-key:hover,
+.spot-keycap.k2:hover,
+.spot-key.is-sur .spot-keycap:hover,
+.spot-loupe:hover,
 .k2.dt-close:hover,
 .mc:not(.is-in):hover,
 .tn-l:hover,
@@ -742,17 +859,27 @@ body:has(.mc.is-in) #club-disc:hover,
 .k2-x:hover,
 .k2-f:hover,
 .k2-z:hover,
-.k2r .k2l:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
+.k2r .k2l:hover,
+.cap-b:hover,
+.take-rail button.is-done:hover,
+.take-stage h2:hover,
+.lsh-sf .take-stage .sfl:hover,
+.take-secondary:hover,
+.take-preview figcaption:hover,
+.take-summary .ns-tag:hover,
+#rdr-new .take-stage .sfl:hover,
+#rdr-new .lv-note:hover,
+#cap-note:hover):where(:not(svg,svg *,img,video,canvas,:empty:not(input,textarea,[contenteditable]),[data-hover-art],[data-hover-art] *,:disabled,[disabled],[aria-disabled="true"],:disabled *,[disabled] *,[aria-disabled="true"] *)){color:#fff!important}
 }
 /* ══ FIN DU BLOC GÉNÉRÉ ══ */
 </style></head>
-<body class="rdr-map">
+<body class="rdr-radar">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="higher-badge" viewBox="0 0 600 200"><defs><mask id="hbmask"><rect width="600" height="200" fill="white"/><circle cx="60" cy="0" r="14" fill="black"/><circle cx="140" cy="0" r="14" fill="black"/><circle cx="220" cy="0" r="14" fill="black"/><circle cx="300" cy="0" r="14" fill="black"/><circle cx="380" cy="0" r="14" fill="black"/><circle cx="460" cy="0" r="14" fill="black"/><circle cx="540" cy="0" r="14" fill="black"/><circle cx="60" cy="200" r="14" fill="black"/><circle cx="140" cy="200" r="14" fill="black"/><circle cx="220" cy="200" r="14" fill="black"/><circle cx="300" cy="200" r="14" fill="black"/><circle cx="380" cy="200" r="14" fill="black"/><circle cx="460" cy="200" r="14" fill="black"/><circle cx="540" cy="200" r="14" fill="black"/><circle cx="0" cy="70" r="14" fill="black"/><circle cx="0" cy="130" r="14" fill="black"/><circle cx="600" cy="70" r="14" fill="black"/><circle cx="600" cy="130" r="14" fill="black"/></mask></defs><rect width="600" height="200" fill="#333366" mask="url(#hbmask)"/><g fill="#ffffff" transform="translate(34.32, 144.42)"><path transform="translate(0.000,0) scale(0.144,-0.144)" d="M596 700H832L692 0H456ZM238 0H2L142 700H378ZM523 258H274L313 452H562Z"/><path transform="translate(115.776,0) scale(0.144,-0.144)" d="M-5 0 104 547H329L220 0ZM241 591Q182 591 147.5 622.0Q113 653 113 698Q113 751 152.5 786.0Q192 821 257 821Q316 821 350.5 792.0Q385 763 385 718Q385 662 345.5 626.5Q306 591 241 591Z"/><path transform="translate(162.576,0) scale(0.144,-0.144)" d="M255 -204Q172 -204 103.5 -187.0Q35 -170 -16 -136L80 18Q113 -7 161.5 -21.5Q210 -36 259 -36Q325 -36 355.0 -8.5Q385 19 395 68L409 138L450 294L485 464L501 547H716L629 110Q596 -57 499.5 -130.5Q403 -204 255 -204ZM260 30Q200 30 146.0 58.0Q92 86 58.0 139.0Q24 192 24 266Q24 327 46.5 379.5Q69 432 109.5 472.0Q150 512 203.5 534.5Q257 557 318 557Q379 557 424.5 533.0Q470 509 490.0 451.5Q510 394 493 294Q478 204 446.0 145.5Q414 87 367.0 58.5Q320 30 260 30ZM332 207Q361 207 383.0 219.5Q405 232 417.0 255.0Q429 278 429 309Q429 340 408.5 359.5Q388 379 350 379Q321 379 299.0 366.5Q277 354 264.5 331.0Q252 308 252 277Q252 246 273.5 226.5Q295 207 332 207Z"/><path transform="translate(264.960,0) scale(0.144,-0.144)" d="M470 557Q535 557 584.0 528.5Q633 500 654.5 443.5Q676 387 659 302L599 0H373L428 275Q437 320 424.0 343.5Q411 367 375 367Q337 367 311.0 341.5Q285 316 274 263L221 0H-5L143 742H369L300 396L260 436Q299 499 356.5 528.0Q414 557 470 557Z"/><path transform="translate(366.048,0) scale(0.144,-0.144)" d="M321 -10Q231 -10 163.5 21.0Q96 52 58.0 109.0Q20 166 20 243Q20 333 62.0 404.0Q104 475 180.5 516.0Q257 557 359 557Q447 557 509.0 526.0Q571 495 604.0 441.0Q637 387 637 316Q637 291 633.5 267.0Q630 243 625 221H200L221 330H521L427 301Q435 333 426.5 355.5Q418 378 398.0 390.5Q378 403 349 403Q308 403 284.0 381.0Q260 359 249.5 324.0Q239 289 239 251Q239 200 266.5 178.5Q294 157 347 157Q378 157 409.0 166.5Q440 176 466 195L560 58Q504 20 443.5 5.0Q383 -10 321 -10Z"/><path transform="translate(459.360,0) scale(0.144,-0.144)" d="M-5 0 104 547H317L286 392L265 436Q299 501 359.5 529.0Q420 557 498 557L458 357Q444 359 432.5 360.0Q421 361 409 361Q353 361 318.5 336.0Q284 311 272 253L221 0Z"/></g></symbol></svg>
 <div id="who"><button id="member" class="mc" type="button" aria-label="Connect with my TOTEHM"><i></i><span id="member-txt">CONNECT WITH MY TOTEHM</span></button><a id="terms" class="mc-terms" href="https://www.totehm.com/terms" target="_blank" rel="noopener">Simple terms of use</a></div>
 
 <div id="rdr-mode">
-  <button id="rdr-select" type="button" class="k2r is-select" data-hover-art aria-label="Grid view" aria-pressed="false" aria-controls="v-map v-grid">
-    <i class="k2k" aria-hidden="true"></i><span class="k2l" aria-hidden="true">Map</span>
+  <button id="rdr-select" type="button" class="k2r is-select" data-hover-art aria-label="Grid view" aria-pressed="false" aria-controls="v-radar v-grid">
+    <i class="k2k" aria-hidden="true"></i><span class="k2l" aria-hidden="true"><span class="radar-label">Radar</span><span class="grid-label">Grid</span></span>
   </button>
 </div>
 <div id="rdr-flt" role="group" aria-label="Spots: filters"></div>
@@ -765,12 +892,12 @@ body:has(.mc.is-in) #club-disc:hover,
     <div class="dc-s"><h2 class="dc-h" data-tw>A spot is your TOTEHM Habit in action.</h2><p class="dc-p">Exact place. Exact time.
 Right people. Your conditions.</p></div>
     <div class="dc-s"><h2 class="dc-h">Find habits like yours.</h2><p class="dc-p">Pick one of your Habits:
-the map shows spots with a similar Habit —
+the Radar shows spots with a similar Habit —
 and says why.</p></div>
     <div class="dc-s"><h2 class="dc-h">See the strategy behind the gesture.</h2><p class="dc-p">Every spot shows its Habit box,
 its objectives and its repulsions.
 Never its media.</p></div>
-    <div class="dc-s"><h2 class="dc-h">Map and Grid.</h2><p class="dc-p">See what is happening around you.
+    <div class="dc-s"><h2 class="dc-h">Radar and Grid.</h2><p class="dc-p">See what is happening around you.
 Explore the whole Club.</p></div>
     <div class="dc-s"><h2 class="dc-h">Post a spot from here.</h2><p class="dc-p">Now or later. Here or elsewhere.
 A photo or a video if you want.
@@ -783,32 +910,61 @@ you are a member.</p>
   <button data-hover-art class="dc-x k2 k2-x" id="cd-x" type="button" aria-label="Close"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2 L12 12 M12 2 L2 12"/></svg></button>
 </div>
 
-<section class="view is-on" id="v-map" aria-label="Spots map">
+<section class="view is-on" id="v-radar" aria-label="Radar">
   <div class="rd-top">
-    <div class="rd-map">
+    <canvas id="canvas" aria-hidden="true"></canvas>
+    <div class="empty hide" id="radar-empty" role="status"></div>
+    <div id="radar-tools" role="group" aria-label="Radar controls">
+      <button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button>
+      <button id="rdr-down" class="chip" type="button" hidden>spots ↓</button>
+      <button id="rdr-here" class="k2" type="button" data-hover-art aria-label="My position">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4"/><path d="M8 1v3m0 8v3M1 8h3m8 0h3"/></svg>
+      </button>
+      <div id="rdr-zoom" role="group" aria-label="Radar range">
+        <button id="rdr-out" class="chip" type="button" aria-label="See further">&minus;</button>
+        <span id="rdr-span" role="status" aria-live="polite"></span>
+        <button id="rdr-in" class="chip" type="button" aria-label="See closer">+</button>
+      </div>
+    </div>
+    <div id="rdr-plus" hidden><button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><b aria-hidden="true">+</b><span>Spot</span></button></div>
+  </div>
+  <div id="rdr-list" aria-label="Spots around me"></div>
+</section>
+<aside id="rdr-choix-carte" role="dialog" aria-modal="true" aria-label="Choose a place" hidden>
+  <div class="rd-map">
       <canvas id="rdr-base" aria-hidden="true"></canvas>
       <canvas id="rdr-map" aria-hidden="true"></canvas>
-      <button id="rdr-locate" class="k2" type="button" data-hover-art aria-label="Center on my location" hidden>
+      <button id="rdr-locate" class="k2" type="button" data-hover-art aria-label="Center on my location">
         <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4"/><path d="M8 1v3m0 8v3M1 8h3m8 0h3"/></svg>
       </button>
       <p id="rdr-loc-note" role="status"></p>
       <p id="rdr-map-credit" hidden><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a></p>
     </div>
-    <button id="rdr-down" class="chip" type="button" hidden>Spots ↓</button>
-  </div>
-  <div id="rdr-list" aria-label="Spots"></div>
-</section>
-<div id="rdr-plus" hidden><button type="button" class="tl tl-add" data-nspot="" aria-label="Add a spot"><b aria-hidden="true">+</b><span>spot</span></button></div>
+  <button type="button" class="chip" id="rdr-pique">Tap the place · Cancel</button>
+</aside>
+
 <section class="view" id="v-grid" aria-label="Spots grid"><div id="rdr-g-f"></div></section>
 
 <aside id="rdr-sf" class="sf" role="dialog" aria-label="Spots: filters" hidden></aside>
 <aside id="rdr-new" class="sf" role="dialog" aria-label="Add a spot" hidden></aside>
 <aside id="detail" role="dialog" aria-modal="true" aria-label="Spot"></aside>
-<!-- 12/11 — TROIS entrées, comme `#cap-f-photo` / `#cap-f-video` / `#cap-f-file` de totehm.com : au
-     téléphone, PHOTO et VIDEO ouvrent la caméra (`capture`), IMPORT ouvre les fichiers. -->
-<input id="ns-f-photo" class="hide" type="file" accept="image/*" capture="environment" aria-label="A photo">
-<input id="ns-f-video" class="hide" type="file" accept="video/*" capture="environment" aria-label="A video">
-<input id="ns-file" class="hide" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" aria-label="A photo or a video">
+<div id="cap" role="dialog" aria-modal="true" aria-label="Photo, video or file" aria-hidden="true">
+  <div id="cap-in">
+    <div id="cap-cam" class="hide"><video id="cap-v" playsinline muted></video><span id="cap-t"></span>
+      <button id="cap-shot" type="button" aria-label="Take the photo"></button></div>
+    <div id="cap-row">
+      <button type="button" class="cap-b" data-capk="photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="4"/></svg>PHOTO</button>
+      <button type="button" class="cap-b" data-capk="video"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.5" fill="#e0453f"/></svg>VIDEO</button>
+      <button type="button" class="cap-b" data-capk="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>IMPORT</button>
+    </div>
+    <button id="cap-back" type="button" class="take-secondary" hidden>Change mode</button>
+    <div class="lv-note" id="cap-note" role="status" aria-live="polite"></div>
+  </div>
+  <button id="cap-x" type="button" class="k2 k2-x side-close" data-hover-art aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
+  <input id="cap-f-photo" type="file" accept="image/*" capture="environment" hidden>
+  <input id="cap-f-video" type="file" accept="video/*" capture="environment" hidden>
+  <input id="cap-f-file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,application/pdf,audio/mpeg,audio/mp4,audio/webm,audio/ogg,text/plain" hidden>
+</div>
 
 <script>
 /* ══ DISCOVER — copié de tools/discover.js dans chaque page (jamais importé) ══
@@ -949,16 +1105,13 @@ const sb = createClient(SB_URL, SB_ANON);
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 const COM = 'https://www.totehm.com';
-const BUILD = '2026-11-27-carte-grind';
+const BUILD = '2026-11-27-radar-spots';
 
 /* ══ AUDIENCE — 13/10 : trois niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
    (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ;
    FIGHER CLUB EST le plus ouvert (il n'y a plus de PUBLIC). Le serveur décide (`_audience_ok`). ══ */
 const AUD = [['private','PRIVATE'],['figher','FIGHER CLUB'],['subscribers','MY SUBSCRIBERS']];
-/* les trois icônes de la prise de média, copiées de com/totehm.html (`ICO_PHOTO`, `ICO_VIDEO`, `ICO_DOC`) */
-const ICO_PHOTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="4"/></svg>';
-const ICO_VIDEO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.5" fill="#e0453f"/></svg>';
-const ICO_DOC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>';
+
 const audNorm = a => a === 'public' ? 'figher' : a;
 const AUD_ICON = {
   private:'<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>',
@@ -1191,18 +1344,16 @@ async function lieuDe(z){
 /* ══ L'ÉTAT ══ */
 const VIDE_CONNECT = 'connect with my TOTEHM to see the spots around me';
 let me = null, PSEUDO = null, POS = null;
-let RULES = { clip_seconds:33, clip_max_bytes:48000000, duration_min:5, duration_max:720, horizon_days:90 };
-let DETAIL = null, DETAIL_GROUPE = null, DETAIL_RETOUR = null;
+let DETAIL=null, DETAIL_RETOUR=null;
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 
 /* Map et Grid lisent les mêmes spots. Le choix tient entre deux visites. */
-const MODES = ['map', 'grid'];
+const MODES = ['radar', 'grid'];
 const MODE = (() => {
-  const CLE = 'figher_mode';
-  let m = store.get(CLE) === 'grid' || store.get(CLE) === 'shorts' ? 'grid' : 'map';
+  let m = 'radar';
   const abon = [];
   return { get:()=>m,
-    set(x){ if(!MODES.includes(x) || x === m) return; m = x; store.set(CLE, x); abon.forEach(f => { try{ f(x); }catch(_){} }); },
+    set(x){ if(!MODES.includes(x) || x === m) return; m=x; abon.forEach(f=>f(x)); },
     sur(f){ if(typeof f === 'function') abon.push(f); } };
 })();
 
@@ -1244,7 +1395,7 @@ const CLUBSP = (() => {
       const q = st.p[per] || {};
       return sb.rpc('club_spots', { p_period:per, p_filters:f,
         p_lat:f.scope === 'near' ? POS.lat : null, p_lng:f.scope === 'near' ? POS.lng : null,
-        p_limit:MODE.get()==='map'?60:20, p_offset:suite ? (q.off | 0) : 0, p_as_of:suite ? (q.asOf || null) : null }).abortSignal(requete.signal).then(r => ({ per, ...r }));
+        p_limit:MODE.get()==='radar'?60:20, p_offset:suite ? (q.off | 0) : 0, p_as_of:suite ? (q.asOf || null) : null }).abortSignal(requete.signal).then(r => ({ per, ...r }));
     }));
     if(s !== st.seq || me?.id !== uid) return;
     lecture = null;
@@ -1318,22 +1469,9 @@ const CLUBSP = (() => {
                 filtres:filtres(), charge:st.charge, rayon:st.srv.rayon })
   };
 })();
-/* « Près de moi » demande la position : on la DEMANDE seulement au geste du membre. */
-let positionEnCours = null;
-function position(){
-  if(POS) return Promise.resolve(true);
-  if(!me||!navigator.geolocation) return Promise.resolve(false);
-  if(positionEnCours) return positionEnCours;
-  const uid=me.id;
-  const demande=new Promise(ok=>{
-    navigator.geolocation.getCurrentPosition(({coords})=>{
-      if(me?.id !== uid){ ok(false); return; }
-      POS={lat:coords.latitude,lng:coords.longitude}; ok(true);
-    },()=>ok(false),{timeout:8000,maximumAge:120000});
-  });
-  positionEnCours=demande;
-  demande.finally(()=>{ if(positionEnCours===demande) positionEnCours=null; });
-  return demande;
+async function position(frais=false){
+  POS=await localisationClub({frais});
+  return !!POS;
 }
 
 /* ══ LA BOÎTE D'UN SPOT — ce que CE lecteur a le droit de voir. Ce qui vient du TOTEHM garde le format
@@ -1379,16 +1517,14 @@ function spotHTML(z){
   const a = audOf(z);
   const how = sdTag(audBadge(a) + esc(audName(a).toLowerCase()), 'sd-aud')
     + (z.mode ? sdTag(z.mode === 'silent' ? 'silent · nobody disturb me' : 'social · we can talk') : '');
-  return boxSpot(z)
-    + '<div class="sdata" aria-label="Where and when"><div class="sd-row">' + sdTag(when, 'is-st')
-    + sdTag(state === 'am' ? 'until ' + hhmm(end) : esc(dayOf(st)) + ' ' + hhmm(st)) + placeHTML(z) + '</div>'
-    + '<details class="spot-more"><summary>Details</summary><div class="sd-row">' + how
-    + (z.duration_min ? sdTag(fmtDur(z.duration_min)) : '') + (kinMot(z) ? sdTag(kinMot(z)) : '') + '</div>'
-    + (z.comment ? '<p class="sd-say" tabindex="0">' + esc(z.comment) + '</p>' : '')
-    + (z.mine ? '<div class="acts"><button class="btn" type="button" data-del="'+esc(String(z.id))+'">Delete</button></div>'
-      + '<p class="note acts-note" hidden></p>' : '') + '</details></div>'
-    + (!z.mine && z.creator ? '<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'
-       + encodeURIComponent(z.creator) + '">' + esc(z.creator) + '</button></div>' : '');
+  return '<div class="sdata spot-data" aria-label="Where and when">'+loupeSpot()+'<div class="sd-row">'
+    +sdTag(when,'is-st')+sdTag(state==='am'?'until '+hhmm(end):esc(dayOf(st))+' '+hhmm(st))+placeHTML(z)+'</div>'
+    +'<div class="sd-row">'+how+(z.duration_min?sdTag(fmtDur(z.duration_min)):'')
+    +(kinMot(z)?sdTag(kinMot(z)):'')+'</div>'
+    +(z.comment?'<p class="sd-say" tabindex="0">'+esc(z.comment)+'</p>':'')+'</div>'
+    +(!z.mine&&z.creator?'<div class="by"><span>by</span><button class="tname" type="button" data-com="/@'
+      +encodeURIComponent(z.creator)+'">'+esc(z.creator)+'</button></div>':'')
+    +actsHTML(z)+boxSpot(z);
 }
 
 /* Une ligne : l'état, le moment, la distance (ou la ville), together, la parenté — la liste sous la carte. */
@@ -1525,13 +1661,63 @@ async function urlMoments(p){
   return data.signedUrl;
 }
 
-/* ══ LE RADAR · LA SIXIÈME VUE ═══════════════════════════════════════════════════════════════════
-   Ce que COM montre sur un globe, le Club le montre EN RELATIF : moi au centre, chaque spot à sa
-   distance et à son relèvement. L'anneau se TOURNE au doigt (ou suit la boussole du téléphone).
-   Un carré PLEIN = le point exact m'est montré ; CREUX = je ne vois que la ville. AUCUN rAF permanent
-   quand rien ne bouge : la cadence tombe à 15 images/s au repos. */
-/* `z` = LA PORTÉE CHOISIE, un facteur sur la portée automatique (Wah, 12/11 : « on doit pouvoir grossir
-   ou dégrossir la portée »). Gardé d'une session à l'autre : la bonne portée est celle de SA ville. */
+/* ══ LE RADAR — les spots du Club à leur distance et à leur relèvement ══ */
+const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[], lieux:[], seq:0,
+              head:0, headTo:null, turn:null, last:0, dirty:null, centre:null, z:1, pinch:null };
+try{ const v = parseFloat(localStorage.getItem('figher_portee')); if(v >= .05 && v <= 40) RAD.z = v; }catch(_){}
+const norm360 = d => ((d % 360) + 360) % 360, norm180 = d => ((d + 540) % 360) - 180;
+const CARD = ['N','NE','E','SE','S','SW','W','NW'];
+const bearing = (a,b) => {
+  const la=a.lat*DEG, lb=b.lat*DEG, dl=(b.lng-a.lng)*DEG;
+  return Math.atan2(Math.sin(dl)*Math.cos(lb),Math.cos(la)*Math.sin(lb)-Math.sin(la)*Math.cos(lb)*Math.cos(dl))/DEG;
+};
+let suppressClickUntil=0;
+let geoRadar='';
+const CMP = { on:false, src:null, target:0, last:0, timer:0,
+              available:typeof DeviceOrientationEvent !== 'undefined' && matchMedia('(pointer:coarse)').matches };
+const centre = () => POS || RAD.centre;
+function radarSize(){
+  const c = $('canvas'), dpr = Math.min(2, devicePixelRatio || 1);
+  const w=c.clientWidth, h=c.clientHeight;
+  if(!w||!h) return;
+  if(RAD.W!==w||RAD.H!==h||RAD.dpr!==dpr){
+    RAD.W=w; RAD.H=h; RAD.dpr=dpr; c.width=w*dpr; c.height=h*dpr; RAD.dirty=null;
+  }
+  const bar=$('rdr-flt').getBoundingClientRect().bottom;
+  const left=31, right=RAD.W-31, top=bar+78, bottom=Math.max(top+85,RAD.H-146);
+  RAD.tx = (left + right) / 2; RAD.ty = (top + bottom) / 2;
+  RAD.tr = Math.max(40, Math.min(right - left, Math.max(60, bottom - top)) / 2 * .92);
+  if(!RAD.rpx){ RAD.cx = RAD.tx; RAD.cy = RAD.ty; RAD.rpx = RAD.tr; }
+  const em = $('radar-empty'); em.style.top = Math.round(RAD.ty) + 'px';
+}
+function radarAuto(){
+  const c = centre(); if(!c) return 1000;
+  const tous=RAD.lieux.map(({z,p})=>({z,d:hav(c,p)}));
+  const proches=tous.filter(({z,d})=>d<=50000&&spotState(z)==='am');
+  const l=POS?(proches.length?proches:tous.filter(({d})=>d<=50000)):tous;
+  if(!l.length) return 5000;
+  const d=l.map(x=>x.d).sort((a,b)=>a-b);
+  return Math.max(POS?750:300,d[Math.floor((d.length-1)*.85)]*1.18);
+}
+/* ⚠️ LA PORTÉE AUTOMATIQUE RESTE LA BASE : le facteur du membre se pose DESSUS, donc un spot qui arrive
+   de loin ne fait plus sauter l'échelle qu'il a choisie. Bornes : 50 m à 20 000 km. */
+const radarRange = () => Math.max(50, Math.min(2e7, radarAuto() * RAD.z));
+let porteeT = 0;
+function porteeSet(z){
+  z = Math.max(.05, Math.min(40, z));
+  if(Math.abs(z - RAD.z) < 1e-4) return;
+  RAD.z = z; RAD.range = radarRange();
+  clearTimeout(porteeT);
+  porteeT = setTimeout(() => { try{ localStorage.setItem('figher_portee', String(RAD.z)); }catch(_){} }, 400);
+  const b = $('rdr-span'); if(b) b.textContent = fmtDist(RAD.range);
+  radarOn();
+}
+const portee = f => porteeSet(RAD.z * f);
+/* Les spots → leurs lieux (une lecture de `cities.json` seulement si un spot n'a pas de point). */
+/* ══ LA VITRINE · 24/11 (Wah : « affiche les spots sur le radar même pour les visiteurs pour donner envie ») ══
+   Sans compte, le radar s'allume quand même : `club_vitrine()` ne rend que la VILLE, les intentions et le temps
+   de chaque spot visible au Club — jamais le point, la Habit, l'auteur ni le média. Un ANNEAU à la ville, de sa
+   couleur ; le tap ouvre le Discover (la porte : CONNECT WITH MY TOTEHM). La liste et la grille restent aux membres. */
 let VITRINE = [];
 async function lireVitrine(){
   const { data, error } = await sb.rpc('club_vitrine');
@@ -1540,8 +1726,246 @@ async function lireVitrine(){
   const ETAT = { now:'am', future:'will', past:'was' };
   VITRINE = (!error && data && data.ok && Array.isArray(data.items) ? data.items : [])
     .map((x, i) => ({ id:'vitrine-' + i, vitrine:true, city:x.city, intentions:x.intentions || [], state:ETAT[x.when] || 'was' }));
-  CARTE.maj(); peindreEtatCarte();
+  situer();
 }
+async function situer(){
+  const s = ++RAD.seq, l = me ? CLUBSP.items() : VITRINE;
+  const r = await Promise.all(l.map(async z => ({ z, p:await lieuDe(z) })));
+  if(s !== RAD.seq) return;
+  RAD.lieux = r.filter(x => x.p);
+  /* la vitrine ne connaît que la VILLE : plusieurs spots d'une même ville s'y empileraient en UN anneau. Ils s'écartent
+     en spirale autour d'elle (400 m, puis 250 m de plus chacun) — un dessin, jamais une position. */
+  if(!me){ const n = new Map();
+    RAD.lieux = RAD.lieux.map(x => { const k = x.p.lat.toFixed(3) + ',' + x.p.lng.toFixed(3), i = n.get(k) || 0; n.set(k, i + 1);
+      if(!i) return x;
+      const d = (400 + 250 * i) / 111320, a = i * 2.39996;
+      return { z:x.z, p:{ lat:x.p.lat + d * Math.cos(a), lng:x.p.lng + d * Math.sin(a) / Math.cos(x.p.lat * Math.PI / 180), plein:false } }; }); }
+  if(RAD.lieux.length && !POS){
+    RAD.centre = { lat:RAD.lieux.reduce((a, x) => a + x.p.lat, 0) / RAD.lieux.length,
+                   lng:RAD.lieux.reduce((a, x) => a + x.p.lng, 0) / RAD.lieux.length };
+  }
+  RAD.range = radarRange();
+  const em = $('radar-empty');
+
+  em.textContent = CLUBSP.charge ? 'reading the club…' : CLUBSP.err === 'signin' ? (RAD.lieux.length ? '' : VIDE_CONNECT) : CLUBSP.err === 'location' ? 'allow my location'
+    : CLUBSP.err ? 'the club is unreachable' : RAD.lieux.length ? '' : 'no spots with these filters';
+  em.classList.toggle('hide', !em.textContent || MODE.get() !== 'radar');
+  radarOn(); LISTE.peindre();
+}
+function paintCmp(){
+  const h = Math.round(norm360(RAD.head)) % 360;
+  const html = '<b>' + String(h).padStart(3, '0') + '° ' + CARD[Math.round(h / 45) % 8] + '</b><br>'
+    + (CMP.on ? 'compass' : Math.abs(norm180(RAD.head)) > .5 ? 'north ↺' : CMP.available ? 'align compass' : 'turn the ring');
+  const el = $('cmp'); if(el._heading !== html){ el._heading = html; el.innerHTML = html; }
+}
+function draw(t){
+  RAD.raf = 0;
+  /* Un panneau ouvert ou un spot ouvert : le radar s'ARRÊTE — rien à montrer derrière, et la batterie
+     du téléphone n'a pas à tourner pour ça. Il repart à la fermeture (`radarOn`). */
+  if(document.hidden || MODE.get() !== 'radar' || $('v-radar').scrollTop > RAD.H) return;
+  if(document.body.matches('.is-nspot,.is-sf,.is-detail,.is-dc')) return;
+  const moving = Math.abs(RAD.tx - RAD.cx) + Math.abs(RAD.ty - RAD.cy) + Math.abs(RAD.tr - RAD.rpx) > 1 || RAD.turn || RAD.headTo !== null;
+  const fps = moving ? 60 : 15;
+  if(t - RAD.last < 1000 / fps - 1){ RAD.raf = requestAnimationFrame(draw); return; }
+  const blend = 1 - Math.pow(.82, Math.min(100, t - RAD.last) / (1000 / 60)); RAD.last = t;
+  for(const [now, target] of [['cx','tx'],['cy','ty'],['rpx','tr']])
+    RAD[now] = Math.abs(RAD[target] - RAD[now]) < .04 ? RAD[target] : RAD[now] + (RAD[target] - RAD[now]) * blend;
+  if(CMP.on){ const delta = norm180(CMP.target - RAD.head); RAD.head = norm360(RAD.head + delta * .15); }
+  else if(RAD.headTo !== null){ const delta = norm180(RAD.headTo - RAD.head); RAD.head = norm360(RAD.head + delta * .16); if(Math.abs(delta) < .1) RAD.headTo = null; }
+  const tools = $('radar-tools');
+  const ecart=Math.max(90,RAD.rpx*.83);
+  const pos=[RAD.cx-ecart,RAD.cx+ecart,RAD.cy+RAD.rpx+32,RAD.cy-RAD.rpx-68].map(n=>n.toFixed(1)+'px');
+  const layout = pos.join('|');
+  if(tools._layout !== layout){ tools._layout = layout; tools.classList.add('is-placed');
+    $('cmp').style.left = pos[0]; $('cmp').style.top = pos[2];
+    $('rdr-here').style.left = pos[1]; $('rdr-here').style.top = pos[2];
+    $('rdr-down').style.left = RAD.cx.toFixed(1) + 'px'; $('rdr-down').style.top = pos[2];
+    const zm = $('rdr-zoom'); if(zm){ zm.style.left = RAD.cx.toFixed(1) + 'px'; zm.style.top = pos[3]; } }
+  { const b = $('rdr-span'); if(b){ const t = fmtDist(RAD.range); if(b.textContent !== t) b.textContent = t; } }
+  paintCmp();
+  const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
+  x.setTransform(dpr, 0, 0, dpr, 0, 0); if(RAD.dirty) x.clearRect(...RAD.dirty);
+  RAD.dirty = [cx - rpx - 42, cy - rpx - 42, (rpx + 42) * 2, (rpx + 42) * 2];
+  const g = x.createRadialGradient(cx, cy, 0, cx, cy, rpx); g.addColorStop(0, '#16161b'); g.addColorStop(1, '#0d0d10');
+  x.fillStyle = g; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI * 2); x.fill();
+  x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1;
+  for(let k = 1; k <= 4; k++){ x.beginPath(); x.arc(cx, cy, rpx * k / 4, 0, Math.PI * 2); x.stroke(); }
+  x.font = '9px "Space Mono", monospace'; x.fillStyle = 'rgba(255,255,255,.28)'; x.textAlign = 'left';
+  if(centre()) for(let k = 2; k <= 4; k += 2) x.fillText(fmtDist(RAD.range * k / 4), cx + 4, cy - rpx * k / 4 + 11);
+  const a = ((t || 0) / 14000 % 1) * Math.PI * 2 - Math.PI / 2;
+  const sw = x.createConicGradient ? x.createConicGradient(a - .55, cx, cy) : null;
+  if(sw){ sw.addColorStop(0, 'rgba(255,255,255,0)'); sw.addColorStop(.0875, 'rgba(255,255,255,.07)'); sw.addColorStop(.0876, 'rgba(255,255,255,0)');
+    x.fillStyle = sw; x.beginPath(); x.arc(cx, cy, rpx, 0, Math.PI * 2); x.fill(); }
+  const c = centre(); RAD.pts = [];
+  if(c) for(const { z, p } of RAD.lieux){
+    const d = hav(c, p), b = (bearing(c, p) - RAD.head) * DEG, dehors = d > RAD.range;
+    const r = Math.min(1, d / RAD.range) * rpx, px = cx + Math.sin(b) * r, py = cy - Math.cos(b) * r, ici = spotState(z) === 'am';
+    /* 12/11 (Wah) : le point PREND TOUTES ses intentions, mélangées comme des pigments (`melange`). */
+    /* 23/11 (Wah) : « des POINTS LUMINEUX reprenant les couleurs des intentions, comme avant » — un rond qui rayonne
+       de sa couleur mélangée ; PLEIN = point exact, ANNEAU = la ville. */
+    const col = melange(z.intentions || []), s = ici ? 4.2 : 3.6;
+    x.globalAlpha = dehors ? .4 : ici ? 1 : .8;
+    x.shadowColor = col; x.shadowBlur = dehors ? 6 : ici ? 16 : 11;
+    x.beginPath(); x.arc(px, py, s, 0, Math.PI * 2);
+    if(p.plein){ x.fillStyle = col; x.fill(); x.fill(); }
+    else { x.strokeStyle = col; x.lineWidth = 1.6; x.stroke(); }
+    x.shadowBlur = 0;
+    if(ici){ x.strokeStyle = col; x.globalAlpha = .35; x.lineWidth = 1; x.beginPath();
+      x.arc(px, py, 10 + 3 * Math.sin((t || 0) / 500), 0, Math.PI * 2); x.stroke(); }
+    x.globalAlpha = 1; RAD.pts.push({ z, px, py });
+  }
+  if(POS){ x.fillStyle = '#fff'; x.shadowColor = '#fff'; x.shadowBlur = 8; x.beginPath(); x.arc(cx, cy, 4, 0, Math.PI * 2); x.fill(); x.shadowBlur = 0; }
+  x.globalAlpha = 1;
+  for(let deg = 0; deg < 360; deg += 5){
+    const an = (deg - RAD.head) * DEG, outer = rpx + 12, inner = outer - (deg % 45 === 0 ? 10 : deg % 15 === 0 ? 6 : 3);
+    x.strokeStyle = deg % 45 === 0 ? 'rgba(255,255,255,.65)' : 'rgba(255,255,255,.25)';
+    x.beginPath(); x.moveTo(cx + Math.sin(an) * inner, cy - Math.cos(an) * inner); x.lineTo(cx + Math.sin(an) * outer, cy - Math.cos(an) * outer); x.stroke();
+  }
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '9px "Space Mono"'; x.fillStyle = 'rgba(255,255,255,.65)';
+  for(const [deg, label] of [[0,'N'],[90,'E'],[180,'S'],[270,'W']]){
+    const an = (deg - RAD.head) * DEG; x.fillText(label, cx + Math.sin(an) * (rpx + 24), cy - Math.cos(an) * (rpx + 24));
+  }
+  RAD.raf = requestAnimationFrame(draw);
+}
+function radarOn(){ radarSize(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
+function compassOff(){ if(CMP.src) removeEventListener(CMP.src, onOrient); CMP.on = false; CMP.src = null; clearTimeout(CMP.timer); }
+function onOrient(e){
+  let h = typeof e.webkitCompassHeading === 'number' ? e.webkitCompassHeading : e.absolute && typeof e.alpha === 'number' ? 360 - e.alpha : null;
+  if(h === null || !Number.isFinite(h)) return;
+  CMP.target = norm360(h + (screen.orientation?.angle || window.orientation || 0)); CMP.last = Date.now(); CMP.on = true; RAD.headTo = null;
+}
+$('cmp').onclick = async () => {
+  if(CMP.on || CMP.src || Math.abs(norm180(RAD.head)) > .5){ compassOff(); RAD.headTo = 0; return; }
+  if(!CMP.available) return;
+  try{ if(typeof DeviceOrientationEvent.requestPermission === 'function' && await DeviceOrientationEvent.requestPermission() !== 'granted') return; }
+  catch{ CMP.available = false; return; }
+  CMP.last = 0; CMP.src = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
+  addEventListener(CMP.src, onOrient);
+  CMP.timer = setTimeout(() => { if(!CMP.last){ compassOff(); CMP.available = false; paintCmp(); } }, 3000);
+};
+async function releverPosition(frais=false){
+  if(geoRadar==='loading') return;
+  const cle=$('rdr-here');
+  geoRadar='loading'; cle.setAttribute('aria-busy','true');
+  if(frais) dire('');
+  const ok=await position(frais);
+  geoRadar=ok?'ready':'failed'; cle.removeAttribute('aria-busy');
+  if(ok&&frais){ compassOff(); RAD.headTo=0; }
+  if(!ok) dire('Location unavailable · tap the position key to retry');
+  await situer();
+  if(MODE.get()==='grid') GRID.maj();
+}
+$('rdr-here').onclick=()=>releverPosition(true);
+{
+  const cv = $('canvas');
+  /* le repère du radar : le canevas DÉFILE avec la vue, ses coordonnées sont les siennes */
+  const ici = e => { const r = cv.getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; };
+  cv.addEventListener('pointerdown', e => {
+    const q = ici(e), d = Math.hypot(q.x - RAD.cx, q.y - RAD.cy);
+    if(d < RAD.rpx - 18 || d > RAD.rpx + 35) return;
+    if(e.button!==0||RAD.turn) return;
+    RAD.turn={id:e.pointerId,a:Math.atan2(q.x-RAD.cx,RAD.cy-q.y),h:RAD.head,debut:q,bouge:false};
+    cv.setPointerCapture(e.pointerId); e.stopImmediatePropagation();
+  });
+  cv.addEventListener('pointermove', e => {
+    if(!RAD.turn || e.pointerId !== RAD.turn.id) return;
+    const q=ici(e), t=RAD.turn;
+    if(!t.bouge){
+      if(Math.hypot(q.x-t.debut.x,q.y-t.debut.y)<5) return;
+      t.bouge=true; compassOff(); RAD.headTo=null;
+    }
+    const a=Math.atan2(q.x-RAD.cx,RAD.cy-q.y);
+    RAD.head=norm360(t.h-(a-t.a)/DEG); suppressClickUntil = Date.now() + 500;
+    e.preventDefault(); e.stopImmediatePropagation();
+  });
+  for(const name of ['pointerup','pointercancel'])
+    cv.addEventListener(name, e => { if(RAD.turn?.id===e.pointerId){ if(RAD.turn.bouge) suppressClickUntil=Date.now()+500; RAD.turn=null; } });
+  cv.addEventListener('click', e => {
+    if(Date.now() < suppressClickUntil || RAD.turn) return;
+    let best = null, bd = 22; const q = ici(e);
+    for(const p of RAD.pts){ const d = Math.hypot(p.px - q.x, p.py - q.y); if(d < bd){ bd = d; best = p.z; } }
+    if(best) best.vitrine ? CD.ouvrir() : ouvrirDetail(best);
+  });
+}
+/* ══ LA PORTÉE SE RÈGLE · 12/11 ══════════════════════════════════════════════════════════════════════
+   Deux boutons (× 1,6 par tap), deux doigts sur le disque, la molette sur l'ordinateur. L'anneau garde SA
+   priorité : son `pointerdown` s'arrête net (`stopImmediatePropagation`), donc tourner n'est jamais zoomer. */
+{ const cv = $('canvas'), pz = new Map();
+  const ici = e => { const r = cv.getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; };
+  const dedans = q => Math.hypot(q.x - RAD.cx, q.y - RAD.cy) <= RAD.rpx + 12;
+  cv.addEventListener('pointerdown', e => {
+    if(!dedans(ici(e))) return;
+    pz.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if(pz.size === 2){ const [a, b] = [...pz.values()]; RAD.pinch = { d:Math.hypot(a.x - b.x, a.y - b.y) || 1, z:RAD.z }; }
+  });
+  cv.addEventListener('pointermove', e => {
+    if(!pz.has(e.pointerId)) return;
+    pz.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if(!RAD.pinch || pz.size !== 2) return;
+    const [a, b] = [...pz.values()], d = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+    porteeSet(RAD.pinch.z * (RAD.pinch.d / d));            /* les doigts s'écartent = on voit plus près */
+    suppressClickUntil = Date.now() + 400;
+    e.preventDefault(); e.stopImmediatePropagation();
+  }, { passive:false });
+  for(const n of ['pointerup', 'pointercancel'])
+    cv.addEventListener(n, e => { pz.delete(e.pointerId); if(pz.size < 2) RAD.pinch = null; });
+  cv.addEventListener('wheel', e => {
+    if(!dedans(ici(e))) return;                            /* hors du disque : la vue défile vers la liste */
+    e.preventDefault(); e.stopPropagation();
+    portee(Math.exp(e.deltaY * .0015));
+  }, { passive:false });
+  $('rdr-out').onclick = () => portee(1.6);
+  $('rdr-in').onclick = () => portee(1 / 1.6);
+}
+addEventListener('resize', () => radarOn());
+$('v-radar').addEventListener('scroll', () => {
+  const y = $('v-radar').scrollTop;
+  document.body.classList.toggle('is-scrolled', y > 40);
+  if(y <= RAD.H) radarOn();
+}, { passive:true });
+$('rdr-down').onclick = () => $('rdr-list').scrollIntoView({ behavior:matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth', block:'start' });
+
+/* ══ LA POSITION DES SPOTS — tools/spot_location.js ══ */
+function creerLocalisation(){
+  let dernier=null, vol=null;
+  function lecture(options){
+    return new Promise(resolve=>{
+      const service=navigator.geolocation;
+      if(!service){ resolve({code:2}); return; }
+      const timer=setTimeout(()=>resolve({code:3}),options.timeout+750);
+      const fin=r=>{ clearTimeout(timer); resolve(r); };
+      try{
+        service.getCurrentPosition(({coords})=>{
+          const {latitude:lat,longitude:lng,accuracy}=coords;
+          fin(Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180
+            ?{point:{lat,lng,accuracy}}:{code:2});
+        },e=>fin({code:e.code}),options);
+      }catch(_){ fin({code:2}); }
+    });
+  }
+  function demander({frais=false,precis=false}={}){
+    const age=dernier?Date.now()-dernier.at:Infinity;
+    if(vol) return vol;
+    if(!frais&&age<120000&&(!precis||dernier.point.accuracy<=250)) return Promise.resolve(dernier.point);
+    vol=(async()=>{
+      const a=await lecture({enableHighAccuracy:precis,timeout:precis?8000:5000,maximumAge:frais?0:120000});
+      if(a.code===1){ dernier=null; return null; }
+      let point=a.point;
+      if(!point||(!precis&&point.accuracy>5000)){
+        const b=await lecture({enableHighAccuracy:!precis,timeout:6500,maximumAge:frais?0:120000});
+        if(b.code===1){ dernier=null; return null; }
+        if(b.point&&(!point||b.point.accuracy<point.accuracy)) point=b.point;
+      }
+      if(point){ dernier={point,at:Date.now()}; return point; }
+      return !precis&&dernier&&Date.now()-dernier.at<300000?dernier.point:null;
+    })().finally(()=>{ vol=null; });
+    return vol;
+  }
+  return demander;
+}
+/* ══ fin LA POSITION DES SPOTS ══ */
+const localisationClub=creerLocalisation(), localisationPrise=creerLocalisation();
+
 /* ══ LA CARTE DES SPOTS — tools/spot_map.js ══ */
 function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,position,groupesOuverts=()=>true}){
   const $=id=>document.getElementById(id);
@@ -1858,26 +2282,28 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   function zoomerIci(clic=false){
     if(!etat.on) return;
     interrompre(); repartition=null; note.textContent='';
-    if(!position&&!navigator.geolocation){ if(clic) note.textContent='location unavailable'; cadrerSpots(); return; }
     const s=++geoSeq; geoAttente=true;
     loc.setAttribute('aria-busy','true');
-    function centrer(coords){
-      if(!coords) { indisponible(); return; }
-      if(s!==geoSeq) return;
-      annulerPosition(); etat.centre=true;
-      ici=coord(coords.longitude,coords.latitude);
-      voler(ici.lat,ici.lng,ZOOM_VILLE,clic?750:1050);
-    }
-    function indisponible(){
+    position({frais:clic}).then(p=>{
       if(s!==geoSeq) return;
       annulerPosition();
-      if(clic) note.textContent='location unavailable';
-      cadrerSpots(); kick();
-    }
-    if(position) position().then(p=>centrer(p&&{latitude:p.lat,longitude:p.lng}),indisponible);
-    else navigator.geolocation.getCurrentPosition(({coords})=>centrer(coords),indisponible,{timeout:8000,maximumAge:0});
+      if(!p){
+        if(clic) note.textContent='location unavailable · try again';
+        cadrerSpots(); kick(); return;
+      }
+      etat.centre=true; ici=coord(p.lng,p.lat);
+      voler(ici.lat,ici.lng,ZOOM_VILLE,clic?750:1050);
+    });
   }
-  loc.addEventListener('click',()=>{ if(!geoAttente) zoomerIci(true); });
+  loc.addEventListener('click',()=>zoomerIci(true));
+
+  function monde(){
+    const initial=k<=1.005&&Math.abs(lat0-28)<.01&&Math.abs(longitude(lon0-8))<.01;
+    if(!etat.on||pique||(!geoAttente&&!trajet&&!roue&&!zoomDoigt&&!repartition&&initial)) return false;
+    interrompre(); dernierTap=null; repartition=null; etat.centre=true;
+    voler(28,8,1,620);
+    return true;
+  }
 
   function dansDisque(x,y){
     const g=geo();
@@ -1996,7 +2422,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       c.classList.remove('is-tenu'); credit.hidden=true;
     },
     maj(){ if(etat.on) situer(); },
-    rafraichir:kick,
+    rafraichir:kick, monde,
     vider(){ seq++; lieux=[]; pts=[]; repartition=null; etat.centre=false; etat.points=0; etat.groupes=0; etat.repartis=0; },
     ou:()=>pts.map(p=>[Math.round(p.x),Math.round(p.y)]),
     dans(x,y){ if(!etat.on) return false; const r=c.getBoundingClientRect(); return dansDisque(x-r.left,y-r.top); },
@@ -2012,27 +2438,12 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
 }
 /* ══ fin LA CARTE DES SPOTS ══ */
 
-const CARTE = creerCarteSpots({
-  spots:()=>me ? CLUBSP.items() : VITRINE, lieuDe, couleur:melange,
-  positionAuto:()=>!!me, position:()=>position().then(ok=>ok?POS:null), groupesOuverts:()=>!!me,
-  geometrie(w,h){ return {cx:w/2,cy:h/2,R0:Math.max(40,Math.min(w*.40,h*.44))}; },
-  voir(cle,cles){
-    if(!me) return CD.ouvrir();
-    const z=CLUBSP.items().find(x=>'sp:'+x.id===cle);
-    if(z) ouvrirDetail(z,cles);
-  }
+/* Le globe est la carte de sélection d'un lieu à venir. */
+const CARTE=creerCarteSpots({
+  spots:()=>[],lieuDe,couleur:melange,positionAuto:()=>false,position:localisationClub,
+  geometrie(w,h){ return {cx:w/2,cy:h/2,R0:Math.max(40,Math.min(w*.43,h*.42))}; },
+  voir(){}
 });
-function peindreEtatCarte(){
-  if(!me){
-    dire(VITRINE.length?VITRINE.length+' spots in the Club · connect to join':VIDE_CONNECT);
-    return;
-  }
-  dire(CLUBSP.err?'the club is unreachable':CLUBSP.charge?'reading the club…':CLUBSP.items().length?'':'no spots with these filters');
-}
-$('v-map').addEventListener('scroll',()=>{
-  document.body.classList.toggle('is-scrolled',MODE.get()==='map'&&$('v-map').scrollTop>40);
-});
-$('rdr-down').onclick=()=>$('rdr-list').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
 
 function arcSpot(z){
   const cols=(z.habit_box?.ints||z.intentions||[]).map(icol);
@@ -2116,7 +2527,7 @@ const LISTE = (() => {
         + esc(z.habit || 'spot') + '">' + boxSpot(z, true) + ligneSpot(z) + '</article>').join('');
     const der = b.querySelector('.rl:last-child');
     if(der && CLUBSP.more){ io = new IntersectionObserver(es => { if(es.some(x => x.isIntersecting)) CLUBSP.suite(); },
-      { root:$('v-map'), rootMargin:'400px 0px' }); io.observe(der); }
+      { root:$('v-radar'), rootMargin:'400px 0px' }); io.observe(der); }
   }
   { const b = $('rdr-list');
     b.addEventListener('click', e => { const t = e.target.closest('.rl[data-cle]'); if(!t) return;
@@ -2159,6 +2570,8 @@ const SF = { ints:new Set(), type:'', ou:'', rayon:50, mode:'', akin:'', exact:f
 const ETAPES_SF=[['habit','My Grind'],['when','When'],['where','Where'],['together','Together'],['intentions','Intentions'],['media','Media']];
 const croixClub=attr=>'<button type="button" class="k2 k2-x '+(attr.includes('data-sf')?'sf-close':'dt-close')+'" data-hover-art '
   +attr+' aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>';
+const toucheFermer=attr=>'<button type="button" class="k2 k2-x side-close" data-hover-art '+attr
+  +' aria-label="Close"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>';
 const INT_ORDRE = ['fight','flow','enrich','love','express','focus','celebrate'];   /* l'ordre de totehm.com */
 const sfCount = () => SF.ints.size + Number(!!SF.type) + Number(!!SF.ou) + Number(!!SF.mode)
   + Number(!!SF.akin) + Number(CLUBSP.pers.length<CLUBSP.ORDRE.length);
@@ -2222,7 +2635,7 @@ function sfPaint(){
 function sfOpen(open){
   const p = $('rdr-sf'); if(!p) return;
   p.hidden = !open; document.body.classList.toggle('is-sf', !!open);
-  if(open){ p.scrollTop = 0; mesHabits().then(() => sfPaint()); } else CARTE.rafraichir();
+  if(open){ p.scrollTop = 0; mesHabits().then(() => sfPaint()); } else radarOn();
   sfPaint(); peindreBarre();
 }
 function sfApply(tousTemps=false){
@@ -2265,13 +2678,133 @@ function sfApply(tousTemps=false){
     if(t && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); t.click(); } });
 }
 
+/* ══ LE PASS DU SPOT — tools/spot_pass.js ══ */
+/* ══ LE PASS D'INVITATION D'UN SPOT · 23/11 ══ Wah : « pour que le membre puisse cut off facilement, il faut créer à chaque
+   fois un pass invitation automatique au spot pour vérification, et qu'un membre puisse [Cut off] la personne ».
+   L'abonné : son pass, créé au premier regard (`spot_pass_mine`) — son nom, le spot, un code à montrer sur place.
+   Le créateur : les passes de SON spot (`spot_passes_for`), un code vérifié (`spot_pass_check`) et [Cut off] en deux gestes
+   (`creator-cut-off` : l'abonnement s'arrête, le pass ne se vérifie plus). Le serveur décide de tout. */
+function creerPassSpot({sb,couperAcces,session}){
+  const diag={mien:0, listes:0, verifs:0, coupes:0};
+  let arme=null, armeT=0, sequence=0, retour=null;
+  const ouvert=()=>!!($('spass')&&!$('spass').hidden);
+  function suivre(){
+    const s=++sequence, uid=session();
+    return ()=>s===sequence&&!!uid&&uid===session()&&ouvert();
+  }
+  function feuille(){ let f=$('spass'); if(f) return f;
+    f=document.createElement('div'); f.id='spass'; f.hidden=true; f.setAttribute('role','dialog'); f.setAttribute('aria-modal','true'); f.setAttribute('aria-label','Spot passes');
+    f.innerHTML='<div class="sp-c"></div>'; document.body.appendChild(f);
+    f.addEventListener('click',e=>{ if(e.target===f||e.target.closest('[data-sp="x"]')) fermer(); });
+    window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!f.hidden){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); } },{capture:true});
+    return f; }
+  const carte=()=>feuille().querySelector('.sp-c');
+  function ouvrir(h){ const f=feuille(); if(f.hidden) retour=document.activeElement; carte().innerHTML=toucheFermer('data-sp="x"')+h; f.hidden=false;
+    const cible=f.querySelector('button:not(.side-close),input')||f.querySelector('.side-close');
+    cible?.focus({preventScroll:true}); }
+  function fermer(){
+    const f=$('spass'); if(f) f.hidden=true;
+    sequence++; arme=null; clearTimeout(armeT);
+    if(retour?.isConnected) retour.focus({preventScroll:true});
+    retour=null;
+  }
+  const quand=z=>{ try{ const d=new Date(z.starts_at); return isNaN(d)?'':d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }catch(_){ return ''; } };
+  async function mien(z){
+    const courant=suivre(); diag.mien++; ouvrir('<p class="sp-k">pass</p><p class="sp-p">…</p>');
+    const {data,error}=await sb.rpc('spot_pass_mine',{p_spot:String(z.id)});
+    if(!courant()) return;
+    if(error){ console.error('[spot_pass_mine]',error.message); ouvrir('<p class="sp-k">pass</p><p class="sp-p">try again</p>'); return; }
+    if(!data||!data.ok){ const w=data&&data.why;
+      ouvrir('<p class="sp-k">pass</p><p class="sp-p">'+esc(({not_subscriber:'Subscribe to '+(z.creator||'this member')+' to get your pass to this spot.',banned:'This ecosystem is closed to you.',self:'This is your own spot.'})[w]||'This pass is not available.')+'</p>'); return; }
+    ouvrir('<p class="sp-k">invited by '+esc(data.creator||'')+'</p><p class="sp-n">'+esc(data.pseudo||'')+'</p>'
+      +'<p class="sp-h">'+esc(data.habit||'')+(quand(data)?' · '+esc(quand(data)):'')+'</p>'
+      +'<p class="sp-code" aria-label="pass code">'+esc(data.code||'')+'</p>'
+      +'<p class="sp-p">Show this pass at the spot. '+esc(data.creator||'The member')+' checks it — and can cut off anyone who does not respect the spot.</p>');
+  }
+  function lignes(l){ return l.length?l.map(x=>'<div class="sp-r"><span><b>'+esc(x.pseudo)+'</b> <i>'+esc(x.code)+'</i></span>'
+      +'<button type="button" data-cut="'+esc(x.pseudo)+'"'+(arme===x.pseudo?' class="is-sur"':'')+'>'+(arme===x.pseudo?'cut off?':'cut off')+'</button></div>').join('')
+      :'<p class="sp-p">No pass yet. A pass is created when one of your subscribers opens this spot.</p>'; }
+  async function liste(z){
+    const courant=suivre(); arme=null; clearTimeout(armeT); diag.listes++; ouvrir('<p class="sp-k">passes</p><p class="sp-p">…</p>');
+    const {data,error}=await sb.rpc('spot_passes_for',{p_spot:String(z.id)});
+    if(!courant()) return;
+    if(error||!data||!data.ok){ if(error) console.error('[spot_passes_for]',error.message); ouvrir('<p class="sp-k">passes</p><p class="sp-p">try again</p>'); return; }
+    peindre(z,data.items||[]);
+  }
+  function peindre(z,l){
+    ouvrir('<p class="sp-k">passes · '+esc(z.habit||'')+'</p>'
+      +'<div class="sp-f"><input data-sp="code" maxlength="6" autocomplete="off" spellcheck="false" placeholder="code" aria-label="A pass code"><button type="button" data-sp="check">check</button></div>'
+      +'<p class="sp-p" data-sp="dit" role="status"></p><div class="sp-l">'+lignes(l)+'</div>');
+    const c=carte();
+    c.querySelector('[data-sp="check"]').onclick=()=>verifier(z);
+    c.querySelector('[data-sp="code"]').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); verifier(z); } });
+    c.querySelector('.sp-l').onclick=e=>{ const b=e.target.closest('[data-cut]'); if(b) couper(z,b,l); };
+  }
+  const dit=t=>{ const n=carte().querySelector('[data-sp="dit"]'); if(n) n.textContent=t||''; };
+  async function verifier(z){
+    const v=String(carte().querySelector('[data-sp="code"]').value||'').trim().toUpperCase(); if(!v) return;
+    const courant=suivre(); diag.verifs++; dit('…');
+    const {data,error}=await sb.rpc('spot_pass_check',{p_spot:String(z.id),p_code:v});
+    if(!courant()) return;
+    if(error){ console.error('[spot_pass_check]',error.message); dit('try again'); return; }
+    dit(data&&data.ok?'✓ '+data.pseudo+' · valid pass':({unknown:'unknown code',cut_off:'cut off · no longer subscribed'})[data&&data.why]||'not valid');
+  }
+  async function couper(z,b,l){
+    const n=b.dataset.cut;
+    if(arme!==n){ arme=n; clearTimeout(armeT); armeT=setTimeout(()=>{ arme=null; peindre(z,l); },6000); peindre(z,l);
+      dit(n+' loses access now, with no refund, and can never subscribe to you again.'); return; }
+    clearTimeout(armeT); arme=null; b.disabled=true; dit('…');
+    const courant=suivre(), ok=await couperAcces(n);
+    if(!courant()) return;
+    if(!ok){ dit('try again'); b.disabled=false; return; }
+    diag.coupes++; await liste(z); if(ouvert()) dit(n+' is cut off.');
+  }
+  return {mien,liste,fermer,ouvert,etat:()=>({...diag,ouvert:ouvert()})};
+}
+/* ══ fin LE PASS DU SPOT ══ */
+const PASS=creerPassSpot({sb,session:()=>me?.id,couperAcces:async pseudo=>{
+  const {data,error}=await sb.functions.invoke('creator-cut-off',{body:{pseudo}});
+  if(error) console.error('[creator-cut-off]',error.message);
+  return !error&&!!data?.ok;
+}});
+/* ══ LES COMMANDES D'UN SPOT — tools/spot_card.js ══ */
+const ICONES_SPOT={
+  go:'<path d="M3 4l10-2-2 10-3-5zM8 7l-4 5"/>',
+  share:'<path d="M8 10V2m-3 3 3-3 3 3M3 7v6h10V7"/>',
+  del:'<path d="M3 4.5h10m-7-2h4m-6 2 1 9h6l1-9M7 7v4m2-4v4"/>',
+  pass:'<path d="M2 4h12v2a2 2 0 0 0 0 4v2H2v-2a2 2 0 0 0 0-4zM9 5.5v.5m0 1.5V8m0 1.5v.5"/>',
+  ics:'<path d="M3 4h10v9H3zM5.5 2.5v3m5-3v3M3 7h10m-7 3h1m2 0h1"/>'
+};
+function toucheSpot(action,id,nom){
+  const icone=ICONES_SPOT[action==='passes'?'pass':action];
+  return '<button type="button" class="spot-key" data-'+action+'="'+esc(String(id))+'">'
+    +'<span class="k2 spot-keycap" aria-hidden="true"><svg viewBox="0 0 16 16">'+icone+'</svg></span>'
+    +'<span class="spot-key-label">'+esc(nom)+'</span></button>';
+}
+function nomToucheSpot(b,nom){
+  const l=b.querySelector('.spot-key-label')||b;
+  l.textContent=nom;
+}
+function loupeSpot(){
+  return '<button type="button" class="spot-loupe" data-spot-zoom aria-pressed="false" aria-label="Bigger">'
+    +'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5M10 7.5v5"/></svg></button>';
+}
+function zoomSpot(b){
+  const data=b.closest('.spot-data'), on=data.classList.toggle('is-zoom');
+  b.setAttribute('aria-pressed',String(on));
+  b.setAttribute('aria-label',on?'Smaller':'Bigger');
+  b.querySelector('path').setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5'));
+}
+/* ══ fin LES COMMANDES D'UN SPOT ══ */
 /* ══ UN SPOT OUVERT — sa box, ses infos, ses gestes. GO résout les droits ACTUELS au geste. ══ */
 function actsHTML(z){
-  const id = esc(String(z.id)), b = [];
-  if(z.exact && z.exact.lat != null) b.push('<button class="btn" type="button" data-go="' + id + '">GO</button>');
-  if(spotState(z) === 'will') b.push('<button class="btn" type="button" data-ics="' + id + '">CALENDAR</button>');
-  b.push('<button class="btn" type="button" data-share="' + id + '">SHARE</button>');
-  return '<div class="acts">' + b.join('') + '</div><p class="note acts-note" hidden></p>';
+  const b=[];
+  if(z.exact&&Number.isFinite(z.exact.lat)&&Number.isFinite(z.exact.lng)) b.push(toucheSpot('go',z.id,'go'));
+  if(spotState(z)==='will') b.push(toucheSpot('ics',z.id,'calendar'));
+  b.push(toucheSpot('share',z.id,'share'));
+  if(z.mine) b.push(toucheSpot('passes',z.id,'passes'),toucheSpot('del',z.id,'delete'));
+  else if(me&&z.creator) b.push(toucheSpot('pass',z.id,'pass'));
+  return '<div class="spot-actions">'+b.join('')+'</div><p class="note acts-note" role="status" hidden></p>';
 }
 function mediaHTML(z){
   if(z.clip && z.clip.id) return '<div class="portrait-media"><video data-bunny="' + esc(String(z.clip.id)) + '" data-spot="' + esc(String(z.id))
@@ -2280,44 +2813,103 @@ function mediaHTML(z){
   if(z.video) return '<div class="portrait-media"><video data-moment-v="' + esc(String(z.video)) + '" playsinline muted loop preload="none"></video></div>';
   return '';
 }
-/* le trait en tête de la feuille : la prise du geste, et rien d'autre */
-const GRAB = '<button type="button" class="dt-grab" aria-label="Lower the spot"><i aria-hidden="true"></i></button>';
-function voisinsSpot(){
-  const tous=CLUBSP.items();
-  return DETAIL_GROUPE?DETAIL_GROUPE.map(k=>tous.find(z=>'sp:'+z.id===k)).filter(Boolean):tous;
+const DETAIL_BOX=$('detail');
+const GRAB='<button type="button" class="dt-grab" aria-label="Lower the spot"><i aria-hidden="true"></i></button>';
+let dtFlux=null, dtVue=null, dtSection=null;
+const dtSpots=new Map();
+
+function ajouterShorts(spots){
+  for(const z of spots){
+    const id=String(z.id);
+    if(dtSpots.has(id)) continue;
+    const sec=document.createElement('section');
+    sec.className='dt-s'; sec.dataset.cle=id; sec.inert=true;
+    dtSpots.set(id,{spot:z,section:sec}); dtFlux.appendChild(sec);
+    dtVue?.observe(sec);
+  }
 }
-function voisinSpot(dir){
-  const voisins=voisinsSpot(), i=voisins.findIndex(x=>String(x.id)===String(DETAIL?.id));
-  return i<0?null:voisins[i+dir];
+function lacherShort(sec){
+  const v=sec?.querySelector('video'); if(!v) return;
+  BUNNY.lacher(v);
+  v.pause(); v.removeAttribute('src'); v.load(); v.parentElement.remove();
 }
-async function ouvrirDetail(z,cles=null){
+async function lireShort(sec){
+  if(dtSection===sec) return;
+  if(dtSection){
+    if(dtSection.contains(document.activeElement)) DETAIL_BOX.querySelector('[data-close]').focus({preventScroll:true});
+    dtSection.inert=true; lacherShort(dtSection);
+  }
+  dtSection=sec;
+  const z=dtSpots.get(sec.dataset.cle).spot;
+  DETAIL=z; sec.inert=false;
+  if(!sec.firstElementChild) sec.innerHTML='<div class="dt-info">'+spotHTML(z)+'</div>';
+  if(z.clip?.id||z.photo||z.video){
+    if(!sec.querySelector('.portrait-media')) sec.insertAdjacentHTML('afterbegin',mediaHTML(z));
+  }else sec.classList.add('is-nu');
+  if(CLUBSP.more&&dtFlux.scrollHeight-sec.offsetTop<=4*dtFlux.clientHeight) CLUBSP.suite();
+  const m=sec.querySelector('img[data-moment]');
+  if(m&&!m.getAttribute('src')){
+    const u=await urlMoments(m.dataset.moment);
+    if(u&&m.isConnected){ m.onerror=()=>m.remove(); m.src=u; }
+  }
+  const v=sec.querySelector('video');
+  if(v&&dtSection===sec){
+    if(v.dataset.bunny) await BUNNY.poser(v);
+    else{
+      const u=await urlMoments(v.dataset.momentV);
+      if(u&&v.isConnected) v.src=u;
+    }
+    if(v.isConnected&&dtSection===sec&&(v.getAttribute('src')||v._hls)) v.play().catch(()=>{});
+  }
+}
+function ouvrirDetail(z){
   if(!DETAIL) DETAIL_RETOUR=document.activeElement;
-  DETAIL=z; DETAIL_GROUPE=cles;
-  const d=$('detail');
-  d.querySelectorAll('video').forEach(v=>BUNNY.lacher(v));
-  d.style.removeProperty('--dy'); d.classList.remove('is-drag');
-  const voisin=(dir,nom,signe)=>voisinSpot(dir)?'<button type="button" class="btn" data-neighbor="'+dir+'" aria-label="'+nom+'">'+signe+'</button>':'';
-  d.innerHTML='<div class="dt-tools">'+voisin(-1,'Previous spot','‹')+voisin(1,'Next spot','›')+GRAB+croixClub('data-close=""')
-    +'</div>'+mediaHTML(z)+spotHTML(z)+actsHTML(z);
-  d.scrollTop=0;
-  d.classList.add('is-open'); document.body.classList.add('is-detail');
-  d.querySelector('[data-close]').focus({preventScroll:true});
-  const b = d.querySelector('video[data-bunny]'); if(b){ await BUNNY.poser(b); if(b.getAttribute('src')) b.play().catch(() => {}); }
-  const i = d.querySelector('img[data-moment]');
-  if(i){ const u = await urlMoments(i.dataset.moment); if(u && i.isConnected){ i.onerror = () => i.remove(); i.src = u; } }
-  const v = d.querySelector('video[data-moment-v]');
-  if(v){ const u = await urlMoments(v.dataset.momentV); if(u && v.isConnected){ v.src = u; v.play().catch(() => {}); } }
+  dtVue?.disconnect(); lacherShort(dtSection); dtSection=null;
+  dtSpots.clear();
+  DETAIL_BOX.style.removeProperty('--dy'); DETAIL_BOX.classList.remove('is-drag');
+  DETAIL_BOX.innerHTML=GRAB+croixClub('data-close=""')+'<div class="dt-feed" aria-label="Spots Shorts"></div>';
+  dtFlux=DETAIL_BOX.querySelector('.dt-feed');
+  dtVue=new IntersectionObserver(es=>{
+    const entree=es.find(e=>e.intersectionRatio>=.6);
+    if(dtFlux&&entree?.target.parentElement===dtFlux) lireShort(entree.target);
+  },{root:dtFlux,threshold:[.6]});
+  const liste=CLUBSP.items().slice(), i=liste.findIndex(x=>String(x.id)===String(z.id));
+  if(i<0) liste.unshift(z);
+  else liste[i]=z;
+  ajouterShorts(liste);
+  DETAIL_BOX.classList.add('is-open'); document.body.classList.add('is-detail');
+  const sec=dtFlux.children[Math.max(0,i)];
+  dtFlux.scrollTop=sec.offsetTop;
+  lireShort(sec);
+  DETAIL_BOX.querySelector('[data-close]').focus({preventScroll:true});
+}
+function voisinsShorts(){
+  if(dtFlux) ajouterShorts(CLUBSP.items());
+}
+function retirerShort(id){
+  const sec=dtSpots.get(id)?.section;
+  if(!sec) return;
+  if(sec===dtSection){ fermerDetail(); return; }
+  dtVue.unobserve(sec); dtSpots.delete(id); sec.remove();
+  dtFlux.scrollTop=dtSection.offsetTop;
 }
 function fermerDetail(){
-  const d = $('detail');
-  d.querySelectorAll('video').forEach(v => BUNNY.lacher(v));
-  d.classList.remove('is-open'); document.body.classList.remove('is-detail'); DETAIL = null; DETAIL_GROUPE=null; CARTE.rafraichir();
+  if(!DETAIL) return;
+  PASS.fermer(); dtVue?.disconnect(); dtVue=null;
+  lacherShort(dtSection); dtSection=null;
+  DETAIL_BOX.classList.remove('is-open'); document.body.classList.remove('is-detail');
+  DETAIL=null; dtFlux=null; dtSpots.clear(); radarOn();
   if(DETAIL_RETOUR?.isConnected) DETAIL_RETOUR.focus({preventScroll:true});
   DETAIL_RETOUR=null;
-  setTimeout(() => { if(!DETAIL) d.innerHTML = ''; }, 340);
+  setTimeout(()=>{ if(!DETAIL) DETAIL_BOX.innerHTML=''; },340);
 }
+function pasShort(dir){
+  const sec=dir>0?dtSection?.nextElementSibling:dtSection?.previousElementSibling;
+  if(sec) dtFlux.scrollTo({top:sec.offsetTop,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+}
+addEventListener('resize',()=>{ if(dtFlux&&dtSection) dtFlux.scrollTop=dtSection.offsetTop; });
 function actsSay(button, text, creator){
-  const n = button.closest('.acts')?.nextElementSibling; if(!n) return;
+  const n=button.closest('.dt-info')?.querySelector('.acts-note'); if(!n) return;
   n.hidden = false;
   n.innerHTML = esc(text) + (creator ? ' <button class="btn" type="button" data-com="/@' + encodeURIComponent(creator) + '">SUBSCRIBE</button>' : '');
 }
@@ -2356,7 +2948,7 @@ function icsFor(z){
     if(!t || t.id !== e.pointerId) return;
     const q = e.clientY - t.y0, v = t.v; t = null;
     d.classList.remove('is-drag');
-    if(e.type === 'pointerup' && (q > d.offsetHeight * .33 || (q > 36 && v > .6))){ d.style.removeProperty('--dy'); return fermerDetail(); }
+    if(e.type === 'pointerup' && (q > d.offsetHeight * .25 || (q > 36 && v > .6))){ d.style.removeProperty('--dy'); return fermerDetail(); }
     dy(0); setTimeout(() => { if(!t) d.style.removeProperty('--dy'); }, 340);
   };
   d.addEventListener('pointerup', fin); d.addEventListener('pointercancel', fin);
@@ -2368,8 +2960,10 @@ function icsFor(z){
 $('detail').addEventListener('click', async e => {
   const t = e.target instanceof Element ? e.target : null; if(!t) return;
   if(t.closest('[data-close]')) return fermerDetail();
-  const voisin=t.closest('[data-neighbor]');
-  if(voisin){ const z=voisinSpot(+voisin.dataset.neighbor); if(z) ouvrirDetail(z,DETAIL_GROUPE); return; }
+  const zoom=t.closest('[data-spot-zoom]');
+  if(zoom) return zoomSpot(zoom);
+  const pa=t.closest('[data-pass],[data-passes]');
+  if(pa&&DETAIL) return pa.dataset.pass?PASS.mien(DETAIL):PASS.liste(DETAIL);
   const com = t.closest('[data-com]'); if(com){ e.preventDefault(); return ssoVersDomaine(sb, 'com', COM + com.dataset.com); }
   const g = t.closest('[data-go]');
   if(g){
@@ -2392,29 +2986,37 @@ $('detail').addEventListener('click', async e => {
     a.download = 'spot.ics'; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); return; }
   const sh = t.closest('[data-share]');
   if(sh){ const url = 'https://www.figher.club/?spot=' + encodeURIComponent(sh.dataset.share);
-    try{ if(navigator.share) await navigator.share({ title:'FIGHER.CLUB', url }); else { await navigator.clipboard.writeText(url); sh.textContent = 'LINK COPIED'; } }
+    try{ if(navigator.share) await navigator.share({ title:'FIGHER.CLUB', url }); else { await navigator.clipboard.writeText(url); nomToucheSpot(sh,'link copied'); setTimeout(()=>nomToucheSpot(sh,'share'),1800); } }
     catch(_){} return; }
   const del = t.closest('[data-del]');
   if(del){
-    if(!del.classList.contains('is-sur')){ del.classList.add('is-sur'); del.textContent = 'DELETE?';
-      setTimeout(() => { if(del.isConnected){ del.classList.remove('is-sur'); del.textContent = 'DELETE'; } }, 3000); return; }
+    if(!del.classList.contains('is-sur')){ del.classList.add('is-sur'); nomToucheSpot(del,'delete?');
+      setTimeout(() => { if(del.isConnected){ del.classList.remove('is-sur'); nomToucheSpot(del,'delete'); } }, 3000); return; }
     del.disabled = true;
+    const uid=me?.id;
     const { data, error } = await sb.rpc('spot_remove', { p_spot:del.dataset.del });
+    if(uid!==me?.id) return;
     if(error || !data?.ok){ if(error) console.error('[spot_remove]', error.message); del.disabled = false; return actsSay(del, 'Not deleted. Try again.'); }
     CLUBSP.retirer(del.dataset.del);
-    if(String(DETAIL?.id)===del.dataset.del) fermerDetail();
+    retirerShort(del.dataset.del);
   }
 });
-addEventListener('keydown', e => {
-  if(DETAIL&&(e.key==='ArrowLeft'||e.key==='ArrowRight')&&!e.target.closest?.('video,textarea,input')){
-    const z=voisinSpot(e.key==='ArrowLeft'?-1:1);
-    if(z){ e.preventDefault(); ouvrirDetail(z,DETAIL_GROUPE); }
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(sfOuvert()){ e.preventDefault(); return sfOpen(false); }
+    if(DETAIL&&!PASS.ouvert()){ e.preventDefault(); fermerDetail(); }
     return;
   }
-  if(e.key !== 'Escape') return;
-  if(!$('rdr-new').hidden){ e.preventDefault(); return NSPOT.fermer(); }
-  if(sfOuvert()){ e.preventDefault(); return sfOpen(false); }
-  if(DETAIL){ e.preventDefault(); fermerDetail(); }
+  if(!DETAIL||PASS.ouvert()||e.target.closest?.('video,textarea,input,.sd-say')) return;
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+    e.preventDefault(); pasShort(e.key==='ArrowDown'||e.key==='ArrowRight'?1:-1);
+  }else if(e.key==='Tab'){
+    const touches=[...DETAIL_BOX.querySelectorAll('button:not(:disabled),a[href],[tabindex="0"]')].filter(b=>!b.closest('[inert]'));
+    const i=touches.indexOf(document.activeElement);
+    if(touches.length&&(i<0||(e.shiftKey?i===0:i===touches.length-1))){
+      e.preventDefault(); touches[e.shiftKey?touches.length-1:0].focus();
+    }
+  }
 });
 
 /* ══ LA VIDÉO PART CHEZ BUNNY — copié de tools/bunny_upload.js dans chaque page (jamais importé) ══
@@ -2471,363 +3073,712 @@ const VID = bunnyEnvoi(sb);
    Publié d'ici, un spot est TOUJOURS visible par FIGHER CLUB (Wah) : « who sees it » ne se demande pas, il se montre.
    Le serveur décide de tout ; un spot NAÎT CACHÉ, `spot_box_set` montre sa box entière. Une vidéo part chez Bunny
    (`VID`, TUS) quand le compte est prêt ; sinon dans le seau `moments`. */
-const NSPOT = (() => {
-  const DURS = [15, 30, 45, 60, 90, 120, 180];
-  /* 12/11 (Wah) — la phrase dit les QUATRE réponses du questionnaire, dans l'ordre où on les donne : WHERE
-     (le point exact), WHEN (l'heure exacte), together + qui le voit (les bonnes personnes), le mot et la
-     durée (tes conditions). Un spot n'est pas un lieu : c'est une Habit EN ACTION. */
-  const DEF = 'A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions.';
-  const POURQUOI = { signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
+/* ══ LA CAPTURE DE MÉDIA — copié de tools/spot_capture.js ══ */
+/* Une photo n'a pas besoin de plus de 1 600 px dans un TOTEHM : JPEG, rien d'autre ne sort de l'appareil. */
+async function emReduire(f){
+  const url=URL.createObjectURL(f);
+  try{
+    const img=await new Promise((ok,ko)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=ko; i.src=url; });
+    const k=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement('canvas');
+    c.width=Math.round(img.naturalWidth*k); c.height=Math.round(img.naturalHeight*k);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    return await new Promise(ok=>c.toBlob(ok,'image/jpeg',.86));
+  }catch(_){ return null; }
+  finally{ URL.revokeObjectURL(url); }
+}
+
+function apercuPrise(url,type,nom=''){
+  const src=esc(url), visuel=/^image\//.test(type)?'<img src="'+src+'" alt="Selected photo">'
+    :/^video\//.test(type)?'<video src="'+src+'" controls playsinline preload="metadata" aria-label="Selected video"></video>'
+    :/^audio\//.test(type)?'<audio src="'+src+'" controls preload="metadata" aria-label="Selected audio"></audio>':'';
+  return '<figure class="take-preview">'+visuel+(nom?'<figcaption>'+esc(nom)+'</figcaption>':'')+'</figure>';
+}
+function railPrise(nom,etapes,actif,action,accessible,occupe=false){
+  const a=etapes.findIndex(([k])=>k===actif);
+  return '<nav class="sf-nav take-rail'+(etapes.length>4?' is-spot':'')+'" aria-label="'+nom+'">'
+    +etapes.map(([k,mot],i)=>'<button type="button" '+action+' data-v="'+k+'"'
+      +(i===a?' aria-current="step"':i<a?' class="is-done"':'')
+      +(occupe||!accessible(k)?' disabled':'')+'>'+mot+'</button>').join('')+'</nav>';
+}
+function actionPrise(attribut,nom,secondaire=false,inactive=false){
+  return '<button type="button" '+attribut+' class="'+(secondaire?'take-secondary':'take-primary')+'"'
+    +(inactive?' disabled':'')+'>'+esc(nom)+'</button>';
+}
+function rendrePrise(p,croix,rail,etape,contenu){
+  const phase=p.dataset.etapePrise!==etape;
+  const actif=p.contains(document.activeElement)?document.activeElement:null;
+  const cible=actif&&actif.dataset;
+  p.dataset.etapePrise=etape;
+  p.innerHTML=toucheFermer(croix)+rail+'<div class="take-stage'+(phase?' is-entering':'')+'" tabindex="-1">'+contenu+'</div>';
+  const stage=p.querySelector('.take-stage');
+  if(phase){ p.scrollTop=0; stage.focus({preventScroll:true}); }
+  else if(cible){
+    const k=cible.nsi||cible.ns||cible.sf;
+    if(k){
+      const remplaçant=[...p.querySelectorAll('[data-nsi],[data-ns],[data-sf]')]
+        .find(n=>(n.dataset.nsi||n.dataset.ns||n.dataset.sf)===k&&n.dataset.v===cible.v&&!n.disabled);
+      remplaçant?.focus({preventScroll:true});
+      if(remplaçant?.tagName==='TEXTAREA'||(remplaçant?.tagName==='INPUT'&&remplaçant.type==='text')){
+        if(actif.selectionStart!=null) remplaçant.setSelectionRange(actif.selectionStart,actif.selectionEnd);
+      }
+    }
+  }
+  return stage;
+}
+
+/* ══ LA CAPTURE (PHOTO · VIDEO · IMPORT) · 15/10/2026 ═══════════════════════════════════════════════════
+   Elle naît de l'élément touché et y retourne ; elle n'est plus une vue de l'atterrissage. Au doigt, l'appareil
+   photo du téléphone (`capture`) ; sur ordinateur, la caméra (getUserMedia : une photo, ou une vidéo ≤ 60 s) ;
+   IMPORT, un fichier (photo, vidéo, PDF, son, texte ; 50 Mo au plus). Rien n'est publié. */
+function creerCapture(autorisee){
+  const root=$('cap'), inn=$('cap-in'), note=$('cap-note'), cam=$('cap-cam'), vid=$('cap-v'), shot=$('cap-shot'), tt=$('cap-t');
+  const choix=$('cap-row'), revenir=$('cap-back');
+  const fP=$('cap-f-photo'), fV=$('cap-f-video'), fF=$('cap-f-file');
+  const diagC={ouvertures:0, envois:0};
+  const vide={ouvrir(){}, fermer(){}, ouvert:()=>false, etat:()=>diagC};
+  if(!root) return vide;
+  let opt=null, flux=null, rec=null, morceaux=[], mode='', t0=0, tick=0, occupe=false, retour=null, hote=null;
+  let depuisCam=0;
+  const fichiers=new Map();
+  const ACCEPT=fF.accept, ACCEPT_SPOT='image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime';
+  const MAX=()=>opt&&opt.max||60;
+  const doigt=()=>!window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  const peutCam=()=>!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)&&!doigt();
+  const dire=t=>{ note.textContent=t||''; };
+  function arreterCam(){
+    depuisCam++;
+    clearInterval(tick); tick=0; tt.textContent=''; shot.classList.remove('is-rec');
+    if(rec){
+      rec.onstop=null; rec.ondataavailable=null;
+      if(rec.state!=='inactive'){ try{ rec.stop(); }catch(_){} }
+    }
+    rec=null; morceaux=[];
+    if(flux){ flux.getTracks().forEach(t=>t.stop()); flux=null; }
+    vid.srcObject=null; cam.classList.add('hide'); mode=''; choix.hidden=false; revenir.hidden=true;
+  }
+  /* En ligne, la feuille se monte dans l'étape qui demande le média. La prise rapide la montre en modale. */
+  function rendre(){
+    if(!hote) return;
+    hote=null; inn.classList.remove('is-inline'); root.insertBefore(inn,root.firstChild); fF.accept=ACCEPT;
+  }
+  function ouvrir(o){
+    if(!autorisee()) return;
+    fermer(); opt=o; dire(''); occupe=false; arreterCam();
+    if(!opt.tout) fF.accept=ACCEPT_SPOT;
+    if(opt.hote){
+      hote=opt.hote; hote.appendChild(inn); inn.classList.add('is-inline'); diagC.ouvertures++; return;
+    }
+    retour=document.activeElement; diagC.ouvertures++;
+    root.classList.add('is-on'); root.setAttribute('aria-hidden','false');
+    setTimeout(()=>{ if(opt===o) root.querySelector('.cap-b')?.focus({preventScroll:true}); },60);
+  }
+  function fermer(){
+    if(hote){ arreterCam(); rendre(); opt=null; return; }
+    if(!root.classList.contains('is-on')) return;
+    arreterCam(); root.classList.remove('is-on'); root.setAttribute('aria-hidden','true'); opt=null; fF.accept=ACCEPT;
+    if(retour?.isConnected) retour.focus({preventScroll:true});
+    retour=null;
+  }
+  async function camera(m){
+    const s=depuisCam;
+    let nouveau;
+    dire('opening camera…');
+    try{ nouveau=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:1280}},audio:m==='video'}); }
+    catch(e){ if(s===depuisCam){ console.error('[capture] camera',e&&e.name||e); dire('no camera · import a file'); } return; }
+    if(!opt||s!==depuisCam){ nouveau.getTracks().forEach(t=>t.stop()); return; }
+    flux=nouveau; mode=m; vid.srcObject=flux; cam.classList.remove('hide'); choix.hidden=true; revenir.hidden=false; dire('');
+    shot.setAttribute('aria-label',m==='photo'?'Take the photo':'Record');
+    shot.focus({preventScroll:true});
+    try{ await vid.play(); }catch(_){}
+  }
+  async function envoyer(f,nom){
+    if(!opt||occupe) return; occupe=true;
+    const o=opt; dire('preparing…');
+    let r;
+    try{ r=await o.prendre(f,nom); }
+    catch(e){ console.error('[capture]',e?.message||e); }
+    if(o!==opt) return;
+    occupe=false;
+    if(r?.ok){ diagC.envois++; dire(''); fermer(); o.fini?.(); return; }
+    dire(({type:'choose a supported file',size:'50 MB at most',media:'choose a photo or video',
+      long:MAX()+' s at most',lourd:'48 MB at most'})[r?.why]||'could not prepare · try again');
+  }
+  root.addEventListener('click',e=>{ if(e.target===root) fermer(); });
+  inn.addEventListener('click',async e=>{
+    const b=e.target.closest('[data-capk]'); if(!b) return;
+    const k=b.dataset.capk;
+    if(occupe) return;
+    if(k==='file'){ arreterCam(); dire(''); fichiers.set(fF,opt); fF.value=''; fF.click(); return; }
+    if(peutCam()){ arreterCam(); await camera(k); return; }
+    const f=k==='photo'?fP:fV; fichiers.set(f,opt); f.value=''; f.click();
+  });
+  [fP,fV,fF].forEach(f=>f.addEventListener('change',()=>{
+    const actif=fichiers.get(f), x=f.files?.[0]; fichiers.delete(f);
+    if(x&&(!actif||actif===opt)) envoyer(x,x.name);
+  }));
+  revenir.onclick=()=>{ if(!occupe){ arreterCam(); dire(''); choix.querySelector('.cap-b')?.focus({preventScroll:true}); } };
+  shot.addEventListener('click',()=>{
+    if(!flux||occupe) return;
+    if(mode==='photo'){
+      const c=document.createElement('canvas'), w=vid.videoWidth||1280, h=vid.videoHeight||960;
+      c.width=w; c.height=h; c.getContext('2d').drawImage(vid,0,0,w,h);
+      const s=depuisCam;
+      c.toBlob(b=>{ if(b&&s===depuisCam) envoyer(new File([b],'photo.jpg',{type:'image/jpeg'}),'photo.jpg'); },'image/jpeg',.9); return;
+    }
+    if(rec&&rec.state==='recording'){ rec.stop(); return; }
+    const t=['video/mp4','video/webm;codecs=vp9,opus','video/webm'].find(x=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(x))||'';
+    try{ rec=new MediaRecorder(flux,t?{mimeType:t}:undefined); }catch(e){ console.error('[capture] recorder',e&&e.message||e); dire('try again'); return; }
+    morceaux=[]; rec.ondataavailable=ev=>{ if(ev.data&&ev.data.size) morceaux.push(ev.data); };
+    rec.onstop=()=>{ const ty=((rec&&rec.mimeType)||t||'video/webm').split(';')[0], b=new Blob(morceaux,{type:ty}), n='video.'+(ty==='video/mp4'?'mp4':'webm');
+      clearInterval(tick); tick=0; tt.textContent=''; shot.classList.remove('is-rec'); shot.setAttribute('aria-label','Record');
+      if(b.size) envoyer(new File([b],n,{type:ty}),n); };
+    try{ rec.start(1000); }catch(e){ console.error('[capture] recorder',e?.message||e); dire('try again'); return; }
+    t0=Date.now(); shot.classList.add('is-rec'); shot.setAttribute('aria-label','Stop recording');
+    tt.textContent='0:00';
+    tick=setInterval(()=>{ const s=Math.floor((Date.now()-t0)/1000); tt.textContent='0:'+String(s).padStart(2,'0'); if(s>=MAX()&&rec&&rec.state==='recording') rec.stop(); },250);
+  });
+  $('cap-x').onclick=fermer;
+  /* Onglet caché : la caméra s'éteint (pas pendant un enregistrement, il finirait coupé). */
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden&&flux&&!(rec&&rec.state==='recording')){ arreterCam(); dire(''); } });
+  window.addEventListener('keydown',e=>{
+    if(!root.classList.contains('is-on')) return;
+    if(e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); return; }
+    if(e.key==='Tab'){ const f=[...root.querySelectorAll('button:not(:disabled)')].filter(x=>x.getClientRects().length); if(!f.length) return;
+      const i=f.indexOf(document.activeElement), j=e.shiftKey?(i<=0?f.length-1:i-1):(i<0||i===f.length-1?0:i+1); e.preventDefault(); f[j].focus(); return; }
+    e.stopImmediatePropagation();                           /* la feuille est modale : rien ne navigue dessous */
+  },{capture:true});
+  return {ouvrir, fermer, ouvert:()=>root.classList.contains('is-on'), inline:()=>!!hote, dans:el=>!!(hote&&el&&el.contains(hote)),
+          etat:()=>Object.assign({ouvert:root.classList.contains('is-on'), inline:!!hote, camera:!!flux}, diagC)};
+}
+/* ══ fin LA CAPTURE DE MÉDIA ══ */
+const CAP=creerCapture(()=>!!me);
+
+/* ══ LA PRISE DE SPOT — copié de tools/spot_take.js ══ */
+/* La prise de spot suit un rail d'étapes depuis la capture facultative jusqu'à la publication.
+   Now relève ma position. Later donne accès à la date, à l'adresse et à la carte.
+   La visibilité de la box limite le choix d'accès et le serveur valide la publication. */
+function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,session,autorise,
+  audienceFixe='',connexion,avantOuvrir,apresPublier}){
+  const DURS=[15,30,45,60,90,120,180];
+  const CLUB='a habit, its why, its repulsions — the closest thing to public.';
+  const PARTAGE_BOX='Opening this Habit to my subscribers also opens its media and sub-boxes in my TOTEHM.';
+  const AUD=[['private','private','me only'],['subscribers','my subscribers','only them'],['figher','figher club','every member']];
+  const POURQUOI={signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
     duration:'the duration', video:'the photo or the video', position:'allow my location', too_many:'enough spots for now',
     city:'no city near me', audience:'who sees it', when:'a future date and time', place:'where',
-    box_private:'this Habit box is private · make it visible to my subscribers and Figher Club members first' };
-  const diag = { ouverts:0, publies:0, refus:0, medias:0, adresses:0 };
-  const N = {};
-  const pan = () => $('rdr-new');
-  const dureeTxt = d => d < 60 ? d + ' min' : d % 60 ? Math.floor(d / 60) + ' h ' + (d % 60) : (d / 60) + ' h';
-  let seqPos = 0;
-  function lacher(){ if(N.media && N.media.url) URL.revokeObjectURL(N.media.url); N.media = null; N.path = ''; }
+    box_private:'this Habit box is private · open it to my subscribers first'};
+  let R={clip_seconds:33, clip_max_bytes:48e6, duration_min:5, duration_max:720, horizon_days:90}, regles=false, seqPos=0;
+  const diag={ouverts:0, publies:0, refus:0, medias:0, cartes:0, adresses:0};
+  const ETAPES=[['media','Media'],['habit','Habit'],['when','When'],['where','Where'],
+    ['access','Access'],['together','Together'],['duration','Duration'],['publish','Publish']];
+  let N;
+  const pan=()=>$('rdr-new');
+  const pad=n=>String(n).padStart(2,'0');
+  const dureeTxt=d=>d<60?d+' min':d%60?Math.floor(d/60)+' h '+(d%60):(d/60)+' h';
+  function lacher(){ if(N?.media) URL.revokeObjectURL(N.media.url); if(N){ N.media=null; N.path=''; } }
   function neuf(){
     lacher(); seqPos++;
-    const d = new Date(Date.now() + 864e5);
-    Object.assign(N, { h:null, quand:'', media:null, path:'', aud:'figher', mode:'', ou:'', boxBusy:false,
+    const d=new Date(Date.now()+864e5);
+    N={etape:'media', mediaOk:false, mediaSeq:0, h:null, quand:'', media:null, path:'', aud:audienceFixe, boxBusy:false, confirmerBox:'', mode:'', ou:'',
       pt:null, ptSrc:'', ptVille:'', ptNom:'', posErr:false, posBusy:false,
       adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0,
-      dur:0, mot:'', date:d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()),
-      time:pad(d.getHours()) + ':' + pad(d.getMinutes()), place:'', occupe:false, note:'' });
+      dur:0, mot:'', date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),
+      time:pad(d.getHours())+':'+pad(d.getMinutes()), place:'', occupe:false, note:''};
   }
   neuf();
-  let regles = false;
   async function lireRegles(){
-    if(regles) return; regles = true;
-    const { data, error } = await sb.rpc('spot_rules');
-    if(error){ console.error('[spot_rules]', error.message); regles = false; return; }
-    if(data && typeof data === 'object') RULES = Object.assign({}, RULES, data);
-  }
-  const dateOk = () => { const t = new Date(N.date + 'T' + N.time).getTime();
-    return Number.isFinite(t) && t > Date.now() && t <= Date.now() + (RULES.horizon_days || 90) * 864e5; };
-  /* le fichier choisi : GARDÉ ici (rien ne part avant la publication) ; une photo est réduite, une vidéo bornée */
-  async function reduire(f){
+    if(regles) return; regles=true;
     try{
-      const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = URL.createObjectURL(f); });
-      const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
-      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(img.src);
-      return await new Promise(ok => c.toBlob(ok, 'image/jpeg', .86));
-    }catch(_){ return null; }
+      const {data,error}=await sb.rpc('spot_rules');
+      if(error) throw error;
+      if(data&&typeof data==='object') R=Object.assign({},R,data);
+      actualiserSuite();
+    }catch(e){ console.error('[spot_rules]',e?.message||e); regles=false; }
   }
-  const duree = f => new Promise(ok => { const v = document.createElement('video'), u = URL.createObjectURL(f); let fini = false;
-    const fin = s => { if(fini) return; fini = true; URL.revokeObjectURL(u); ok(s); };
-    v.preload = 'metadata'; v.muted = true; v.onloadedmetadata = () => fin(Number.isFinite(v.duration) ? v.duration : 0);
-    v.onerror = () => fin(0); setTimeout(() => fin(0), 6000); v.src = u; });
+  const dateOk=()=>{ const t=new Date(N.date+'T'+N.time).getTime();
+    return Number.isFinite(t)&&t>Date.now()&&t<=Date.now()+(R.horizon_days||90)*864e5; };
+  const durOk=()=>Number.isInteger(N.dur)&&N.dur>=(R.duration_min||5)&&N.dur<=(R.duration_max||720);
+  function termine(k){
+    switch(k){
+      case 'media': return N.mediaOk;
+      case 'habit': return !!N.h;
+      case 'when': return N.quand==='now'||(N.quand==='later'&&dateOk());
+      case 'where': return !!N.pt;
+      case 'access': return !!N.aud&&!N.boxBusy&&(!boxPrivee()||N.aud==='private');
+      case 'together': return !!N.mode;
+      case 'duration': return durOk();
+    }
+  }
+  function accessible(k){
+    const i=ETAPES.findIndex(([id])=>id===k);
+    return i>=0&&ETAPES.slice(0,i).every(([id])=>termine(id));
+  }
+  function aller(k){
+    if(N.occupe||!accessible(k)) return;
+    N.etape=k; N.note=''; peindre();
+  }
+  function actualiserSuite(){
+    const b=pan()?.querySelector('[data-ns="continue"]');
+    if(b) b.disabled=!termine(N.etape);
+    pan()?.querySelectorAll('.take-rail [data-v]').forEach(b=>{ b.disabled=N.occupe||!accessible(b.dataset.v); });
+  }
+  /* le fichier choisi : GARDÉ ici (rien ne part avant la publication) ; une photo est réduite en JPEG, une vidéo bornée */
+  const duree=f=>new Promise(ok=>{ const v=document.createElement('video'), u=URL.createObjectURL(f); let fini=false;
+    const fin=s=>{ if(fini) return; fini=true; URL.revokeObjectURL(u); ok(s); };
+    v.preload='metadata'; v.muted=true; v.onloadedmetadata=()=>fin(Number.isFinite(v.duration)?v.duration:0);
+    v.onerror=()=>fin(0); setTimeout(()=>fin(0),6000); v.src=u; });
   async function prendre(f){
-    const t = String(f && f.type || '').toLowerCase().split(';')[0], photo = /^image\//.test(t), video = /^video\//.test(t);
-    if(!photo && !video) return dire('a photo or a video only');
-    let blob = f, secs = 0;
-    if(photo){ blob = await reduire(f); if(!blob) return dire('this photo cannot be read'); }
-    else{
-      if(f.size > (RULES.clip_max_bytes || 48e6)) return dire('this video is too heavy');
-      secs = await duree(f); if(secs > (RULES.clip_seconds || 33) + .5) return dire((RULES.clip_seconds || 33) + ' seconds at most');
-    }
-    lacher(); diag.medias++; dire('');
-    N.media = { blob, url:URL.createObjectURL(blob), photo, secs, type:photo ? 'image/jpeg' : t };
-    peindre();
+    const t=String(f&&f.type||'').toLowerCase().split(';')[0], photo=/^image\//.test(t), video=/^video\//.test(t);
+    if(!photo&&!video) return {ok:false, why:'media'};
+    const draft=N, seq=++N.mediaSeq, uid=session();
+    let blob=f, secs=0;
+    if(photo){ blob=await emReduire(f); if(!blob) return {ok:false, why:'media'}; }
+    else{ if(f.size>(R.clip_max_bytes||48e6)) return {ok:false, why:'lourd'};
+      secs=await duree(f); if(secs>(R.clip_seconds||33)+.5) return {ok:false, why:'long'}; }
+    if(draft!==N||seq!==N.mediaSeq||uid!==session()) return {ok:false};
+    lacher(); diag.medias++;
+    N.media={blob, url:URL.createObjectURL(blob), photo, secs, type:photo?'image/jpeg':t};
+    return {ok:true};
   }
-  async function envoyerMedia(m){
-    /* la vidéo chez Bunny : cinq qualités, le CDN le plus proche, elle démarre tout de suite ; refusée → `moments` */
-    if(!m.photo && await VID.dispo()){
-      try{ return await VID.envoyer(m.blob, m.secs, p => note2('sending… ' + p + ' %')); }
-      catch(e){ console.error('[bunny upload]', e && e.message || e); }
+  async function envoyerMedia(m,uid,suivi){
+    /* la vidéo chez Bunny (cinq qualités, le CDN le plus proche : elle démarre tout de suite) ; refusée → `moments` */
+    if(!m.photo&&await VID.dispo()){
+      if(uid!==session()) return '';
+      try{ return await VID.envoyer(m.blob,m.secs,p=>suivi('sending… '+p+' %')); }
+      catch(e){ console.error('[bunny upload]',e&&e.message||e); }
     }
-    const ext = m.photo ? 'jpg' : m.type.includes('mp4') ? 'mp4' : m.type.includes('quicktime') ? 'mov' : 'webm';
-    const path = me.id + '/' + crypto.randomUUID() + '.' + ext;
-    const { error } = await sb.storage.from('moments').upload(path, m.blob, { contentType:m.photo ? 'image/jpeg' : (m.type || 'video/' + ext), upsert:false });
-    if(error){ console.error('[moments upload]', error.message); return ''; }
-    if(m.photo) VIGNETTE.ecrire(path, m.blob);                                  /* 15/11 : sa vignette, sans attendre */
+    const ext=m.photo?'jpg':m.type.includes('mp4')?'mp4':m.type.includes('quicktime')?'mov':'webm';
+    if(uid!==session()) return '';
+    const path=uid+'/'+crypto.randomUUID()+'.'+ext;
+    const {error}=await sb.storage.from('moments').upload(path,m.blob,{contentType:m.photo?'image/jpeg':(m.type||'video/'+ext),upsert:false});
+    if(error){ console.error('[moments upload]',error.message); return ''; }
+    if(m.photo) vignette(path,m.blob);                          /* 15/11 : sa vignette, sans attendre */
     return path;
   }
-  /* ── LE LIEU : UN SEUL POINT, d'où qu'il vienne. La ville vient TOUJOURS de `cities.json`, jamais du
-     géocodeur : c'est le vocabulaire du filtre et du radar. ── */
-  function poser(ll, src, nom){
-    const s = ++seqPos;
-    N.pt = { lat:ll.lat, lng:ll.lng }; N.ptSrc = src; N.ptNom = nom || ''; N.ptVille = ''; N.posErr = false; N.posBusy = false;
-    villeDe(ll.lat, ll.lng).then(v => { if(s === seqPos){ N.ptVille = v || ''; peindre(); } });
+  /* ── LE LIEU : UN SEUL POINT (`N.pt`), d'où qu'il vienne ── La ville se déduit TOUJOURS de `cities.json`
+     (`villeDe`), jamais du géocodeur : c'est le même vocabulaire que le filtre `city` et que la carte. */
+  function poser(ll,src,nom){
+    const s=++seqPos;
+    N.pt={lat:ll.lat, lng:ll.lng}; N.ptSrc=src; N.ptNom=nom||''; N.ptVille=''; N.posErr=false; N.posBusy=false;
+    carte.moteur.epingler(N.pt);
+    villeDe(ll.lat,ll.lng).then(v=>{
+      if(s!==seqPos) return;
+      N.ptVille=v||'';
+      if(!N.occupe&&(N.etape==='where'||N.etape==='publish')) peindre();
+    });
     peindre();
   }
   function localiser(){
-    const s = ++seqPos; N.posErr = false; N.posBusy = true;
-    if(!navigator.geolocation){ N.posBusy = false; N.posErr = true; return; }
-    navigator.geolocation.getCurrentPosition(q => {
-      if(s !== seqPos) return;
-      POS = { lat:q.coords.latitude, lng:q.coords.longitude };
-      poser(POS, 'ici', '');
-    }, () => { if(s !== seqPos) return; N.posBusy = false; N.posErr = true; peindre(); },
-      { enableHighAccuracy:true, timeout:9000, maximumAge:120000 });
+    const s=++seqPos, frais=N.posErr; N.posErr=false; N.posBusy=true;
+    position({frais,precis:true}).then(pt=>{
+      if(s!==seqPos) return;
+      if(pt) poser(pt,'ici','');
+      else{ N.posBusy=false; N.posErr=true; peindre(); }
+    });
   }
-  /* ── L'ADRESSE → UN POINT ── Nominatim (OpenStreetMap). UNE requête par GESTE, jamais à la frappe
-     (leur règle, et la nôtre : rien de systématique) ; chaque réponse est gardée. Injoignable, le refus se VOIT. */
-  const ADR = new Map();
+  /* ── L'ADRESSE → UN POINT ── Nominatim (OpenStreetMap : le même fonds que les tuiles du Club). UNE requête
+     par GESTE, jamais à la frappe (leur règle, et la nôtre : rien de systématique) ; chaque réponse est gardée.
+     Injoignable, le refus se VOIT et le membre garde [here] ou la carte. */
+  const ADR=new Map();
   async function chercherAdresse(){
-    const q = N.adr.trim();
-    if(q.length < 3){ N.adrErr = 'write the address first'; return peindre(); }
+    const q=N.adr.trim();
+    if(q.length<3){ N.adrErr='write the address first'; return peindre(); }
     if(N.adrBusy) return;
-    const s = ++N.adrSeq, k = q.toLowerCase();
-    N.adrBusy = true; N.adrErr = ''; N.hits = []; N.hit = -1; peindre();
-    let l = ADR.get(k);
+    const draft=N, s=++N.adrSeq, k=q.toLowerCase();
+    N.adrBusy=true; N.adrErr=''; N.hits=[]; N.hit=-1; peindre();
+    let l=ADR.get(k);
     if(!l){
       try{
-        const r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=' + encodeURIComponent(q),
-          { headers:{ Accept:'application/json' }, referrerPolicy:'strict-origin-when-cross-origin' });
-        if(!r.ok) throw new Error('http ' + r.status);
-        const d = await r.json();
-        l = (Array.isArray(d) ? d : []).map(x => ({ lat:+x.lat, lng:+x.lon, nom:String(x.display_name || '').slice(0, 160) }))
-          .filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lng) && x.lat >= -90 && x.lat <= 90 && x.lng >= -180 && x.lng <= 180);
-        ADR.set(k, l); if(ADR.size > 40) ADR.delete(ADR.keys().next().value);
+        const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q='+encodeURIComponent(q),
+          {headers:{Accept:'application/json'}, referrerPolicy:'strict-origin-when-cross-origin'});
+        if(!r.ok) throw new Error('http '+r.status);
+        const d=await r.json();
+        l=(Array.isArray(d)?d:[]).map(x=>({lat:+x.lat, lng:+x.lon, nom:String(x.display_name||'').slice(0,160)}))
+          .filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&x.lat>=-90&&x.lat<=90&&x.lng>=-180&&x.lng<=180);
+        ADR.set(k,l); if(ADR.size>40) ADR.delete(ADR.keys().next().value);
       }catch(e){
-        console.error('[adresse]', e && e.message || e);
-        if(s === N.adrSeq){ N.adrBusy = false; N.adrErr = 'addresses are unreachable · use here'; peindre(); }
+        console.error('[adresse]',e&&e.message||e);
+        if(draft===N&&s===N.adrSeq){ N.adrBusy=false; N.adrErr='addresses are unreachable · use here or the map'; peindre(); }
         return;
       }
     }
-    if(s !== N.adrSeq) return;
+    if(draft!==N||s!==N.adrSeq) return;
     diag.adresses++;
-    N.adrBusy = false; N.hits = l; N.adrErr = l.length ? '' : 'no place with this address';
+    N.adrBusy=false; N.hits=l; N.adrErr=l.length?'':'no place with this address';
     peindre();
   }
-  /* ── LA PEINTURE ── */
-  const chip = (a, mot, on, sous) => '<button type="button" class="sfc ns-c' + (on ? ' is-on' : '') + '" ' + a + ' aria-pressed="' + !!on + '">'
-    + esc(mot) + (sous ? '<small>' + esc(sous) + '</small>' : '') + '</button>';
-  const grp = (mot, corps) => '<div class="sfg"><div class="sfl">' + esc(mot) + '</div><div class="sfr">' + corps + '</div></div>';
-  const tag = t => '<span class="ns-tag">' + esc(t) + '</span>';
-  const note = t => '<p class="ns-def ns-note-g">' + esc(t) + '</p>';
-  /* ⚠️ 14/11 — ICI, UNE HABIT PRIVÉE NE PEUT PAS PORTER UN SPOT (Wah) : « dans figher.club, audience =
-     Visible to Figher Club, verrouillée, non modifiable. Les Habit Private sont affichées GRISÉES, non
-     sélectionnables, avec un bouton "Make visible to subscribers". Si une Habit Private est sélectionnée,
-     bloquer la création. » Le niveau vient du serveur (`space_habits` → `audience`), jamais d'ici. */
-  const privee = x => !!x && String(x.audience || 'private') === 'private';
+  /* LATER — un point posé sur la Terre : le panneau s'efface, un tap sur le globe le donne */
+  function surLaCarte(){
+    const p=pan(); if(!p) return;
+    carte.ouvrir();
+    const draft=N;
+    p.hidden=true; document.body.classList.add('rdr-pique'); diag.cartes++;
+    carte.moteur.piquer(ll=>{
+      const revenir=()=>{
+        if(draft!==N||!document.body.classList.contains('is-nspot')) return;
+        document.body.classList.remove('rdr-pique');
+        carte.fermer?.();
+        p.hidden=false;
+        peindre();
+      };
+      if(!ll){ revenir(); return; }
+      poser(ll,'carte','');
+      // Le clic généré après le toucher doit finir sur la carte.
+      requestAnimationFrame(()=>requestAnimationFrame(revenir));
+    });
+  }
+  /* Une question par étape, les réponses précédentes restent accessibles sur le rail. */
+  const chip=(a,mot,on,sous)=>'<button type="button" class="sfc ns-c'+(on?' is-on':'')+'" '+a+' aria-pressed="'+!!on+'">'
+    +esc(mot)+(sous?'<small>'+esc(sous)+'</small>':'')+'</button>';
+  const grp=(mot,corps)=>'<div class="sfg"><div class="sfl">'+esc(mot)+'</div><div class="sfr">'+corps+'</div></div>';
+  const tag=t=>'<span class="ns-tag">'+esc(t)+'</span>';
+  const note=t=>'<p class="ns-def ns-note-g">'+esc(t)+'</p>';
   function habitHTML(){
-    const box = boxHabit;
-    if(N.h) return '<div class="sfg"><div class="sfl">my habit</div><div class="sfbx"><div class="sfb is-on" role="button" tabindex="0"'
-      + ' data-ns="reh" aria-label="Change the Habit">' + box(N.h) + '</div></div>'
-      + (privee(N.h) ? '<p class="ns-def ns-what">this Habit box is private, so it cannot carry a Figher Club spot. '
-        + 'Opening it to my subscribers opens the box ITSELF in my TOTEHM — its media and its sub-boxes follow.</p>'
-        + '<div class="sfr">' + chip('data-ns="ouvrirbox"', 'make visible to subscribers and Figher Club members', false, N.boxBusy ? '…' : 'one tap') + '</div>' : '')
-      + '</div>';
-    const hs = HABITS || [];
-    return '<div class="sfg"><div class="sfl">which habit?</div><div class="sfbx">' + (hs.length
-      ? hs.map(x => privee(x)
-          /* pas d'`aria-disabled` sur l'enveloppe : son bouton, lui, DOIT rester actionnable — c'est le seul
-             geste qu'elle offre. La box n'est simplement pas interactive (ni `role`, ni `tabindex`). */
-          ? '<div class="sfb is-off" title="This Habit box is private">' + box(x)
-            + '<div class="sfr sfb-act">' + chip('data-ns="ouvrirbox" data-v="' + esc(x.name) + '"', 'make visible to subscribers and Figher Club members', false) + '</div></div>'
-          : '<div class="sfb" role="button" tabindex="0" data-ns="h" data-v="' + esc(x.name) + '">' + box(x) + '</div>').join('')
-      : '<p class="note">' + (HABITS ? 'write a Habit in my TOTEHM first' : 'reading my TOTEHM…') + '</p>') + '</div></div>';
+    if(N.h) return '<div class="sfg"><div class="sfl">my habit</div><div class="sfbx"><div class="sfb is-on" role="button" tabindex="0" data-ns="reh"'
+      +' aria-label="Change the Habit">'+habits.box(N.h)+'</div></div></div>';
+    const liste=habits.liste(), hs=(liste||[]).filter(h=>String(habits.ref(h)||'').trim());
+    return '<div class="sfg"><div class="sfl">which habit?</div><div class="sfbx">'+(hs.length
+      ?hs.map(h=>{
+        const cle=String(habits.id(h)), id=esc(cle);
+        if(audienceFixe&&habits.privee(h)){
+          const verrou=N.boxBusy?' disabled':'';
+          const ouvrir=N.confirmerBox===cle;
+          return '<div class="sfb is-off">'+habits.box(h)+'<div class="sfb-act">'
+            +(ouvrir?note(PARTAGE_BOX):'')+'<div class="sfr">'
+            +(ouvrir?chip('data-ns="ouvrirbox" data-v="'+id+'"'+verrou,'confirm',false)
+              +chip('data-ns="demanderbox"'+verrou,'cancel',false)
+              :chip('data-ns="demanderbox" data-v="'+id+'"'+verrou,'open the Habit box to my subscribers',false))
+            +'</div></div></div>';
+        }
+        return '<div class="sfb" role="button" tabindex="0" data-ns="h" data-v="'+id+'">'+habits.box(h)+'</div>';
+      }).join('')
+      :'<p class="lv-note">'+(liste?'write a Habit in my TOTEHM first':'reading my TOTEHM…')+'</p>')+'</div></div>';
   }
-  /* 14/11 — LE MÉDIA EST FACULTATIF (Wah : « un spot peut être sans media ») : les trois pavés restent au
-     format de la vue de droite de com, mais ils ne gardent plus la suite du questionnaire. */
-  function medHTML(){
-    const m = N.media;
-    if(m) return '<div class="sfg"><div class="sfl">' + (m.photo ? 'photo' : 'video') + '</div><div class="ns-m">'
-      + (m.photo ? '<img alt="" src="' + esc(m.url) + '">' : '<video src="' + esc(m.url) + '" muted loop playsinline autoplay></video>')
-      + '</div><div class="sfr">' + chip('data-ns="nomedia"', 'change', false) + chip('data-ns="sansmedia"', 'remove', false) + '</div></div>';
-    return '<div class="sfg"><div class="sfl">'
-      + esc('a photo or a video · optional · ' + (RULES.clip_seconds || 33) + ' s at most')
-      + '</div><div id="ns-cap">'
-      + '<button type="button" class="cap-b" data-ns="capk" data-v="photo">' + ICO_PHOTO + 'PHOTO</button>'
-      + '<button type="button" class="cap-b" data-ns="capk" data-v="video">' + ICO_VIDEO + 'VIDEO</button>'
-      + '<button type="button" class="cap-b" data-ns="capk" data-v="file">' + ICO_DOC + 'IMPORT</button>'
-      + '</div></div>';
+  const titre=mot=>'<h2>'+esc(mot)+'</h2>';
+  const actions=html=>'<div class="take-actions">'+html+'</div>';
+  const suite=()=>actions(actionPrise('data-ns="continue"','Continue',false,!termine(N.etape)));
+  function mediaHTML(){
+    const m=N.media;
+    if(m) return apercuPrise(m.url,m.type)+actions(actionPrise('data-ns="media-next"','Continue')
+      +actionPrise('data-ns="replace"','Retake',true)+actionPrise('data-ns="skip"','Continue without media',true));
+    return '<div class="sfg"><p class="sfl">Photo or video · up to '+(R.clip_seconds||33)
+      +' s</p><div class="ns-cap"></div></div>'+actions(actionPrise('data-ns="skip"','Continue without media',true));
   }
-  const quandHTML = () => grp('when', chip('data-ns="quand" data-v="now"', 'now', N.quand === 'now', 'I am here')
-    + chip('data-ns="quand" data-v="later"', 'later', N.quand === 'later', 'I will be here'));
-  const dateHTML = () => grp('the day and the hour',
-    '<input class="sfc ns-in" type="date" aria-label="Date" data-nsi="date" value="' + esc(N.date) + '">'
-    + '<input class="sfc ns-in" type="time" aria-label="Time" data-nsi="time" value="' + esc(N.time) + '">'
-    + (dateOk() ? '' : tag('a future date · ' + (RULES.horizon_days || 90) + ' days at most')));
-  function adresseHTML(){
-    let h = '<div class="sfg"><div class="sfl">the address</div><div class="ns-adr">'
-      + '<input class="sfc ns-in ns-adrin" type="text" maxlength="160" autocomplete="off" enterkeyhint="search"'
-      + ' placeholder="street, number, city" aria-label="The address" data-nsi="adr" value="' + esc(N.adr) + '">'
-      + '<button type="button" class="sfc" data-ns="find"' + (N.adrBusy ? ' disabled' : '') + '>' + (N.adrBusy ? 'reading…' : 'read it') + '</button></div>';
-    if(N.adrErr) h += '<p class="note">' + esc(N.adrErr) + '</p>';
-    if(N.hits.length) h += '<div class="ns-hits">' + N.hits.map((x, i) => '<button type="button" class="ns-hit' + (N.hit === i ? ' is-on' : '')
-      + '" data-ns="hit" data-v="' + i + '">' + esc(x.nom) + '</button>').join('') + '</div>';
-    return h + '</div>';
-  }
+  /* WHEN : deux réponses, et la date SEULEMENT si c'est « later ». */
+  const quandHTML=()=>grp('when',chip('data-ns="quand" data-v="now"','now',N.quand==='now','I am here')
+    +chip('data-ns="quand" data-v="later"','later',N.quand==='later','I will be here'));
+  const dateHTML=()=>grp('the day and the hour','<input class="sfc ns-in" type="date" aria-label="Date" data-nsi="date" value="'+esc(N.date)+'">'
+    +'<input class="sfc ns-in" type="time" aria-label="Time" data-nsi="time" value="'+esc(N.time)+'">'
+    +tag('within '+(R.horizon_days||90)+' days'));
+  /* WHERE : [here] ou [elsewhere]. NOW n'a pas le choix — maintenant, c'est ici. */
   function ouHTML(){
-    const now = N.quand === 'now';
-    let c = now ? '<span class="sfc ns-c is-on">here<small>my position</small></span>'
-      : chip('data-ns="ou" data-v="ici"', 'here', N.ou === 'ici', 'my position')
-        + chip('data-ns="ou" data-v="ailleurs"', 'elsewhere', N.ou === 'ailleurs', 'an address');
-    if(N.pt) c += tag(N.ptVille || N.ptNom.split(',')[0].trim() || 'the exact point');
-    else if(N.ou === 'ici' || now) c += N.posErr ? tag('allow my location') + chip('data-ns="retry"', 'try again', false) : tag('finding my place…');
-    let h = grp('where', c);
-    if(N.ou === 'ailleurs') h += adresseHTML();
-    if(N.pt && !now) h += '<div class="sfg"><input class="sfc ns-in ns-place" type="text" maxlength="120" autocomplete="off"'
-      + ' placeholder="the place · optional" aria-label="The place" data-nsi="place" value="' + esc(N.place) + '"></div>';
+    const now=N.quand==='now';
+    let c=now?'<span class="sfc ns-c is-on">here<small>my position</small></span>'
+      :chip('data-ns="ou" data-v="ici"','here',N.ou==='ici','my position')
+       +chip('data-ns="ou" data-v="ailleurs"','elsewhere',N.ou==='ailleurs','an address');
+    if(N.pt) c+=tag(N.ptVille||N.ptNom.split(',')[0].trim()||'the exact point');
+    else if(N.ou==='ici'||now) c+=N.posErr?tag('allow my location')+chip('data-ns="retry"','try again',false):tag('finding my place…');
+    let h=grp(now?'my position':'choose a place',c);
+    if(N.ou==='ailleurs') h+=adresseHTML();
+    if(N.pt&&!now) h+='<div class="sfg"><input class="sfc ns-in ns-place" type="text" maxlength="120" autocomplete="off"'
+      +' placeholder="the place · optional" aria-label="The place" data-nsi="place" value="'+esc(N.place)+'"></div>';
     return h;
   }
-  /* publié d'ici : FIGHER CLUB, d'office — montré, jamais demandé */
-  const quiHTML = () => grp('who sees it', '<span class="sfc ns-c is-on" aria-disabled="true">figher club<small>every member</small></span>');
-  const ensHTML = () => grp('together', chip('data-ns="mode" data-v="silent"', 'silent', N.mode === 'silent', 'nobody disturb me')
-    + chip('data-ns="mode" data-v="social"', 'social', N.mode === 'social', 'we can talk'));
-  const durHTML = () => grp('duration', DURS.map(d => chip('data-ns="dur" data-v="' + d + '"', dureeTxt(d), N.dur === d)).join('')
-    + '<input class="sfc ns-in ns-min" type="number" inputmode="numeric" min="' + (RULES.duration_min || 5) + '" max="' + (RULES.duration_max || 720)
-    + '" placeholder="min" aria-label="Duration in minutes" data-nsi="dur" value="' + (N.dur && !DURS.includes(N.dur) ? N.dur : '') + '">');
-  const motHTML = () => '<div class="sfg"><div class="sfl">a word · optional</div><textarea class="sfc ns-in ns-mot" maxlength="400" rows="2"'
-    + ' placeholder="A word" aria-label="A word" data-nsi="mot">' + esc(N.mot) + '</textarea></div>';
-  const envoiHTML = mot => '<div class="sfg"><button type="button" class="ns-go" data-ns="go"' + (N.occupe ? ' disabled' : '') + '>' + mot + '</button>'
-    + '<p class="note ns-note" role="status" aria-live="polite">' + esc(N.note) + '</p></div>';
-  function peindre(){
-    const p = pan(); if(!p || p.hidden) return;
-    let h = '<p class="sfl">+ spot</p><p class="ns-def ns-what" data-tw>' + esc(DEF) + '</p>' + habitHTML();
-    /* une Habit privée arrête le questionnaire ici : elle ne peut pas porter un spot du Club */
-    if(N.h && !privee(N.h)){
-      h += quandHTML();
-      const plan = N.quand === 'later';
-      if(plan) h += dateHTML();
-      if(N.quand && (!plan || dateOk())){
-        h += ouHTML();
-        if(N.pt){
-          h += quiHTML() + ensHTML();
-          if(N.mode){
-            h += medHTML();          /* 14/11 : facultatif, et il ne garde plus la suite */
-            h += durHTML();
-            if(N.dur){
-              h += motHTML();
-              h += envoiHTML(plan ? 'I WILL BE HERE' : 'I AM HERE');
-            }
-          }
-        }
-      }
-    }
-    h += '<div class="sfg"><div class="sfr sfa"><span></span><button type="button" class="sfc" data-ns="close">CLOSE</button></div></div>';
-    p.innerHTML = h;
+  function adresseHTML(){
+    let h='<div class="sfg"><div class="sfl">the address</div><div class="ns-adr">'
+      +'<input class="sfc ns-in ns-adrin" type="text" maxlength="160" autocomplete="off" enterkeyhint="search"'
+      +' placeholder="street, number, city" aria-label="The address" data-nsi="adr" value="'+esc(N.adr)+'">'
+      +'<button type="button" class="sfc" data-ns="find"'+(N.adrBusy?' disabled':'')+'>'+(N.adrBusy?'reading…':'read it')+'</button>'
+      +'</div>';
+    if(N.adrErr) h+='<p class="lv-note">'+esc(N.adrErr)+'</p>';
+    if(N.hits.length) h+='<div class="ns-hits">'+N.hits.map((x,i)=>'<button type="button" class="ns-hit'+(N.hit===i?' is-on':'')
+      +'" data-ns="hit" data-v="'+i+'">'+esc(x.nom)+'</button>').join('')+'</div>';
+    h+='</div>';
+    h+=grp('or',chip('data-ns="carte"','on the map',N.ptSrc==='carte',N.ptSrc==='carte'?'the point is set':'tap the place'));
+    return h;
   }
-  function note2(t){ N.note = t || ''; const n = pan() && pan().querySelector('.ns-note'); if(n) n.textContent = N.note; }
+  /* ⚠️ 14/11 — LES TROIS NIVEAUX SONT TOUJOURS LÀ, ET LA BOX EST LE PLAFOND (Wah) : « Box Private → Spot
+     forcément Private ; Box Visible to subscribers → Spot Private / My subscribers / Figher club, au choix,
+     sans changer la box. Si la box Habit est Private et que l'utilisateur choisit My subscribers ou Figher
+     club, demander confirmation avant de passer la box Habit en Visible to subscribers dans le TOTEHM. »
+     Donc : on montre les trois, on n'en cache aucun, et le choix au-dessus du plafond ARME une confirmation
+     qui dit ce qu'elle ouvre. Le serveur refuse de toute façon (`why:'box_private'`). */
+  const boxPrivee=()=>!!N.h&&habits.privee(N.h);
+  const audHTML=()=>{
+    const haut=N.aud==='subscribers'||N.aud==='figher';
+    const choix=audienceFixe?'<span class="sfc ns-c is-on">figher club<small>every member</small></span>'
+      :AUD.map(([v,m,s])=>chip('data-ns="aud" data-v="'+v+'"',m,N.aud===v,s)).join('');
+    let h=grp('who sees it',choix);
+    if(boxPrivee()&&haut) h+=note('This Habit box is private. '+PARTAGE_BOX)
+      +'<div class="sfg"><div class="sfr">'+chip('data-ns="ouvrirbox"'+(N.boxBusy?' disabled':''),N.boxBusy?'opening…':'open the box to my subscribers',false)+'</div></div>';
+    else if(N.aud==='figher'&&!audienceFixe) h+=note(CLUB);
+    return h;
+  };
+  const ensHTML=()=>grp('together',chip('data-ns="mode" data-v="silent"','silent',N.mode==='silent','nobody disturb me')
+    +chip('data-ns="mode" data-v="social"','social',N.mode==='social','we can talk'));
+  const durHTML=()=>grp('how long?',DURS.filter(d=>d>=(R.duration_min||5)&&d<=(R.duration_max||720))
+    .map(d=>chip('data-ns="dur" data-v="'+d+'"',dureeTxt(d),N.dur===d)).join(''))
+    +grp('or set the minutes','<input class="sfc ns-in ns-min" type="number" inputmode="numeric" min="'+(R.duration_min||5)
+    +'" max="'+(R.duration_max||720)+'" placeholder="min" aria-label="Duration in minutes" data-nsi="dur" value="'
+    +esc(N.dur&&!DURS.includes(N.dur)?String(N.dur):'')+'">');
+  const motHTML=()=>'<div class="sfg"><div class="sfl">a word · optional</div><textarea class="sfc ns-in ns-mot" maxlength="400" rows="3"'
+    +' placeholder="A word" aria-label="A word" enterkeyhint="enter" data-nsi="mot">\n'+esc(N.mot)+'</textarea></div>';
+  function publierHTML(){
+    const plan=N.quand==='later';
+    const date=plan?new Date(N.date+'T'+N.time).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}):'Now';
+    const infos=[date,N.place.trim()||N.ptVille||N.ptNom.split(',')[0].trim()||'Exact location',
+      (AUD.find(([v])=>v===N.aud)||[])[1],N.mode,dureeTxt(N.dur)];
+    return titre('Review spot')+'<div class="take-summary">'+(N.media?apercuPrise(N.media.url,N.media.type):'')
+      +'<div class="sfbx">'+habits.box(N.h)+'</div><div class="sfr">'+infos.map(tag).join('')+'</div></div>'+motHTML()
+      +actions(actionPrise('data-ns="go"',plan?'I will be here':'I am here',false,N.occupe||!accessible('publish')));
+  }
+  function peindre(){
+    const p=pan(); if(!p||p.hidden) return;
+    // Un retour de géolocalisation ou d'adresse ne doit pas interrompre la capture en cours.
+    if(N.etape==='media'&&!N.media&&CAP.dans(p)) return;
+    if(CAP.dans(p)) CAP.fermer();
+    let h;
+    switch(N.etape){
+      case 'media': h=mediaHTML(); break;
+      case 'habit': h=habitHTML()+(N.h?suite():''); break;
+      case 'when': h=quandHTML()+(N.quand==='later'?dateHTML()+suite():''); break;
+      case 'where': h=ouHTML()+suite(); break;
+      case 'access': h=audHTML()+suite(); break;
+      case 'together': h=ensHTML(); break;
+      case 'duration': h=durHTML()+suite(); break;
+      case 'publish': h=publierHTML(); break;
+    }
+    if(N.etape!=='media'||N.note) h+='<p class="lv-note ns-note" role="status">'+esc(N.note)+'</p>';
+    const stage=rendrePrise(p,'data-ns="close"',railPrise('Spot',ETAPES,N.etape,'data-ns="stage"',accessible,N.occupe),N.etape,h);
+    p.querySelector('[data-ns="close"]').disabled=N.occupe;
+    const ho=stage.querySelector('.ns-cap');
+    if(ho) CAP.ouvrir({hote:ho, prendre, max:R.clip_seconds||33, fini:peindre});
+  }
+  function dire(t){ N.note=t||''; const n=pan()&&pan().querySelector('.ns-note'); if(n) n.textContent=N.note; }
   /* ── OUVRIR LA BOX DEPUIS ICI (14/11, Wah) ── « On doit pouvoir changer la confidentialité d'une box
-     aisément dans tous les endroits où elle apparaît, pas seulement dans le TOTEHM. » Le tap sur ce bouton
-     EST la confirmation : la note au-dessus dit que les médias et les sous-box suivent. Jamais l'inverse —
-     rien ici ne fait redescendre une box en private. `box_audience_set` est accordée à `authenticated`. */
-  async function ouvrirLaBox(nom){
-    const cible = nom ? (HABITS || []).find(h => String(h.name) === String(nom)) : N.h;
-    if(N.boxBusy || !cible || !me) return;
-    N.boxBusy = true; peindre();
-    const { data, error } = await sb.rpc('box_audience_set', { p_kind:'h', p_id:String(cible.name), p_audience:'subscribers' });
-    N.boxBusy = false;
-    if(error || !data || !data.ok){ if(error) console.error('[box_audience_set]', error.message);
-      note2('the box did not open · try again'); peindre(); return; }
-    cible.audience = data.audience;                    /* la liste en mémoire suit : zéro lecture de plus */
-    /* on n'enchaîne PAS sur un choix : la box est ouverte, le membre choisit sa Habit comme avant. */
+     aisément dans tous les endroits où elle apparaît, pas seulement dans le TOTEHM. » Le questionnaire est
+     l'un de ces endroits : la confirmation est le tap sur CE bouton, et la note au-dessus dit que les médias
+     et les sous-box suivent. Jamais l'inverse : rien ici ne fait REDESCENDRE une box. */
+  async function ouvrirLaBox(h){
+    if(N.boxBusy||!h||!autorise()) return;
+    const draft=N;
+    N.boxBusy=true; dire(''); peindre();
+    const ok=await habits.ouvrir(h).catch(e=>{ console.error('[spot box]',e?.message||e); return false; });
+    if(draft!==N) return;
+    N.boxBusy=false;
+    if(ok) N.confirmerBox='';
+    else N.note='the box did not open · try again';
     peindre();
   }
-  /* ── LA PUBLICATION ── Le point est TOUJOURS exact (`p_location:'on'`), donc `p_mode` est toujours rempli. */
+  /* ── LA PUBLICATION : le serveur dit oui ou pourquoi ── Le point est TOUJOURS exact (`p_location:'on'`), donc
+     `p_mode` est toujours rempli : c'est ce que le serveur exige d'un spot dont le lieu est précis. */
   async function publier(){
-    /* 14/11 : une Habit privée BLOQUE la création — le serveur refuserait de toute façon (`box_private`) */
-    if(N.occupe || !me || !N.h || privee(N.h) || !N.pt || !N.mode) return;
-    const plan = N.quand === 'later', uid = me.id;
-    N.occupe = true; note2(plan ? 'announcing…' : 'sending…');
-    const go = pan() && pan().querySelector('.ns-go'); if(go) go.disabled = true;
-    const fin = t => { N.occupe = false; diag.refus++; note2(t); const g = pan() && pan().querySelector('.ns-go'); if(g) g.disabled = false; };
-    /* 14/11 : on n'envoie un fichier QUE s'il y en a un — un spot sans média part tel quel. */
-    if(!plan && N.media && !N.path){ N.path = await envoyerMedia(N.media); if(uid !== (me && me.id)) return; if(!N.path) return fin('not sent · try again'); }
-    const commun = { p_habit:N.h.name, p_duration_min:N.dur, p_lat:N.pt.lat, p_lng:N.pt.lng, p_city:N.ptVille || null,
-      p_comment:N.mot.trim() || null, p_mode:N.mode, p_location:'on', p_audience:'figher' };
-    const corps = plan
-      ? Object.assign({}, commun, { p_starts_at:new Date(N.date + 'T' + N.time).toISOString(),
-          p_place:(N.place.trim() || N.ptNom.split(',')[0].trim() || N.ptVille || 'the planned place').slice(0, 120) })
-      : Object.assign({}, commun, { p_video:N.path || null });
-    const fn = plan ? 'spot_schedule_audience' : 'spot_create_audience';
-    const { data, error } = await sb.rpc(fn, corps);
-    if(uid !== (me && me.id)) return;
-    if(error){ console.error('[' + fn + ']', error.message); return fin('not saved · try again'); }
-    if(!data || !data.ok) return fin(POURQUOI[data && data.why] || 'not saved · try again');
-    const id = data.id;
-    let pasMedia = false;
-    if(plan && N.media){
-      const path = await envoyerMedia(N.media);
-      const r = path ? await sb.rpc('spot_video_attach', { p_spot:id, p_video:path }) : { error:null, data:null };
-      if(r.error) console.error('[spot_video_attach]', r.error.message);
-      pasMedia = !path || !!r.error || !(r.data && r.data.ok);
+    if(N.occupe||!autorise()||N.etape!=='publish') return;
+    const manque=ETAPES.slice(0,-1).find(([id])=>!termine(id));
+    if(manque){ aller(manque[0]); return; }
+    const draft=N, plan=N.quand==='later', uid=session();
+    const courant=()=>draft===N&&uid===session();
+    const suivre=t=>{ if(courant()) dire(t); };
+    const fin=t=>{ if(courant()){ N.occupe=false; diag.refus++; dire(t); peindre(); } };
+    let id;
+    N.occupe=true; dire(plan?'announcing…':'sending…'); peindre();
+    try{
+      if(!plan&&N.media&&!N.path){
+        const path=await envoyerMedia(N.media,uid,suivre);
+        if(!courant()) return;
+        if(!path) return fin('media unavailable · try again');
+        N.path=path;
+      }
+      const commun={p_habit:habits.ref(N.h), p_duration_min:N.dur, p_lat:N.pt.lat, p_lng:N.pt.lng, p_city:N.ptVille||null,
+        p_comment:N.mot.trim()||null, p_mode:N.mode, p_location:'on', p_audience:N.aud};
+      const corps=plan
+        ?Object.assign({}, commun, {p_starts_at:new Date(N.date+'T'+N.time).toISOString(),
+          p_place:(N.place.trim()||N.ptNom.split(',')[0].trim()||N.ptVille||'the planned place').slice(0,120)})
+        :Object.assign({}, commun, {p_video:N.path||null});
+      const fn=plan?'spot_schedule_audience':'spot_create_audience';
+      let {data,error}=await sb.rpc(fn,corps);
+      if(!courant()) return;
+      /* Une Habit toute neuve peut attendre son enregistrement. */
+      if(habits.sauver&&!error&&data?.why==='habit'){
+        await habits.sauver();
+        if(!courant()) return;
+        ({data,error}=await sb.rpc(fn,corps));
+      }
+      if(!courant()) return;
+      if(error) throw error;
+      if(!data?.ok) return fin(POURQUOI[data?.why]||'not saved · try again');
+      id=data.id;
+    }catch(e){ console.error('[spot publish]',e?.message||e); return fin('not saved · try again'); }
+
+    let pasMedia=false;
+    if(plan&&draft.media){
+      try{
+        const path=await envoyerMedia(draft.media,uid,suivre);
+        if(!courant()) return;
+        if(path){
+          const {data,error}=await sb.rpc('spot_video_attach',{p_spot:id,p_video:path});
+          if(error) throw error;
+          pasMedia=!data?.ok;
+        }else pasMedia=true;
+      }catch(e){ console.error('[spot_video_attach]',e?.message||e); pasMedia=true; }
     }
-    const b = await sb.rpc('spot_box_set', { p_spot:id, p_hide:{ objectives:[], repulsions:[], freq:false } });
-    if(b.error) console.error('[spot_box_set]', b.error.message);
-    if(uid !== (me && me.id)) return;
-    diag.publies++; N.occupe = false;
+    if(!courant()) return;
+    try{
+      const {error}=await sb.rpc('spot_box_set',{p_spot:id, p_hide:{objectives:[], repulsions:[], freq:false}});
+      if(error) console.error('[spot_box_set]',error.message);
+    }catch(e){ console.error('[spot_box_set]',e?.message||e); }
+    if(!courant()) return;
+    diag.publies++;
     fermer();
-    CLUBSP.montrer(plan ? 'future' : 'now');
-    dire(pasMedia ? 'announced · the media did not go' : '');
+    apresPublier(plan?'future':'now',pasMedia);
   }
-  function ouvrir(x){
-    const p = pan(); if(!p) return;
-    if(!me) return ssoLogin(false);
+  function ouvrir(x,dejaPris=false){
+    const p=pan(); if(!p||N.occupe) return false;
+    if(!autorise()){ connexion?.(); return false; }
+    if(CAP.dans(p)) CAP.fermer();
+    if(carte.moteur.pique()) carte.moteur.piquer(null);
     neuf(); lireRegles(); VID.dispo();
-    p.hidden = false; document.body.classList.add('is-nspot'); diag.ouverts++;
-    mesHabits().then(() => {
-      if(x && !N.h) N.h = (HABITS || []).find(h => String(h.name || '').trim() === String(x).trim()) || null;
-      peindre();
+    const draft=N;
+    const choisir=()=>habits.trouver?.(String(x))||(habits.liste()||[])
+      .find(h=>String(habits.ref(h)).trim()===String(x).trim())||null;
+    if(x) N.h=choisir();
+    habits.charger?.().then(()=>{
+      if(draft!==N) return;
+      if(x&&!N.h&&(N.etape==='media'||N.etape==='habit')) N.h=choisir();
+      if(N.etape==='habit') peindre();
     });
-    peindre(); p.scrollTop = 0;
+    avantOuvrir();
+    p.hidden=false; document.body.classList.add('is-nspot'); diag.ouverts++;
+    delete p.dataset.etapePrise;
+    if(!dejaPris) peindre();
+    return true;
   }
   function fermer(){
-    const p = pan(); if(!p) return;
-    document.body.classList.remove('is-nspot');
-    p.hidden = true; p.innerHTML = ''; neuf(); CARTE.rafraichir();
+    const p=pan(); if(!p) return;
+    document.body.classList.remove('is-nspot','rdr-pique');
+    if(carte.moteur.pique()) carte.moteur.piquer(null);
+    carte.fermer?.();
+    if(CAP.dans(p)) CAP.fermer();
+    p.hidden=true; p.innerHTML=''; carte.moteur.epingler(null); neuf();
   }
-  function oublierLieu(){ seqPos++; N.adrSeq++; N.pt = null; N.ptSrc = ''; N.ptVille = ''; N.ptNom = ''; N.posErr = false;
-    N.posBusy = false; N.adrBusy = false; N.hits = []; N.hit = -1; N.adrErr = ''; N.place = ''; }
-  /* 12/11 — une entrée par pavé, comme sur totehm.com : PHOTO et VIDEO ouvrent la caméra, IMPORT les fichiers. */
-  function fichier(k){
-    const f = k === 'photo' ? $('ns-f-photo') : k === 'video' ? $('ns-f-video') : $('ns-file');
-    f.value = ''; f.click();
-  }
-  for(const id of ['ns-f-photo', 'ns-f-video', 'ns-file'])
-    $(id).addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if(f) prendre(f); });
-  {
-    const p = pan();
-    p.addEventListener('click', e => {
-      const t = e.target.closest('[data-ns]'); if(!t) return;
-      const c = t.dataset.ns, v = t.dataset.v;
-      if(c === 'close') return fermer();
-      if(c === 'go') return void publier();
-      if(N.occupe) return;
-      if(c === 'h') N.h = (HABITS || []).find(h => String(h.name) === String(v)) || null;
-      else if(c === 'reh') N.h = null;
-      else if(c === 'quand'){ if(N.quand === v) return; N.quand = v; N.mode = ''; oublierLieu();
-        if(v === 'now'){ N.ou = 'ici'; localiser(); } else N.ou = ''; }
-      else if(c === 'ou'){ if(N.ou === v) return; N.ou = v; oublierLieu(); if(v === 'ici') localiser(); }
-      else if(c === 'retry') localiser();
-      else if(c === 'find') return void chercherAdresse();
-      else if(c === 'hit'){ const x = N.hits[+v]; if(!x) return; N.hit = +v; return poser(x, 'adresse', x.nom); }
-      else if(c === 'capk') return fichier(v);
-      else if(c === 'nomedia'){ lacher(); }
-      else if(c === 'sansmedia'){ lacher(); }          /* 14/11 : publier SANS média */
-      else if(c === 'ouvrirbox') return void ouvrirLaBox(v);
-      else if(c === 'mode') N.mode = v;
-      else if(c === 'dur') N.dur = +v || 0;
+  /* Changer de temps ou de lieu REND le lieu : « now » reprend ma position, « elsewhere » repart de l'adresse. */
+  function oublierLieu(){ seqPos++; N.adrSeq++; N.pt=null; N.ptSrc=''; N.ptVille=''; N.ptNom=''; N.posErr=false;
+    N.posBusy=false; N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr=''; N.place=''; carte.moteur.epingler(null); }
+  { const p=pan(); if(p){
+    p.addEventListener('click',e=>{
+      const t=e.target.closest('[data-ns]'); if(!t) return;
+      const c=t.dataset.ns, v=t.dataset.v;
+      if(N.occupe||t.disabled) return;
+      if(c==='close') return fermer();
+      if(c==='go') return void publier();
+      if(c==='stage'){ if(N.etape!==v) aller(v); return; }
+      if(c==='skip'||c==='media-next'){
+        if(c==='skip'){
+          if(CAP.dans(p)) CAP.fermer();
+          ++N.mediaSeq; lacher();
+        }
+        N.mediaOk=true;
+        return aller(N.h?'when':'habit');
+      }
+      if(c==='continue'){
+        const suite={habit:'when',when:'where',where:'access',access:'together',duration:'publish'}[N.etape];
+        if(suite) aller(suite);
+        return;
+      }
+      if(c==='h'){
+        N.h=(habits.liste()||[]).find(h=>String(habits.id(h))===String(v))||null;
+        N.confirmerBox='';
+        if(N.h) aller('when');
+        return;
+      }
+      if(c==='reh'){ N.h=null; N.aud=audienceFixe; }
+      else if(c==='quand'){
+        if(N.quand!==v){ N.quand=v; oublierLieu(); N.ou=''; }
+        if(v==='now'){
+          N.ou='ici'; if(!N.pt&&!N.posBusy) localiser();
+          return aller('where');
+        }
+      }
+      else if(c==='ou'){ if(N.ou===v) return; N.ou=v; oublierLieu(); if(v==='ici') localiser(); }
+      else if(c==='retry') localiser();
+      else if(c==='find') return void chercherAdresse();
+      else if(c==='hit'){ const x=N.hits[+v]; if(!x) return; N.hit=+v; return poser(x,'adresse',x.nom); }
+      else if(c==='carte') return surLaCarte();
+      else if(c==='replace'){ ++N.mediaSeq; N.mediaOk=false; lacher(); }
+      /* le plafond de la box : un tap de plus, et il DIT ce qu'il ouvre (`audHTML`) */
+      else if(c==='demanderbox'){ N.confirmerBox=v||''; N.note=''; }
+      else if(c==='ouvrirbox') return void ouvrirLaBox(v
+        ?(habits.liste()||[]).find(h=>String(habits.id(h))===v):N.h);
+      else if(c==='aud'){ N.aud=v; N.note=''; }
+      else if(c==='mode'){ N.mode=v; return aller('duration'); }
+      else if(c==='dur'){ N.dur=+v; return aller('publish'); }
       else return;
       peindre();
     });
-    p.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('.sfb[data-ns]');
-      if(t && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); t.click(); } });
-    p.addEventListener('input', e => { const f = e.target.closest('[data-nsi]'); if(!f) return;
-      const k = f.dataset.nsi;
-      if(k === 'mot') N.mot = f.value; else if(k === 'place') N.place = f.value;
-      else if(k === 'adr'){ N.adr = f.value; N.adrErr = ''; } });
-    p.addEventListener('keydown', e => { const f = e.target.closest && e.target.closest('[data-nsi="adr"]');
-      if(f && e.key === 'Enter'){ e.preventDefault(); chercherAdresse(); } });
-    p.addEventListener('change', e => { const f = e.target.closest('[data-nsi]'); if(!f || N.occupe) return; const k = f.dataset.nsi;
-      if(k === 'date'){ if(f.value && !/^(19|2\d)\d\d-/.test(f.value)) return; N.date = f.value; }   /* 23/11 : une année en cours de frappe n'est pas une date */
-      else if(k === 'time') N.time = f.value;
-      else if(k === 'dur'){ const n = Math.round(+f.value); N.dur = n >= (RULES.duration_min || 5) && n <= (RULES.duration_max || 720) ? n : 0; }
-      else return;
-      peindre(); });
+    p.addEventListener('keydown',e=>{ const t=e.target.closest&&e.target.closest('.sfb[data-ns]');
+      if(t&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); t.click(); } });
+    p.addEventListener('input',e=>{
+      const f=e.target.closest('[data-nsi]'); if(!f||N.occupe) return;
+      const k=f.dataset.nsi;
+      if(k==='mot') N.mot=f.value;
+      else if(k==='place') N.place=f.value;
+      else if(k==='adr'){ N.adr=f.value; N.adrErr=''; }
+      else if(k==='date'||k==='time'||k==='dur'){
+        N[k]=k==='dur'?(f.valueAsNumber||0):f.value;
+        if(k==='dur') p.querySelectorAll('[data-ns="dur"]').forEach(b=>{
+          const on=+b.dataset.v===N.dur; b.classList.toggle('is-on',on); b.setAttribute('aria-pressed',on);
+        });
+        actualiserSuite();
+      }
+    });
+    p.addEventListener('keydown',e=>{
+      if(e.key!=='Enter') return;
+      const k=e.target.dataset.nsi;
+      if(k==='adr'){ e.preventDefault(); e.target.blur(); chercherAdresse(); }
+      else if(k==='date'||k==='time'||k==='dur') p.querySelector('[data-ns="continue"]')?.click();
+    });
+  } }
+  { const b=$('rdr-pique'); if(b) b.addEventListener('click',()=>carte.moteur.piquer(null)); }
+  window.addEventListener('keydown',e=>{
+    if(e.key!=='Escape') return;
+    if(carte.moteur.pique()){ e.preventDefault(); e.stopImmediatePropagation(); carte.moteur.piquer(null); return; }
+    const p=pan(); if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); if(!N.occupe) fermer(); }
+  },{capture:true});
+  /* 25/11 — la PRISE RAPIDE : le média est déjà pris, le questionnaire s'ouvre dessus */
+  async function prise(f){
+    if(!ouvrir(null,true)) return {ok:false};
+    const draft=N;
+    rendrePrise(pan(),'data-ns="close"',railPrise('Spot',ETAPES,'media','data-ns="stage"',accessible),
+      'media','<p class="lv-note" role="status">Preparing media…</p>');
+    const r=await prendre(f).catch(e=>{ console.error('[spot media]',e?.message||e); return {ok:false}; });
+    if(draft!==N) return r;
+    if(r.ok){ N.mediaOk=true; aller('habit'); }
+    else{ dire(({long:(R.clip_seconds||33)+' s at most',lourd:'48 MB at most'})[r.why]||'choose a photo or video'); peindre(); }
+    return r;
   }
-  { const b = $('rdr-plus'); if(b) b.addEventListener('click', e => { if(e.target.closest('[data-nspot]')) ouvrir(); }); }
-  return { ouvrir, fermer, ouvert:()=>!$('rdr-new').hidden,
-    etat:()=>Object.assign({ ouvert:!$('rdr-new').hidden, habit:!!N.h, quand:N.quand, media:!!N.media, aud:N.aud,
-      ou:N.ou, mode:N.mode, pt:!!N.pt, ptSrc:N.ptSrc, hits:N.hits.length, dur:N.dur }, diag) };
-})();
+  return {ouvrir, fermer, prise, ouvert:()=>document.body.classList.contains('is-nspot'),
+          etat:()=>Object.assign({ouvert:document.body.classList.contains('is-nspot'), habit:!!N.h, etape:N.etape, quand:N.quand, media:!!N.media,
+            aud:N.aud, ou:N.ou, mode:N.mode, pt:!!N.pt, ptSrc:N.ptSrc, hits:N.hits.length, dur:N.dur}, diag)};
+}
+/* ══ fin LA PRISE DE SPOT ══ */
+const NSPOT=creerPriseSpot({
+  sb,VID,CAP,villeDe,position:localisationPrise,vignette:(path,blob)=>VIGNETTE.ecrire(path,blob),
+  carte:{moteur:CARTE,
+    ouvrir:()=>{ $('rdr-choix-carte').hidden=false; CARTE.ouvrir(); },
+    fermer:()=>{ CARTE.fermer(); $('rdr-choix-carte').hidden=true; radarOn(); }},
+  habits:{liste:()=>HABITS,charger:()=>mesHabits(),id:h=>h.name,ref:h=>h.name,box:boxHabit,
+    privee:h=>String(h.audience||'private')==='private',
+    ouvrir:async h=>{
+      const {data,error}=await sb.rpc('box_audience_set',{p_kind:'h',p_id:h.name,p_audience:'subscribers'});
+      if(error) throw error;
+      if(data?.ok) h.audience=data.audience;
+      return !!data?.ok;
+    }},
+  audienceFixe:'figher',session:()=>me?.id,autorise:()=>!!me,connexion:()=>ssoLogin(false),
+  avantOuvrir:()=>{ fermerDetail(); sfOpen(false); },
+  apresPublier:(quand,pasMedia)=>{ CLUBSP.montrer(quand); dire(pasMedia?'announced · the media did not go':''); }
+});
+$('rdr-plus').addEventListener('click',e=>{ if(e.target.closest('[data-nspot]')) NSPOT.ouvrir(); });
 
 /* ══ LE COIN MEMBRE — CONNECT WITH MY TOTEHM seul ; connecté, le NOM seul, qui ramène à COM.
    Il n'y a PAS de bouton SORTIR ici : sortir de totehm.com sort de partout (le numéro de sortie). ══ */
@@ -2837,7 +3788,6 @@ function paintMember(){
   $('member').setAttribute('aria-label', me ? 'My TOTEHM' : 'Connect with my TOTEHM');
   $('terms').classList.toggle('hide', !!me);
   $('rdr-plus').hidden = !me;
-  $('rdr-locate').hidden = !me;
 }
 $('member').onclick = () => me ? ssoVersDomaine(sb, 'com', COM + '/totehm#in') : ssoLogin(false);
 /* ══ LE DISCOVER DU CLUB · 16/11 ══ Un bouton, et le Club s'explique : une idée par écran (`tools/discover.*`, copié),
@@ -2854,7 +3804,7 @@ const CD = (() => {
   function fermer(){
     if(!ouvert) return; ouvert = false; if(dc) dc.activer(false);
     el.classList.remove('is-open'); document.body.classList.remove('is-dc');
-    t = setTimeout(() => { if(!ouvert) el.hidden = true; }, 380);
+    t = setTimeout(() => { if(!ouvert) el.hidden = true; }, 380); radarOn();
     try{ $('club-disc').focus({ preventScroll:true }); }catch(_){}
   }
   $('club-disc').onclick = ouvrir; $('cd-x').onclick = fermer;
@@ -2867,33 +3817,37 @@ window.__totehm_club_discover = () => CD.etat();
 /* ══ LES VUES ══ */
 function peindreMode(){
   const m=MODE.get(), grille=m==='grid', sel=$('rdr-select');
-  for(const k of MODES){ document.body.classList.toggle('rdr-'+k,m===k); $('v-'+k).classList.toggle('is-on',m===k); }
+  for(const k of MODES){
+    document.body.classList.toggle('rdr-'+k,m===k);
+    $('v-'+k).classList.toggle('is-on',m===k);
+  }
   sel.setAttribute('aria-pressed',String(grille));
-  sel.setAttribute('aria-label',grille?'Show map':'Grid view');
-  sel.querySelector('.k2l').textContent=grille?'Grid':'Map';
-  if(grille){ CARTE.fermer(); GRID.peindre(); }
-  else{ if(!CARTE.etat().on) CARTE.ouvrir(); LISTE.peindre(); }
-  document.body.classList.toggle('is-scrolled',!grille&&$('v-map').scrollTop>40);
+  sel.setAttribute('aria-label',grille?'Radar view':'Grid view');
+  if(grille) GRID.peindre();
+  else{ radarOn(); LISTE.peindre(); }
+  document.body.classList.toggle('is-scrolled',!grille&&$('v-radar').scrollTop>40);
 }
-$('rdr-select').addEventListener('click',()=>MODE.set(MODE.get()==='grid'?'map':'grid'));
+$('rdr-select').addEventListener('click',()=>MODE.set(MODE.get()==='grid'?'radar':'grid'));
 MODE.sur(peindreMode);
 CLUBSP.sur(()=>{
-  CARTE.maj(); GRID.maj();
-  if(MODE.get()==='map') LISTE.peindre();
-  peindreEtatCarte(); peindreBarre(); if(sfOuvert()) sfPaint();
+  situer(); GRID.maj(); voisinsShorts(); peindreBarre();
+  if(sfOuvert()) sfPaint();
 });
 
 /* ══ LE DÉMARRAGE ══ */
 window.__totehm_club = () => ({ build:BUILD, mode:MODE.get(), signed_in:!!me, located:!!POS, detail:!!DETAIL,
   filtre:sfOuvert(), filtres:sfCount(), habits:(HABITS || []).length, akin:!!SF.akin, replie:SF.replie, exact:SF.exact, ou:SF.ou || 'world',
   liste:LISTE.etat(), scrolled:document.body.classList.contains('is-scrolled'),
-  carte:{...CARTE.etat(), p0:CARTE.ou()[0]||null},
+  carte:CARTE.etat(),
+  radar:{range:RAD.range,zoom:RAD.z,points:RAD.pts.length,geo:geoRadar,
+    p0:RAD.pts.length?{x:RAD.pts[0].px,y:RAD.pts[0].py}:null},
   grille:GRID.etat(), club:CLUBSP.etat(), prise:NSPOT.etat() });
 
 /* `boot` lit la session et le Club UNE fois ; le premier événement de session (INITIAL_SESSION) n'en relance pas
    une seconde lecture (mesuré : une lecture du Club entier partait pour rien avant celle « près de moi »). */
 let DEMARRE = false;
 async function boot(){
+  releverPosition();
   const { data:{ session } } = await sb.auth.getSession();
   me = session?.user || null;
   if(me){
@@ -2904,12 +3858,6 @@ async function boot(){
   }
   paintMember(); peindreMode(); peindreBarre();
   DEMARRE = true;
-  if(me) position().then(async ok=>{
-    const uid=me?.id;
-    if(!ok||!uid) return;
-    await loadCities();
-    if(uid===me?.id){ GRID.maj(); LISTE.peindre(); }
-  });
   await CLUBSP.lire();
   /* Un lien partagé (`?spot=…`) ouvre CE spot, quels que soient les filtres. */
   const p = new URLSearchParams(location.search);
@@ -2926,13 +3874,13 @@ sb.auth.onAuthStateChange((ev, s) => {
   if(!DEMARRE) return;
   const id = s?.user?.id || null;
   if(id === (me ? me.id : null)) return;
-  me = s?.user || null; PSEUDO = null; HABITS = null; habitsEnCours=null; VITRINE = []; POS = null; positionEnCours = null; VID.oublier();
+  me = s?.user || null; PSEUDO = null; HABITS = null; habitsEnCours=null; VITRINE = []; VID.oublier();
   SF.ints.clear(); Object.assign(SF,{type:'',ou:'',mode:'',akin:'',exact:false,replie:false,rayon:50,etape:'habit'});
-  CLUBSP.reinitialiser(); CARTE.vider(); CARTE.fermer(); fermerDetail();
+  NSPOT.fermer(); fermerDetail(); CLUBSP.reinitialiser();
   paintMember(); peindreMode(); CLUBSP.lire();
   if(me) sb.from('profiles').select('pseudo').eq('id', me.id).maybeSingle().then(({data}) => { PSEUDO = data?.pseudo || null; paintMember(); });
 });
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ CLUBSP.ouvrir(); CARTE.rafraichir(); } });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ CLUBSP.ouvrir(); radarOn(); } });
 boot();
 </script>
 <script>

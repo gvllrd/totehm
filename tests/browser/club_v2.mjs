@@ -29,12 +29,13 @@ try{
     await pg.goto(origin+'/'); await pg.waitForFunction(()=>window.__totehm_club?.().club.lu,null,{timeout:12000}); await pg.waitForTimeout(800);
     const m=await boite(pg,'#member'), s=await boite(pg,'#rdr-mode');
     const qui=session?'connecté':'déconnecté';
-    if(!session){ const v=await pg.evaluate(()=>({t:document.getElementById('rdr-say').textContent, loc:window.__totehm_club().located}));
-      ok(!lus.length&&!v.loc&&/connect with my TOTEHM/i.test(v.t),
-         'téléphone déconnecté · le serveur ne montrerait rien : zéro lecture du Club, zéro demande de position, « '+v.t+' »'); }
+    if(!session) ok(!lus.length&&await pg.evaluate(()=>window.__totehm_club().located),
+      'téléphone déconnecté · localisation automatique avec la vitrine du Radar');
     /* 12/11 — le TOTEHM central du haut est parti (Wah) : il reste le coin membre et la bascule. */
-    ok(!croise(m,s)&&m.y<20&&s.y<20&&!(await pg.evaluate(()=>!!document.getElementById('club-logo'))),
-       'téléphone '+qui+' · coin membre et Map et Grid sur une ligne, sans chevauchement, sans TOTEHM central (bascule dès '+Math.round(s.x)+')');
+    const ctr=await pg.evaluate(()=>({x:innerWidth/2,y:innerHeight}));
+    ok(!croise(m,s)&&m.y<20&&s.y>ctr.y-105&&Math.abs((s.x+s.r)/2-ctr.x)<1
+      &&!(await pg.evaluate(()=>!!document.getElementById('club-logo'))),
+       'téléphone '+qui+' · le coin membre reste en haut, SELECT se centre en bas');
     ok(!erreurs(log).length,'téléphone '+qui+' · aucune erreur');
     await pg.context().close();
   }
@@ -56,15 +57,15 @@ try{
     await pg.route('**/cities.json',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({cities:[['Lisbon',38.7223,-9.1393,1,'PT']]})}));
     await pg.goto(origin+'/'); await pg.waitForFunction(()=>window.__totehm_club?.().club.lu,null,{timeout:12000}); await pg.waitForTimeout(1200);
     const d0=await pg.evaluate(()=>window.__totehm_club());
-    ok(d0.located&&d0.ou==='world'&&d0.carte.zoom>20&&new Set(appels.map(a=>a.p_period)).size===3,
-       nom+' · la carte se centre à l’arrivée avec les spots des trois temps');
-    // La liste sous la carte privilégie les spots proches.
+    ok(d0.located&&d0.ou==='world'&&d0.radar.points===3&&new Set(appels.map(a=>a.p_period)).size===3,
+       nom+' · le Radar se centre à l’arrivée avec les spots des trois temps');
+    // La liste sous le Radar privilégie les spots proches.
     const li=await pg.evaluate(()=>({ids:[...document.querySelectorAll('#rdr-list .rl')].map(e=>e.dataset.cle), titre:(document.querySelector('#rdr-list .sfl')||{}).textContent,
       down:(document.getElementById('rdr-down')||{}).textContent, terms:getComputedStyle(document.getElementById('terms')).opacity}));
     ok(li.ids.join('|')==='pres|photo|loin'&&/the club/.test(li.titre)&&/3 spots/.test(li.down),
-       nom+' · sous la carte, les spots du plus proche au plus loin : '+li.ids.join(' · ')+' (« '+li.down+' »)');
+       nom+' · sous le Radar, les spots du plus proche au plus loin : '+li.ids.join(' · ')+' (« '+li.down+' »)');
     await pg.$eval('#rdr-down',e=>e.click()); await pg.waitForTimeout(900);
-    const sc=await pg.evaluate(()=>({y:document.getElementById('v-map').scrollTop, top:document.querySelector('#rdr-list .rl').getBoundingClientRect().top,
+    const sc=await pg.evaluate(()=>({y:document.getElementById('v-radar').scrollTop, top:document.querySelector('#rdr-list .rl').getBoundingClientRect().top,
       scrolled:window.__totehm_club().scrolled}));
     ok(sc.y>200&&sc.top<innerHeightOf(vp)&&sc.scrolled,nom+' · « 3 spots ↓ » fait défiler jusqu\'à la liste ('+Math.round(sc.y)+' px)');
     await pg.waitForTimeout(400);
@@ -81,20 +82,22 @@ try{
     await fiche.locator('video[data-bunny]').waitFor();
     ok(log.functions.some(f=>f.name==='bunny-video')&&!await pg.locator('#v-shorts').count(),
       nom+' · la vidéo est signée depuis la fiche de la grille');
-    await fiche.getByRole('button',{name:'Previous spot'}).click();
-    ok(await fiche.locator('.v-name').textContent()==='Read in the park',
-      nom+' · la même fiche donne accès au spot voisin');
+    if(tel){
+      const doigt=await pg.context().newCDPSession(pg), x=vp.width/2;
+      const glisse=(type,y)=>doigt.send('Input.dispatchTouchEvent',{type,touchPoints:y?[{x,y}]:[]});
+      await glisse('touchStart',150);
+      for(const y of [190,240,300,370,455,540,620,690]) await glisse('touchMove',y);
+      await glisse('touchEnd');
+    }else await pg.keyboard.press('ArrowUp');
+    await fiche.locator('.dt-s[data-cle="photo"]:not([inert])').waitFor();
+    ok(await fiche.locator('.dt-s:not([inert]) .v-name').textContent()==='Read in the park'
+      &&await fiche.locator('video[data-bunny]').count()===0,
+      nom+' · le flux vertical passe au spot voisin et libère la vidéo précédente');
     await fiche.getByRole('button',{name:'Close',exact:true}).click();
 
     // Une vidéo part chez Bunny.
     await pg.locator('#rdr-g-f .tl-add').click();
-    await pg.locator('#rdr-new [data-ns="h"]').first().click(); await pg.waitForTimeout(300);
-    await pg.$eval('#rdr-new [data-ns="quand"][data-v="now"]',e=>e.click());
-    await pg.waitForFunction(()=>[...document.querySelectorAll('#rdr-new .sfl')].some(e=>e.textContent==='together'),null,{timeout:8000}).catch(()=>{});
-    await pg.$eval('#rdr-new [data-ns="mode"][data-v="social"]',e=>e.click()); await pg.waitForTimeout(300);
-    await pg.setInputFiles('#ns-file',VIDEO); await pg.waitForTimeout(1500);
-    await pg.$eval('#rdr-new [data-ns="dur"][data-v="30"]',e=>e.click()); await pg.waitForTimeout(300);
-    await pg.$eval('#rdr-new .ns-go',e=>e.click());
+    await publierVideo(pg,'social');
     await pg.waitForFunction(()=>document.getElementById('rdr-new').hidden,null,{timeout:10000}).catch(()=>{});
     const cr=log.rpc.filter(r=>r.name==='spot_create_audience').pop();
     ok(cr&&cr.body.p_video==='bunny:11111111-2222-4333-8444-555555555555'&&cr.body.p_audience==='figher'&&(log.tus||[]).includes('POST')
@@ -118,13 +121,7 @@ try{
     await pg.click('#rdr-sf [data-sf="close"]');
     await pg.waitForFunction(()=>window.__totehm_club().club.items===3);
     await pg.$eval('#rdr-plus [data-nspot]',e=>e.click()); await pg.waitForTimeout(700);
-    await pg.locator('#rdr-new [data-ns="h"]').first().click(); await pg.waitForTimeout(300);
-    await pg.$eval('#rdr-new [data-ns="quand"][data-v="now"]',e=>e.click());
-    await pg.waitForFunction(()=>[...document.querySelectorAll('#rdr-new .sfl')].some(e=>e.textContent==='together'),null,{timeout:8000}).catch(()=>{});
-    await pg.$eval('#rdr-new [data-ns="mode"][data-v="silent"]',e=>e.click()); await pg.waitForTimeout(300);
-    await pg.setInputFiles('#ns-file',VIDEO); await pg.waitForTimeout(1500);
-    await pg.$eval('#rdr-new [data-ns="dur"][data-v="30"]',e=>e.click()); await pg.waitForTimeout(300);
-    await pg.$eval('#rdr-new .ns-go',e=>e.click());
+    await publierVideo(pg,'silent');
     await pg.waitForFunction(()=>document.getElementById('rdr-new').hidden,null,{timeout:10000}).catch(()=>{});
     const cr=log.rpc.filter(r=>r.name==='spot_create_audience').pop();
     ok(cr&&/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.webm$/.test(cr.body.p_video)&&log.upload.some(u=>u.path.startsWith('moments/')),
@@ -133,3 +130,17 @@ try{
     await pg.context().close(); }
 }finally{await browser.close();}
 function innerHeightOf(vp){ return vp.height; }
+async function publierVideo(pg,mode){
+  const ns=pg.locator('#rdr-new'), suite=ns.locator('[data-ns="continue"]');
+  await ns.locator('#cap-in [data-capk="file"]').waitFor();
+  await pg.setInputFiles('#cap-f-file',VIDEO);
+  await ns.locator('.take-preview video').waitFor();
+  await ns.locator('[data-ns="media-next"]').click();
+  await ns.locator('[data-ns="h"]').first().click();
+  await ns.locator('[data-ns="quand"][data-v="now"]').click();
+  await suite.click();
+  await suite.click();
+  await ns.locator('[data-ns="mode"][data-v="'+mode+'"]').click();
+  await ns.locator('[data-ns="dur"][data-v="30"]').click();
+  await ns.locator('[data-ns="go"]').click();
+}

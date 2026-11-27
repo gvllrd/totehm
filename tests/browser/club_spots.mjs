@@ -1,4 +1,4 @@
-// Figher Club partage le globe et les tuiles de Totehm. Map et Grid ouvrent la même fiche.
+// Radar et Grid ouvrent un Short. Le Club partage la prise de spot de Totehm.
 // Le rail Refine garde les Habits personnelles, puis les autres critères. La prise reste disponible depuis la grille.
 // Tout est simulé (comptes, RPC, stockage, géocodeur) : aucune écriture en production. LANCER : node club_spots.mjs /tmp
 import fs from 'node:fs'; import {launch,page,ok} from './harness.mjs';
@@ -21,7 +21,7 @@ const sp=(id,extra={})=>({id,habit:'Run the hill',intentions:['fight'],freq:'eve
   ends_at:new Date(now+36e5).toISOString(),duration_min:60,exact:{lat:38.73,lng:-9.15,place:'the hill'},
   habit_box:{name:'Run the hill',ints:['fight'],freq:'every_morning',objectives:[{text:'Move with friends'}],repulsions:[]},...extra});
 const etat=pg=>pg.evaluate(()=>window.__totehm_club());
-const etapes=pg=>pg.evaluate(()=>[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent));
+const etape=pg=>pg.locator('#rdr-new [aria-current="step"]').getAttribute('data-v');
 const clic=(pg,sel)=>pg.$eval(sel,e=>e.click());
 const erreurs=log=>log.errors.filter(e=>e.startsWith('pageerror'));
 try{
@@ -39,9 +39,11 @@ try{
              :f.habit?[sp('a')]
              :f.akin?[sp('a',{kin:{score:1,why:'same'}}),sp('b',{id:'b',habit:'Lift heavy',exact:null,
                  habit_box:{name:'Lift heavy',ints:['fight']},kin:{score:0.36,why:'intentions'}})]
-             :[sp('a'),sp('b',{id:'b',exact:null})];
+             :[sp('a',{mine:true,comment:'first line\nsecond line'}),sp('b',{id:'b',exact:null})];
            return {ok:true,period:b.p_period,items:l,total:l.length,has_more:false,next_offset:l.length,as_of:new Date(now).toISOString()}; },
          spot_get:b=>({ok:true,spot:sp(b.p_id)}),
+         spot_passes_for:{ok:true,items:[{pseudo:'nia',code:'AB23CD'}]},
+         spot_remove:{ok:true},
          spot_create_audience:b=>MOMENT.test('moments/'+b.p_video)?{ok:true,id:'sp9',audience:b.p_audience}:{ok:false,why:'video'},
          spot_schedule_audience:{ok:true,id:'sp10',audience:'private'},
          spot_box_set:{ok:true}}});
@@ -54,9 +56,10 @@ try{
 
   // ══ 1 · LA PAGE ══
   const s0=await etat(pg);
-  ok(s0.mode==='map'&&s0.club.items===2&&s0.carte.points===2&&s0.carte.terres>0&&s0.carte.zoom>20
-     &&s0.club.pers.length===3&&!await pg.locator('#v-shorts').count(),
-     nom+' · la carte pointe la ville et les deux spots des trois temps');
+  const radar=await pg.locator('#canvas').boundingBox();
+  ok(s0.mode==='radar'&&s0.club.items===2&&s0.radar.points===2&&s0.located&&s0.club.pers.length===3
+     &&radar.y===0&&radar.height===vp.height&&!await pg.locator('#v-shorts').count(),
+     nom+' · Radar plein écran par défaut : position automatique et spots des trois temps');
   const nu=await pg.evaluate(()=>({joy:!!document.getElementById('joy'), about:!!document.getElementById('space-about'),
     quoi:/what is a spot/i.test(document.body.innerText), titre:!!document.getElementById('club-title'),
     /* 12/11 (Wah) : « tu peux enlever le totehm central en haut, il ne sert à rien » — le coin membre
@@ -68,18 +71,14 @@ try{
   ok(barre.join('|')==='Refine',nom+' · une seule touche Refine');
   await pg.screenshot({path:OUT+'/club_map_'+(tel?'tel':'ordi')+'.png'});
 
-  // Le zoom et le recentrage passent par la carte.
-  await pg.waitForFunction(()=>window.__totehm_club().carte.zoom>450,null,{timeout:8000});
-  const c=await pg.locator('#rdr-map').boundingBox();
-  const avant=(await etat(pg)).carte.zoom;
-  await pg.mouse.move(c.x+c.width/2,c.y+c.height/2);
-  await pg.mouse.wheel(0,240);
-  await pg.waitForFunction(z=>window.__totehm_club().carte.zoom<z*.85,avant);
-  await pg.click('#rdr-locate');
-  await pg.waitForFunction(()=>window.__totehm_club().carte.zoom>450,null,{timeout:8000});
-  ok((await etat(pg)).carte.position,nom+' · la carte zoome à la molette et la touche retrouve le point blanc');
+  const avant=(await etat(pg)).radar.range;
+  await pg.click('#rdr-in');
+  await pg.waitForFunction(r=>window.__totehm_club().radar.range<r,avant);
+  await pg.click('#rdr-here');
+  await pg.waitForFunction(()=>window.__totehm_club().radar.geo==='ready');
+  ok(await pg.locator('#rdr-here svg').count()===1,nom+' · le Radar règle sa portée et donne accès à la touche de position');
 
-  // ══ 2 · MAP | GRID, le même objet ══
+  // ══ 2 · RADAR | GRID ══
   await clic(pg,'#rdr-select'); await pg.waitForTimeout(600);
   const g=await pg.evaluate(()=>({t:window.__totehm_club().grille.tuiles, mode:window.__totehm_club().mode,
     plus:document.querySelector('#rdr-g-f .tlg')?.firstElementChild.classList.contains('tl-add'),
@@ -144,66 +143,62 @@ try{
   await pg.screenshot({path:OUT+'/club_filtre_'+(tel?'tel':'ordi')+'.png'});
   await clic(pg,'#rdr-sf [data-sf="close"]'); await pg.waitForTimeout(400);
 
-  // ══ 4 · LA PRISE DE SPOT, ICI ══
-  await clic(pg,'#rdr-g-f .tl-add'); await pg.waitForTimeout(600);
-  const p0=await pg.evaluate(()=>({def:(document.querySelector('#rdr-new .ns-def')||{}).textContent||'',
-    l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent),
-    h:[...document.querySelectorAll('#rdr-new [data-ns="h"] .v-name')].map(e=>e.textContent)}));
-  ok(/^A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions\.$/.test(p0.def)
-     &&p0.l.join('|')==='+ spot|which habit?'&&p0.h.join('|')==='Run the hill|Call mum',
-     nom+' · la prise DIT ce qu\'est un spot, puis MES Habits OUVERTES : '+p0.h.join(' · '));
-  /* 14/11 (Wah) : « les Habit Private sont affichées GRISÉES, NON SÉLECTIONNABLES, avec un bouton Make
-     visible to subscribers. Si une Habit Private est sélectionnée, bloquer la création. » */
-  const pr=await pg.evaluate(()=>{const b=document.querySelector('#rdr-new .sfb.is-off');if(!b)return null;
-    const t=b.querySelector('.tb,.habit')||b.firstElementChild;
-    return {nom:(b.querySelector('.v-name')||{}).textContent,choisissable:!!b.getAttribute('data-ns'),
-      op:t?+getComputedStyle(t).opacity:1,bouton:(b.querySelector('[data-ns="ouvrirbox"]')||{}).textContent||''};});
-  ok(pr&&pr.nom==='Secret'&&!pr.choisissable&&pr.op<.6&&/make visible to subscribers/i.test(pr.bouton),
-     nom+' · une Habit PRIVÉE est grisée et non sélectionnable, avec « '+(pr&&pr.bouton)+' » → '+JSON.stringify(pr));
-  await pg.locator('#rdr-new .sfb.is-off [data-ns="ouvrirbox"]').first().click();
-  await pg.waitForFunction(()=>!document.querySelector('#rdr-new .sfb.is-off'),null,{timeout:6000}).catch(()=>{});
+  // ══ 4 · LE MÊME PARCOURS DE PRISE QUE TOTEHM ══
+  const ns=pg.locator('#rdr-new'), suite=ns.locator('[data-ns="continue"]');
+  const stage=k=>ns.locator('[data-ns="stage"][data-v="'+k+'"]');
+  await pg.locator('#rdr-g-f .tl-add').click();
+  ok(await etape(pg)==='media'&&await stage('habit').isDisabled()&&!await ns.locator('.ns-what').count()
+     &&(await ns.locator('.cap-b').allTextContents()).join('|')==='PHOTO|VIDEO|IMPORT',
+    nom+' · les choix média arrivent directement, les autres étapes attendent');
+  await ns.locator('[data-ns="skip"]').click();
+  const pr=ns.locator('.sfb.is-off');
+  await pr.waitFor();
+  ok(await pr.locator('.v-name').textContent()==='Secret'&&await pr.getAttribute('role')===null,
+    nom+' · la Habit privée garde son rendu et un geste explicite');
+  await pr.locator('[data-ns="demanderbox"]').click();
+  ok(await pr.locator('.ns-note-g').isVisible()&&!log.rpc.some(r=>r.name==='box_audience_set'),
+    nom+' · le premier geste explique ce que la confirmation ouvrira');
+  await pr.locator('[data-ns="ouvrirbox"]').click();
+  await ns.locator('[data-ns="h"][data-v="Secret"]').waitFor();
   const ouv=log.rpc.filter(r=>r.name==='box_audience_set').pop();
-  ok(ouv&&ouv.body.p_kind==='h'&&ouv.body.p_id==='Secret'&&ouv.body.p_audience==='subscribers'
-     &&!await pg.evaluate(()=>!!document.querySelector('#rdr-new .sfb.is-off')),
-     nom+' · le tap ouvre la box à mes abonnés, et elle devient choisissable → '+JSON.stringify(ouv&&ouv.body));
-  await pg.locator('#rdr-new [data-ns="h"]').filter({hasText:'Call mum'}).first().click(); await pg.waitForTimeout(300);
-  await clic(pg,'#rdr-new [data-ns="quand"][data-v="later"]'); await pg.waitForTimeout(300);
-  const l1=await etapes(pg);
-  ok(l1.join('|')==='+ spot|my habit|when|the day and the hour|where',
-     nom+' · LATER : la date ET l\'heure tout de suite, puis WHERE — rien d\'autre');
-  await clic(pg,'#rdr-new [data-ns="ou"][data-v="ailleurs"]'); await pg.waitForTimeout(300);
-  await pg.fill('#rdr-new [data-nsi="adr"]','rua de santa catarina porto'); await pg.waitForTimeout(300);
-  ok(geocodes===0,nom+' · l\'adresse se tape sans RIEN demander au géocodeur ('+geocodes+' requête)');
-  await clic(pg,'#rdr-new [data-ns="find"]');
-  await pg.waitForFunction(()=>!!document.querySelector('#rdr-new .ns-hit'),null,{timeout:6000}).catch(()=>{});
-  await clic(pg,'#rdr-new .ns-hit');
-  await pg.waitForFunction(()=>[...document.querySelectorAll('#rdr-new .sfl')].some(e=>e.textContent==='who sees it'),null,{timeout:6000}).catch(()=>{});
-  const ad=await pg.evaluate(()=>({d:window.__totehm_club().prise,
-    ville:[...document.querySelectorAll('#rdr-new .ns-tag')].map(e=>e.textContent).join('|')}));
-  ok(geocodes===1&&ad.d.pt&&ad.d.ptSrc==='adresse'&&ad.ville==='Porto',
-     nom+' · UNE requête par geste ; l\'adresse choisie devient le point, sa ville vient de cities.json (« '+ad.ville+' »)');
-  const cl=await pg.evaluate(()=>({choix:document.querySelectorAll('#rdr-new [data-ns="aud"]').length,
-    qui:[...document.querySelectorAll('#rdr-new .sfl')].filter(e=>e.textContent==='who sees it').map(e=>e.nextElementSibling.innerText.replace(/\s+/g,' ')).join(''),
-    l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent)}));
-  ok(cl.choix===0&&/^figher club every member$/i.test(cl.qui)&&cl.l.slice(-1)[0]==='together'&&!cl.l.includes('location'),
-     nom+' · publié d\'ici, FIGHER CLUB d\'office : montré (« '+cl.qui+' »), jamais demandé ; puis together, et jamais « location »');
-  await clic(pg,'#rdr-new [data-ns="mode"][data-v="silent"]'); await pg.waitForTimeout(300);
-  await clic(pg,'#rdr-new [data-ns="dur"][data-v="90"]'); await pg.waitForTimeout(300);
-  const l2=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent).slice(-2),
-    media:([...document.querySelectorAll('#rdr-new .sfl')].map(e=>e.textContent).find(t=>/^a photo or a video/.test(t))||''),
-    go:(document.querySelector('#rdr-new .ns-go')||{}).textContent}));
-  ok(l2.l.join('|')==='duration|a word · optional'&&l2.media&&l2.go==='I WILL BE HERE',
-     nom+' · un média FACULTATIF (« '+l2.media+' »), puis la durée et un mot, I WILL BE HERE');
-  await pg.fill('#rdr-new input[data-nsi="place"]','the old court');
+  ok(ouv?.body.p_id==='Secret'&&ouv?.body.p_audience==='subscribers',nom+' · seule la confirmation ouvre la box');
+  await ns.locator('[data-ns="h"][data-v="Call mum"]').click();
+  await ns.locator('[data-ns="quand"][data-v="later"]').click();
+  ok(await etape(pg)==='when'&&await ns.locator('[data-nsi="date"]').isVisible()
+    &&!await ns.locator('[data-ns="ou"]').count(),nom+' · Later demande la date avant le lieu');
+  await suite.click();
+  await ns.locator('[data-ns="ou"][data-v="ailleurs"]').click();
+  await ns.locator('[data-ns="carte"]').click();
+  await pg.locator('#rdr-choix-carte').waitFor();
+  const globe=await pg.locator('#rdr-map').boundingBox();
+  if(tel) await pg.touchscreen.tap(globe.width/2,globe.height/2);
+  else await pg.mouse.click(globe.width/2,globe.height/2);
+  await ns.waitFor();
+  ok((await etat(pg)).prise.ptSrc==='carte'&&await etape(pg)==='where',
+    nom+' · le globe revient avec le point choisi dans Where');
+  await ns.locator('[data-nsi="adr"]').fill('rua de santa catarina porto');
+  ok(geocodes===0,nom+' · aucun géocodage à la frappe');
+  await ns.locator('[data-ns="find"]').click();
+  await ns.locator('.ns-hit').first().click();
+  await pg.waitForFunction(()=>document.querySelector('#rdr-new .ns-tag')?.textContent==='Porto');
+  ok(geocodes===1&&(await etat(pg)).prise.ptSrc==='adresse',nom+' · le résultat de l’adresse remplace le point de la carte');
+  await ns.locator('[data-nsi="place"]').fill('the old court');
+  await suite.click();
+  ok(await etape(pg)==='access'&&await ns.locator('.ns-c').textContent()==='figher clubevery member'
+    &&!await ns.locator('[data-ns="aud"]').count(),nom+' · l’accès Club est affiché avant Together');
+  await suite.click();
+  await ns.locator('[data-ns="mode"][data-v="silent"]').click();
+  await ns.locator('[data-ns="dur"][data-v="90"]').click();
+  ok(await etape(pg)==='publish'&&await ns.locator('[data-ns="go"]').textContent()==='I will be here',
+    nom+' · le récapitulatif précède la publication');
   await pg.screenshot({path:OUT+'/club_prise_'+(tel?'tel':'ordi')+'.png'});
-  await clic(pg,'#rdr-new .ns-go');
-  await pg.waitForFunction(()=>document.getElementById('rdr-new').hidden,null,{timeout:8000}).catch(()=>{});
+  await ns.locator('[data-ns="go"]').click();
+  await ns.waitFor({state:'hidden'});
   const sc=log.rpc.filter(r=>r.name==='spot_schedule_audience').pop();
   ok(sc&&sc.body.p_habit==='Call mum'&&sc.body.p_location==='on'&&sc.body.p_mode==='silent'&&sc.body.p_audience==='figher'
-     &&sc.body.p_duration_min===90&&sc.body.p_place==='the old court'&&sc.body.p_city==='Porto'
-     &&new Date(sc.body.p_starts_at).getTime()>Date.now(),
-     nom+' · I WILL BE HERE → spot_schedule_audience : '+JSON.stringify(sc&&Object.assign({},sc.body,{p_lat:'…',p_lng:'…',p_starts_at:'…'})));
-  ok(log.rpc.some(r=>r.name==='spot_box_set'),nom+' · un spot naît caché : spot_box_set montre sa box entière');
+    &&sc.body.p_duration_min===90&&sc.body.p_place==='the old court'&&sc.body.p_city==='Porto',
+    nom+' · la publication utilise la Habit, la durée, le point et l’audience Club');
+  ok(log.rpc.some(r=>r.name==='spot_box_set'),nom+' · le spot publie sa box complète');
 
   // Le Club garde les trois temps après la publication.
   await pg.waitForTimeout(700);
@@ -211,17 +206,28 @@ try{
   await pg.$eval('#rdr-g-f .tl[data-cle="a"]',e=>e.click());
   await pg.waitForFunction(()=>window.__totehm_club().detail,null,{timeout:6000}).catch(()=>{});
   await pg.waitForTimeout(400);
-  const d=await pg.evaluate(()=>({n:(document.querySelector('#detail .v-name')||{}).textContent,
-    tags:[...document.querySelectorAll('#detail .sd-tag')].map(e=>e.textContent.trim()),
-    acts:[...document.querySelectorAll('#detail .acts .btn')].map(e=>e.textContent)}));
-  ok(d.n==='Run the hill'&&d.tags.some(t=>/I AM HERE/.test(t))&&d.acts.includes('GO')&&await pg.locator('#detail [data-close]').isVisible(),
-     nom+' · le spot ouvert : sa box, son état, ses gestes → '+d.acts.join(' · '));
+  const actif=pg.locator('#detail .dt-s:not([inert])');
+  const d=await actif.evaluate(e=>({id:e.dataset.cle,h:e.clientHeight,keys:[...e.querySelectorAll('.spot-key')].map(x=>x.textContent),
+    comment:e.querySelector('.sd-say').textContent}));
+  ok(d.id==='a'&&d.h===vp.height&&d.keys.join('|')==='go|share|passes|delete'&&d.comment==='first line\nsecond line',
+    nom+' · la grille ouvre directement son spot plein écran, commentaire et touches visibles');
+  const loupe=actif.locator('[data-spot-zoom]');
+  await loupe.click();
+  ok(await loupe.getAttribute('aria-pressed')==='true',nom+' · la loupe agrandit la box spatio-temporelle');
+  await actif.locator('[data-passes]').click();
+  await pg.locator('#spass .sp-f').waitFor();
+  await pg.keyboard.press('Escape');
+  ok(await pg.locator('#detail').isVisible()&&!await pg.locator('#spass').isVisible(),nom+' · Échap referme les passes seuls');
+  const del=actif.locator('[data-del]');
+  await del.click();
+  ok(await del.textContent()==='delete?'&&await del.locator('svg').count()===1&&!log.rpc.some(r=>r.name==='spot_remove'),
+    nom+' · Delete garde son icône et demande un deuxième appui');
   await pg.screenshot({path:OUT+'/club_spot_'+(tel?'tel':'ordi')+'.png'});
   /* 12/11 (Wah) — ON ABAISSE LA FEUILLE : le trait en haut tient le geste à lui seul ; descendue d'un
      tiers de sa hauteur, elle s'en va, et elle ne laisse aucun `--dy` posé. */
   const g0=await pg.evaluate(()=>{const g=document.querySelector('#detail .dt-grab'),c=getComputedStyle(g),r=g.getBoundingClientRect();
-    return {prise:c.touchAction, colle:getComputedStyle(g.parentElement).position, x:Math.round(r.x+r.width/2), y:Math.round(r.y+r.height/2)};});
-  ok(g0.prise==='none'&&g0.colle==='sticky',nom+' · la feuille porte SON trait, collé en haut → '+JSON.stringify(g0));
+    return {prise:c.touchAction, colle:c.position, x:Math.round(r.x+r.width/2), y:Math.round(r.y+r.height/2)};});
+  ok(g0.prise==='none'&&g0.colle==='absolute',nom+' · la feuille porte SON trait, collé en haut → '+JSON.stringify(g0));
   await pg.mouse.move(g0.x,g0.y); await pg.mouse.down();
   for(let k=1;k<=8;k++){ await pg.mouse.move(g0.x,g0.y+k*40); await pg.waitForTimeout(16); }
   const suit=await pg.evaluate(()=>document.getElementById('detail').style.getPropertyValue('--dy'));

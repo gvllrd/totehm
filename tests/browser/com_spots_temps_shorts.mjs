@@ -77,8 +77,12 @@ try{
   const fermerSpot=pg.locator('#rdr-x');
   ok(await fermerSpot.evaluate(e=>getComputedStyle(e).getPropertyValue('--joy-vue').trim()==='#0b0b0b'&&!!e.querySelector('svg')),
     nom+' · le spot s’ouvre avec une touche croix noire');
-  await fermerSpot.click();
+  await pg.keyboard.press('Escape');
+  await pg.waitForFunction(()=>!window.__totehm_rdr().voit&&window.__totehm_rdr().carte.zoom===1);
+  ok(await pg.evaluate(()=>window.__totehm_lv().vue==='d'),nom+' · Échap referme le spot et rétablit le globe');
   const locate=pg.getByRole('button',{name:'Center on my location'});
+  await locate.click();
+  await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom>450);
   const zoomInitial=(await pg.evaluate(()=>window.__totehm_rdr().carte)).zoom;
   if(tel){
     const doigt=await ctx.newCDPSession(pg), x=vp.width/2, y=vp.height/2;
@@ -96,10 +100,22 @@ try{
     await pg.mouse.wheel(0,120);
     await pg.waitForFunction(k=>window.__totehm_rdr().carte.zoom<k*.72,zoomInitial);
   }
+  await pg.keyboard.press('Escape');
+  await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom===1);
+  ok(await pg.evaluate(()=>window.__totehm_lv().vue==='d'),nom+' · Échap remet le globe à son échelle initiale après le zoom');
   await ctx.setGeolocation({latitude:41.15,longitude:-8.61});
+  await pg.evaluate(()=>{
+    const geo=navigator.geolocation, lire=geo.getCurrentPosition.bind(geo);
+    window.__geoDemandes=0;
+    geo.getCurrentPosition=(reussite,echec,opts)=>{
+      if(++window.__geoDemandes===1) return setTimeout(()=>echec({code:2}),30);
+      lire(reussite,echec,opts);
+    };
+  });
   if(tel) await locate.tap(); else await locate.click();
   await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom>400&&window.__totehm_rdr().carte.points===1);
-  ok(await pg.evaluate(()=>window.__totehm_rdr().club.items===6),nom+' · la touche de position retrouve la nouvelle ville et garde tous les spots');
+  ok(await pg.evaluate(()=>window.__geoDemandes===2&&window.__totehm_rdr().club.items===6),
+    nom+' · la localisation réessaie après une erreur et centre la nouvelle ville avec tous les spots');
 
   const select=pg.getByRole('button',{name:'Grid view',exact:true});
   const refine=pg.getByRole('button',{name:'Refine',exact:true});
@@ -164,7 +180,10 @@ try{
   await pg.click('#rdr-g .tl[data-cle]');await pg.waitForTimeout(1500);
   const s=await pg.evaluate(()=>({voit:document.body.classList.contains('rdr-voir'),etat:window.__totehm_lv().spots}));
   ok(s.voit&&s.etat.mode==='grid'&&s.etat.polaroid.on,nom+' · un tap sur une tuile : les spots défilent plein écran → '+JSON.stringify({voit:s.voit,mode:s.etat.mode,on:s.etat.polaroid.on}));
-  await pg.locator('#rdr-sh [data-lsh-k="sp:p1"] .card-more summary').click();
+  const loupe=pg.locator('#rdr-sh [data-lsh-k="sp:p1"] [data-spot-zoom]');
+  await loupe.click();
+  ok(await loupe.getAttribute('aria-pressed')==='true'&&await loupe.locator('..').evaluate(e=>e.classList.contains('is-zoom')),
+    nom+' · la loupe agrandit la box en place');
   const note=await pg.locator('#rdr-sh [data-lsh-k="sp:p1"] .sd-say').evaluate(e=>{
     const cadre=e.closest('.sdata').getBoundingClientRect(), texte=e.getBoundingClientRect();
     return {mot:e.textContent,lignes:getComputedStyle(e).whiteSpace,scroll:e.scrollHeight>e.clientHeight,
@@ -175,7 +194,7 @@ try{
   await pg.evaluate(()=>{ window.__part=null; navigator.share=d=>{ window.__part=d; return Promise.resolve(); }; });
   const band=await pg.evaluate(()=>{ const r=document.querySelector('#rdr-sh .lsh.is-ici .ssp-row')||document.querySelector('#rdr-sh .ssp-row');
     return r?{w:Math.round(r.getBoundingClientRect().width),W:innerWidth,b:[...r.querySelectorAll('.ssp-acts button')].map(x=>x.textContent)}:null; });
-  ok(band&&band.b.join('|')==='go|share'&&band.w<band.W*0.8,nom+' · la bande des actions immédiates : go · share → '+JSON.stringify(band));
+  ok(band&&band.b.join('|')==='go|share|passes|delete'&&band.w<band.W*0.8,nom+' · les touches de la bande noire → '+JSON.stringify(band));
   await pg.evaluate(()=>{ const b=(document.querySelector('#rdr-sh .lsh.is-ici [data-share]')||document.querySelector('#rdr-sh [data-share]')); b.click(); });
   await pg.waitForTimeout(400);
   const part=await pg.evaluate(()=>window.__part);

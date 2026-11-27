@@ -1,0 +1,22 @@
+/* ══ LES TOUCHES D'UN SPOT — tools/spot_card.css ══ */
+.spot-key{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-start;flex:none;gap:4px;
+  min-width:44px;padding:2px 3px;border:0;background:none;cursor:pointer;touch-action:manipulation;
+  color:#d2d2df;-webkit-tap-highlight-color:transparent}
+.spot-keycap.k2{--k2-d:36px;background:linear-gradient(#28282d,#17171b 54%,#0b0b0e);color:#9292ac;pointer-events:none}
+.spot-keycap.k2 svg{stroke-width:1.45}
+.spot-key-label{font:700 8.5px/1.25 'Space Mono',monospace;letter-spacing:.075em;text-transform:uppercase;white-space:nowrap}
+.spot-key:active .spot-keycap{transform:translateY(3px) scale(.96);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,255,255,.06)}
+.spot-key:focus-visible,.spot-loupe:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.spot-key:disabled{opacity:.45;cursor:default}
+.spot-key.is-sur .spot-keycap{box-shadow:inset 0 0 0 1px #b96995,0 2px 0 #22101d;color:#d698bb}
+.spot-actions{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:3px}
+.spot-data{position:relative;padding-right:35px}
+.spot-loupe{position:absolute;top:3px;right:3px;width:30px;height:30px;display:grid;place-items:center;
+  padding:0;border:0;background:transparent;color:#a7a7be;cursor:pointer;touch-action:manipulation}
+.spot-loupe svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.spot-loupe[aria-pressed="true"]{color:#fff}
+.spot-data.is-zoom .sd-tag{font-size:11px;letter-spacing:.08em}
+.spot-data.is-zoom .sd-say{font-size:16px}
+@media(hover:hover){.spot-key:hover .spot-keycap{filter:brightness(1.25)}.spot-loupe:hover{color:#fff}}
+/* ══ fin LES TOUCHES D'UN SPOT ══ */

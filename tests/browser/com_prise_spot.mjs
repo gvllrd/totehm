@@ -68,9 +68,8 @@ try{
     &&await cap.allTextContents().then(v=>v.map(t=>t.trim()).join('|')==='PHOTO|VIDEO|IMPORT')
     &&await pg.locator('#rdr-new .sfb').count()===0,
     nom+' · la prise ouvre sur le média, les étapes suivantes attendent');
-  const def=await pg.locator('#rdr-new .ns-what').textContent();
-  ok(/^A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions\.$/.test(def),
-    nom+' · la définition précède la capture');
+  ok(!await pg.getByRole('heading',{name:'Take a spot'}).count()&&!await pg.locator('#rdr-new .ns-what').count(),
+    nom+' · la capture commence directement par ses trois choix');
   await pg.screenshot({animations:'disabled',path:OUT+'/prise_capture_'+(tel?'tel':'ordi')+'.png'});
   await pg.keyboard.press('ArrowLeft');
   ok((await lv(pg)).vue==='d',nom+' · la prise tient la navigation');

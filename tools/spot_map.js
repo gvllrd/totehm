@@ -314,26 +314,28 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   function zoomerIci(clic=false){
     if(!etat.on) return;
     interrompre(); repartition=null; note.textContent='';
-    if(!position&&!navigator.geolocation){ if(clic) note.textContent='location unavailable'; cadrerSpots(); return; }
     const s=++geoSeq; geoAttente=true;
     loc.setAttribute('aria-busy','true');
-    function centrer(coords){
-      if(!coords) { indisponible(); return; }
-      if(s!==geoSeq) return;
-      annulerPosition(); etat.centre=true;
-      ici=coord(coords.longitude,coords.latitude);
-      voler(ici.lat,ici.lng,ZOOM_VILLE,clic?750:1050);
-    }
-    function indisponible(){
+    position({frais:clic}).then(p=>{
       if(s!==geoSeq) return;
       annulerPosition();
-      if(clic) note.textContent='location unavailable';
-      cadrerSpots(); kick();
-    }
-    if(position) position().then(p=>centrer(p&&{latitude:p.lat,longitude:p.lng}),indisponible);
-    else navigator.geolocation.getCurrentPosition(({coords})=>centrer(coords),indisponible,{timeout:8000,maximumAge:0});
+      if(!p){
+        if(clic) note.textContent='location unavailable · try again';
+        cadrerSpots(); kick(); return;
+      }
+      etat.centre=true; ici=coord(p.lng,p.lat);
+      voler(ici.lat,ici.lng,ZOOM_VILLE,clic?750:1050);
+    });
   }
-  loc.addEventListener('click',()=>{ if(!geoAttente) zoomerIci(true); });
+  loc.addEventListener('click',()=>zoomerIci(true));
+
+  function monde(){
+    const initial=k<=1.005&&Math.abs(lat0-28)<.01&&Math.abs(longitude(lon0-8))<.01;
+    if(!etat.on||pique||(!geoAttente&&!trajet&&!roue&&!zoomDoigt&&!repartition&&initial)) return false;
+    interrompre(); dernierTap=null; repartition=null; etat.centre=true;
+    voler(28,8,1,620);
+    return true;
+  }
 
   function dansDisque(x,y){
     const g=geo();
@@ -452,7 +454,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       c.classList.remove('is-tenu'); credit.hidden=true;
     },
     maj(){ if(etat.on) situer(); },
-    rafraichir:kick,
+    rafraichir:kick, monde,
     vider(){ seq++; lieux=[]; pts=[]; repartition=null; etat.centre=false; etat.points=0; etat.groupes=0; etat.repartis=0; },
     ou:()=>pts.map(p=>[Math.round(p.x),Math.round(p.y)]),
     dans(x,y){ if(!etat.on) return false; const r=c.getBoundingClientRect(); return dansDisque(x-r.left,y-r.top); },

@@ -12,13 +12,12 @@ try{
   ok(await pg.evaluate(()=>{const b=document.getElementById('club-disc'),r=b.getBoundingClientRect();return r.width>40&&r.bottom<=innerHeight&&getComputedStyle(b).visibility!=='hidden';}),nom+' · le bouton Discover the Club est là');
   /* 24/11 (Wah) : « affiche les spots sur la carte même pour les visiteurs pour donner envie » — la VITRINE : des anneaux
      à la ville, une ligne qui invite, et le tap sur un point ouvre le Discover ; le membre lit le Club, pas la vitrine. */
-  const r0=await pg.evaluate(()=>({r:window.__totehm_club().carte,say:document.getElementById('rdr-say').textContent,
-    vit:window.__totehm_club().carte.points}));
+  const r0=await pg.evaluate(()=>window.__totehm_club());
   if(!session){
-    ok(r0.r.points===2&&/2 spots in the Club · connect to join/.test(r0.say)&&!log.rpc.some(x=>x.name==='club_spots'),
-       nom+' · la vitrine : les spots du Club sur la carte, sans compte et sans lecture des spots → '+JSON.stringify({points:r0.r.points,say:r0.say}));
-    const carte=await pg.locator('#rdr-map').boundingBox();
-    await pg.mouse.click(carte.x+r0.r.p0[0],carte.y+r0.r.p0[1]);await pg.waitForTimeout(700);
+    ok(r0.radar.points===2&&r0.located&&!log.rpc.some(x=>x.name==='club_spots'),
+       nom+' · le Radar demande la position aussi aux visiteurs, le serveur ne rend que la vitrine');
+    const radar=await pg.locator('#canvas').boundingBox();
+    await pg.mouse.click(radar.x+r0.radar.p0.x,radar.y+r0.radar.p0.y);await pg.waitForTimeout(700);
     ok((await E(pg)).ouvert,nom+' · le tap sur un point ouvre le Discover (la porte : Connect with my TOTEHM)');
     await pg.keyboard.press('Escape');await pg.waitForTimeout(600);
   } else ok(!log.rpc.some(x=>x.name==='club_vitrine'),nom+' · un membre ne lit jamais la vitrine');
@@ -33,5 +32,24 @@ try{
   ok(await pg.evaluate(()=>!window.__totehm_club_discover().ouvert&&document.getElementById('cd').hidden),nom+' · Échap referme');
   ok(!log.errors.some(e=>e.startsWith('pageerror')),nom+' · aucune erreur');
   await ctx.close();
+ }
+ {
+   const {pg,ctx}=await page(browser,{dir:'club',origin,session:false,rpc:RPC});
+   await ctx.addInitScript(()=>{
+     const geo=navigator.geolocation, lire=geo.getCurrentPosition.bind(geo);
+     window.gps=0;
+     geo.getCurrentPosition=(resolve,reject,options)=>{
+       if(++window.gps===1) return setTimeout(()=>reject({code:1}),0);
+       lire(resolve,reject,options);
+     };
+   });
+   await pg.goto(origin+'/');
+   await pg.waitForFunction(()=>window.__totehm_club?.().radar.geo==='failed'&&window.__totehm_club().radar.points===2);
+   ok(await pg.evaluate(()=>window.gps===1&&!window.__totehm_club().located),
+     'un refus du navigateur garde le Radar accessible avec la vitrine');
+   await pg.locator('#rdr-here').click();
+   await pg.waitForFunction(()=>window.__totehm_club().located);
+   ok(await pg.evaluate(()=>window.gps===2),'la touche de position permet de réessayer');
+   await ctx.close();
  }
 }finally{await browser.close();}

@@ -291,7 +291,7 @@ try{
   ok(d.plein&&d.dock&&d.haut,'la carte prend l\'écran ; le Totehm est sorti se caler EN HAUT, centré');
   await pg.screenshot({path:OUT+'/spots_'+(tel?'tel':'ordi')+'.png'});
   // un tap sur le point : SON spot en grand, par-dessus (21/10 : plus de polaroid)
-  const pt=await toucherSpotSurCarte(pg,tel);
+  await toucherSpotSurCarte(pg,tel);
   await pg.waitForTimeout(1100);
   const sh2=await pg.evaluate(()=>{const c=document.querySelector('#rdr-sh .ssp-s.is-ici')||document.querySelector('#rdr-sh .ssp-s'),
       info=c&&c.querySelector('.ssp-info'),m=c&&c.querySelector('.ssp-m'),sd=c&&c.querySelector('.sdata'),im=m&&m.querySelector('img'),bx=c&&c.querySelector('.ssp-box');
@@ -332,11 +332,14 @@ try{
   const autresNiv=await pg.evaluate(()=>document.querySelectorAll('#rdr-sh [data-spaud]').length);
   ok(niv.join(' ')==='sp1:private=private sp1:subscribers=my subscribers sp1:figher=figher club'&&autresNiv===3,
      '26/10 · mes spots : trois niveaux en boucle — '+niv.join(' · '));
-  await pg.keyboard.press('Escape');await pg.waitForTimeout(500);
-  ok(await pg.evaluate(()=>!document.body.classList.contains('rdr-voir')&&window.__totehm_lv().vue==='d'),'Échap referme la vue agrandie : on est de retour sur la carte');
+  await pg.keyboard.press('Escape');
+  await pg.waitForFunction(()=>!window.__totehm_rdr().voit&&window.__totehm_rdr().carte.zoom===1);
+  ok(await pg.evaluate(()=>window.__totehm_lv().vue==='d'),'Échap referme la vue agrandie et rétablit le globe');
   /* 12/11 (Wah) — ON ABAISSE UN SPOT AGRANDI : « qu'on puisse les fermer une fois agrandis, ou qu'on puisse
      les abaisser en mode glisser avec un trait en haut de la fenêtre ». Le trait tient le geste à lui seul. */
-  if(tel) await pg.touchscreen.tap(pt[0],pt[1]); else await pg.mouse.click(pt[0],pt[1]);
+  await pg.getByRole('button',{name:'Center on my location',exact:true}).click();
+  await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom>=450);
+  await toucherSpotSurCarte(pg,tel);
   await pg.waitForTimeout(900);
   const g0=await pg.evaluate(()=>{const g=document.getElementById('rdr-grab'),c=getComputedStyle(g),r=g.getBoundingClientRect();
     return {vu:c.display, prise:c.touchAction, x:Math.round(r.x+r.width/2), y:Math.round(r.y+r.height/2)};});
@@ -600,7 +603,6 @@ try{
   // → mes spots : [delete] sur le mien seulement
   await pg.click('#lvn-rt');await vers(pg,'c');await pg.waitForTimeout(300);await pg.click('#lvn-rt');await vers(pg,'d');await pg.waitForTimeout(900);
   await toucherSpotSurCarte(pg,false);await pg.waitForTimeout(1100);
-  await pg.locator('#rdr-sh [data-lsh-k="sp:sp1"] .card-more summary').click();
   const s0=await pg.evaluate(()=>({mien:document.querySelectorAll('#rdr-sh .ssp-s .ssp-acts [data-del="sp1"]').length,
     autres:document.querySelectorAll('#rdr-sh .ssp-s .ssp-acts [data-del]:not([data-del="sp1"])').length}));
   await pg.click('#rdr-sh .ssp-acts [data-del="sp1"]');await pg.waitForTimeout(150);

@@ -78,11 +78,11 @@ try{
     nom+' · les trois temps figurent dans la grille, avec le plus en tête');
   const first=pg.locator('#rdr-g-f [data-order-id="sp:1"]');
   await first.click();
-  const details=pg.locator('#rdr-sh .card-more').first();
+  const details=pg.locator('#rdr-sh [data-lsh-k="sp:1"] .spot-data');
   await details.waitFor();
-  ok(!await details.locator('.sd-say').isVisible(),nom+' · le commentaire attend l’ouverture des détails');
-  await details.locator('summary').click();
-  ok(await details.locator('.sd-say').textContent()==='first line\nsecond line',nom+' · le commentaire multiligne s’affiche dans les détails');
+  ok(await details.locator('.sd-say').textContent()==='first line\nsecond line',nom+' · le commentaire multiligne apparaît directement dans la box');
+  await details.locator('[data-spot-zoom]').click();
+  ok(await details.evaluate(e=>e.classList.contains('is-zoom')),nom+' · la loupe agrandit cette box sur place');
   await pg.locator('#rdr-x').click();
   await pg.click('#rdr-g-sort');
   await pg.locator('#rdr-g-f [data-order-id="sp:3"]').click();

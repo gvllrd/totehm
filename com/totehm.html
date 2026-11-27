@@ -3605,6 +3605,7 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
    gestes — le premier arme (`is-sur`, « delete? », 3 s), le second retire. Rien ne part sur un tap égaré. */
 /* 14/11 (Wah) : « le bouton [Delete] de la vue de droite spot est le bon » — un seul format pour les deux
    vues, DANS la rangée noire au-dessus de la box, jamais flottant dans un coin de l'image. */
+/* ══ L'INVITATION AU SPOT — tools/spot_pass.css ══ */
 /* ══ LE PASS D'UN SPOT · 23/11 ══ une feuille noire posée au centre : le pass de l'abonné, ou les passes du créateur */
 #spass{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.82)}
 #spass[hidden]{display:none}
@@ -3625,7 +3626,8 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 #spass .side-close{position:sticky;top:0;z-index:1;flex:none;align-self:flex-end;margin:-10px -6px -8px 0}
 #spass button.is-sur{background:var(--rep);color:#fff}
 #spass button:focus-visible{outline:1px solid #fff;outline-offset:2px}
-.ssp-acts button[data-del],.ssp-acts button[data-tlv]{font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
+/* ══ fin L'INVITATION AU SPOT ══ */
+.ssp-acts button:not(.spot-key)[data-del],.ssp-acts button:not(.spot-key)[data-tlv]{font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
 .tlv-b .ssp-row{align-self:center;min-height:0;padding:3px}
 /* le niveau d'une box, PARTOUT où elle apparaît : la même ligne de mots que dans le TOTEHM, posée sous la box */
 /* Les descendants de la manette ont leur propre zone tactile. La visibilité la retire avec eux. */
@@ -3716,6 +3718,28 @@ body.papier-haut #gate-asteroid{transition:opacity .25s ease}
 .lsh-sf .sfi{position:relative}
 .lsh-sf .sfi i{position:absolute;inset:6px auto 6px 0;width:2px;background:var(--c)}
 .lsh-sf .sfi.is-on i{box-shadow:0 0 8px var(--c)}
+/* ══ LES TOUCHES D'UN SPOT — tools/spot_card.css ══ */
+.spot-key{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-start;flex:none;gap:4px;
+  min-width:44px;padding:2px 3px;border:0;background:none;cursor:pointer;touch-action:manipulation;
+  color:#d2d2df;-webkit-tap-highlight-color:transparent}
+.spot-keycap.k2{--k2-d:36px;background:linear-gradient(#28282d,#17171b 54%,#0b0b0e);color:#9292ac;pointer-events:none}
+.spot-keycap.k2 svg{stroke-width:1.45}
+.spot-key-label{font:700 8.5px/1.25 'Space Mono',monospace;letter-spacing:.075em;text-transform:uppercase;white-space:nowrap}
+.spot-key:active .spot-keycap{transform:translateY(3px) scale(.96);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,255,255,.06)}
+.spot-key:focus-visible,.spot-loupe:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.spot-key:disabled{opacity:.45;cursor:default}
+.spot-key.is-sur .spot-keycap{box-shadow:inset 0 0 0 1px #b96995,0 2px 0 #22101d;color:#d698bb}
+.spot-actions{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:3px}
+.spot-data{position:relative;padding-right:35px}
+.spot-loupe{position:absolute;top:3px;right:3px;width:30px;height:30px;display:grid;place-items:center;
+  padding:0;border:0;background:transparent;color:#a7a7be;cursor:pointer;touch-action:manipulation}
+.spot-loupe svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.spot-loupe[aria-pressed="true"]{color:#fff}
+.spot-data.is-zoom .sd-tag{font-size:11px;letter-spacing:.08em}
+.spot-data.is-zoom .sd-say{font-size:16px}
+@media(hover:hover){.spot-key:hover .spot-keycap{filter:brightness(1.25)}.spot-loupe:hover{color:#fff}}
+/* ══ fin LES TOUCHES D'UN SPOT ══ */
 /* ══ 21/10 — LA VUE AGRANDIE D'UN SPOT : plus de polaroid ═════════════════════════════════════════════════
    Wah : « plus d'effet polaroid … l'image telle qu'elle, avec le background noir, comme dans la vue de gauche » ;
    22/10 : « les boxes comme dans la vue de gauche, en bas, et les informations spot juste au-dessus ». Un écran par
@@ -3743,18 +3767,18 @@ button.sd-tag.is-aud[disabled]{opacity:.6;cursor:progress}
   min-width:0;max-height:min(12em,28dvh);white-space:pre-wrap;overflow-wrap:anywhere;overflow:auto;overscroll-behavior:contain}
 .sd-say:focus-visible{outline:1px solid var(--rail-color);outline-offset:2px}
 /* 23/11 (Wah : « réduire la bande noire : pas besoin qu'elle fasse toute la largeur puisqu'il n'y a que trois boutons ») */
-.ssp-row{display:flex;align-items:center;justify-content:center;gap:8px;min-height:30px;width:fit-content;max-width:100%;margin:0 auto;
+.ssp-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;min-height:30px;width:fit-content;max-width:100%;margin:0 auto;
   background:rgba(0,0,0,.86);border-radius:16px;padding:3px}
 .ssp-row:has(.ssp-par){padding-left:11px}   /* posé sur l'image : lisible comme `.sdata` */
 .ssp-par{display:flex;align-items:center;gap:7px;font:400 9px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#9a9aa0}
 .ssp-by{border:0;background:none;padding:0;cursor:pointer;font:400 13px/1.2 'Quantico',sans-serif;letter-spacing:0;text-transform:none;color:#fbd5ca}
 .ssp-acts{display:flex;gap:6px}
-.ssp-acts button{border:0;border-radius:10px;background:#1f1f24;color:#fff;cursor:pointer;padding:8px 12px;
+.ssp-acts button:not(.spot-key){border:0;border-radius:10px;background:#1f1f24;color:#fff;cursor:pointer;padding:8px 12px;
   font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
-.ssp-acts button:focus-visible,.ssp-by:focus-visible{outline:1px solid #fff;outline-offset:2px}
-.ssp-acts button{white-space:nowrap}
-.ssp-acts button[data-del].is-sur,.ssp-acts button[data-tlv].is-sur{background:var(--rep);color:#fff}
-@media(max-width:420px){.ssp-acts{gap:5px}.ssp-acts button{padding:8px 9px;letter-spacing:.12em}}
+.ssp-acts button:not(.spot-key):focus-visible,.ssp-by:focus-visible{outline:1px solid #fff;outline-offset:2px}
+.ssp-acts button:not(.spot-key){white-space:nowrap}
+.ssp-acts button:not(.spot-key)[data-del].is-sur,.ssp-acts button:not(.spot-key)[data-tlv].is-sur{background:var(--rep);color:#fff}
+@media(max-width:420px){.ssp-acts{gap:5px}.ssp-acts button:not(.spot-key){padding:8px 9px;letter-spacing:.12em}}
 /* LE MÉDIA, TEL QU'IL EST : jamais recadré, le noir autour — la place exacte de celui de la vue de gauche. */
 .card-more{max-width:100%;min-width:0}
 .card-more summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:40px;
@@ -3766,9 +3790,10 @@ button.sd-tag.is-aud[disabled]{opacity:.6;cursor:progress}
 .card-more summary:active{transform:translateY(2px)}
 .card-more .sd-row{margin-top:5px}
 .card-more .ssp-acts{justify-content:flex-start;flex-wrap:wrap;margin-top:6px}
-.sdata .sd-primary{display:flex;flex-wrap:wrap;gap:5px}
-.ssp-info .ssp-acts button,.tlv-b .ssp-acts button{min-height:37px;border-radius:0;border-bottom:1px solid var(--rail-color)}
-.ssp-info .ssp-acts button:active,.tlv-b .ssp-acts button:active{transform:translateY(2px)}
+.sdata.spot-data{padding-right:35px}
+.ssp-info .spot-data .sd-say{max-height:min(12em,20dvh)}
+.ssp-info .ssp-acts button:not(.spot-key),.tlv-b .ssp-acts button:not(.spot-key){min-height:37px;border-radius:0;border-bottom:1px solid var(--rail-color)}
+.ssp-info .ssp-acts button:not(.spot-key):active,.tlv-b .ssp-acts button:not(.spot-key):active{transform:translateY(2px)}
 .ssp-m{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 46px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 24px);background:#000}
 .ssp-m img,.ssp-m video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 0;display:block;opacity:0;transition:opacity .4s ease}
 .ssp-m img[src],.ssp-m video[src],.ssp-m video[poster]{opacity:1}
@@ -3868,9 +3893,6 @@ body.lv-g #lv-socket,body.lv-d #lv-socket{opacity:0}
 .ns-c.is-on small{color:#b8b8c2}
 .ns-tag{display:inline-block;padding:8px 2px;font:400 11.5px/1.3 'Space Mono',monospace;color:#b8b8c2}
 .ns-def{margin:0;font:400 10.5px/1.55 'Space Mono',monospace;color:#8a8a92;max-width:54ch}
-/* la définition d'un spot, mise en avant (Wah, 10/11) : grande, blanche, juste sous « + spot » */
-.ns-def.ns-what{width:min(92vw,420px);max-width:none;margin:2px 0 10px;font-size:14px;line-height:1.5;color:#fff}
-@media(min-width:700px){.ns-def.ns-what{font-size:15px}}
 .ns-note-g{color:#b8b8c2}
 .ns-adr{display:flex;flex-wrap:wrap;gap:5px;align-items:center;width:100%}
 .ns-adr .ns-adrin{flex:1 1 160px;min-width:0;background:#1f1f24;border-radius:10px;padding:9px 11px}
@@ -3981,6 +4003,7 @@ body.lv-d.rdr-voir :is(#gate-asteroid,#lvjoy,#rdr-flt){opacity:0;visibility:hidd
 .m-f .mini-t svg{width:11px;height:11px;flex:none}
 .mf-x{background:none;border:0;color:rgba(255,255,255,.5);cursor:pointer;font:400 13px/1 'Space Mono',monospace;padding:0 5px}
 @media(hover:hover){.mf-x:hover{color:#fff}}
+/* ══ LES ÉTAPES DE PRISE — copié de tools/spot_capture.css ══ */
 /* ── LA CAPTURE (PHOTO · VIDEO · IMPORT) : une feuille ancrée EN HAUT (le clavier mange le bas), qui naît de
    l'élément (`--cx/--cy`) et y retourne. Sur ordinateur, la caméra de l'appareil (getUserMedia) ; au doigt,
    l'appareil photo natif. ── */
@@ -4027,7 +4050,6 @@ body.lv-d.rdr-voir :is(#gate-asteroid,#lvjoy,#rdr-flt){opacity:0;visibility:hidd
 .take-stage{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(100%,460px);flex:none;padding-top:10px;outline:0}
 .take-stage h2{margin:0;color:#f6f6fa;text-align:center;
   font:700 14px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
-.take-stage .ns-what{text-align:center;margin:0 0 5px;max-width:100%;color:#ceced9;font-size:12px}
 .take-stage>.sfg{gap:8px}
 .take-stage :is(.sfg,.sf-cap,#cap-in.is-inline){max-width:100%}
 .lsh-sf .take-stage .sfl{color:#a6a6b3;font-size:10px}
@@ -4055,6 +4077,7 @@ body.lv-d.rdr-voir :is(#gate-asteroid,#lvjoy,#rdr-flt){opacity:0;visibility:hidd
 .take-stage.is-entering{animation:take-in .2s ease both}
 @keyframes take-in{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.take-stage.is-entering{animation:none}.cap-b{transition:none}}
+/* ══ fin LES ÉTAPES DE PRISE ══ */
 #prise{position:fixed;inset:0;z-index:245;background:rgba(0,0,0,.92);display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:14px;padding:60px 14px 24px;overflow-y:auto}
 #prise[hidden]{display:none}
@@ -4595,6 +4618,10 @@ div:not(:has(> :not(br,wbr))):hover,
 #spass .sp-p:hover,
 #spass .sp-r i:hover,
 .lsh-sf .sf-aj:hover,
+.spot-key:hover,
+.spot-keycap.k2:hover,
+.spot-key.is-sur .spot-keycap:hover,
+.spot-loupe:hover,
 .sd-tag:hover,
 .ssp-par:hover,
 .ssp-by:hover,
@@ -4620,7 +4647,6 @@ div:not(:has(> :not(br,wbr))):hover,
 .cap-b:hover,
 .take-rail button.is-done:hover,
 .take-stage h2:hover,
-.take-stage .ns-what:hover,
 .lsh-sf .take-stage .sfl:hover,
 .take-secondary:hover,
 .take-preview figcaption:hover,
@@ -6280,18 +6306,6 @@ function emRenommer(ancien,nouveau){
   l.forEach(m=>{ m.ref=String(nouveau).trim(); }); emIndexer();
   apres(sb.rpc('element_media_rekey',{p_old:ancien,p_new:nouveau}));
 }
-/* Une photo n'a pas besoin de plus de 1 600 px dans un TOTEHM : JPEG, rien d'autre ne sort de l'appareil. */
-async function emReduire(f){
-  const url=URL.createObjectURL(f);
-  try{
-    const img=await new Promise((ok,ko)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=ko; i.src=url; });
-    const k=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement('canvas');
-    c.width=Math.round(img.naturalWidth*k); c.height=Math.round(img.naturalHeight*k);
-    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-    return await new Promise(ok=>c.toBlob(ok,'image/jpeg',.86));
-  }catch(_){ return null; }
-  finally{ URL.revokeObjectURL(url); }
-}
 async function emEnvoyer(k,ref,fichier,nom){
   if(RO||!me) return {ok:false,why:'signin'};
   const uid=me.id;
@@ -6330,6 +6344,20 @@ function fichierPrise(f,nom){
   if(!f.size||(!photo&&f.size>52428800)) return {ok:false,why:'size'};
   return {ok:true,f,nom:nom||f.name||'',mime,url:URL.createObjectURL(f)};
 }
+/* ══ LA CAPTURE DE MÉDIA — copié de tools/spot_capture.js ══ */
+/* Une photo n'a pas besoin de plus de 1 600 px dans un TOTEHM : JPEG, rien d'autre ne sort de l'appareil. */
+async function emReduire(f){
+  const url=URL.createObjectURL(f);
+  try{
+    const img=await new Promise((ok,ko)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=ko; i.src=url; });
+    const k=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement('canvas');
+    c.width=Math.round(img.naturalWidth*k); c.height=Math.round(img.naturalHeight*k);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    return await new Promise(ok=>c.toBlob(ok,'image/jpeg',.86));
+  }catch(_){ return null; }
+  finally{ URL.revokeObjectURL(url); }
+}
+
 function apercuPrise(url,type,nom=''){
   const src=esc(url), visuel=/^image\//.test(type)?'<img src="'+src+'" alt="Selected photo">'
     :/^video\//.test(type)?'<video src="'+src+'" controls playsinline preload="metadata" aria-label="Selected video"></video>'
@@ -6373,7 +6401,7 @@ function rendrePrise(p,croix,rail,etape,contenu){
    Elle naît de l'élément touché et y retourne ; elle n'est plus une vue de l'atterrissage. Au doigt, l'appareil
    photo du téléphone (`capture`) ; sur ordinateur, la caméra (getUserMedia : une photo, ou une vidéo ≤ 60 s) ;
    IMPORT, un fichier (photo, vidéo, PDF, son, texte ; 50 Mo au plus). Rien n'est publié. */
-const CAP=(()=>{
+function creerCapture(autorisee){
   const root=$('cap'), inn=$('cap-in'), note=$('cap-note'), cam=$('cap-cam'), vid=$('cap-v'), shot=$('cap-shot'), tt=$('cap-t');
   const choix=$('cap-row'), revenir=$('cap-back');
   const fP=$('cap-f-photo'), fV=$('cap-f-video'), fF=$('cap-f-file');
@@ -6405,7 +6433,7 @@ const CAP=(()=>{
     hote=null; inn.classList.remove('is-inline'); root.insertBefore(inn,root.firstChild); fF.accept=ACCEPT;
   }
   function ouvrir(o){
-    if(RO||!me) return;
+    if(!autorisee()) return;
     fermer(); opt=o; dire(''); occupe=false; arreterCam();
     if(!opt.tout) fF.accept=ACCEPT_SPOT;
     if(opt.hote){
@@ -6492,7 +6520,9 @@ const CAP=(()=>{
   },{capture:true});
   return {ouvrir, fermer, ouvert:()=>root.classList.contains('is-on'), inline:()=>!!hote, dans:el=>!!(hote&&el&&el.contains(hote)),
           etat:()=>Object.assign({ouvert:root.classList.contains('is-on'), inline:!!hote, camera:!!flux}, diagC)};
-})();
+}
+/* ══ fin LA CAPTURE DE MÉDIA ══ */
+const CAP=creerCapture(()=>!!me&&!RO);
 
 /* ══ LA VIGNETTE D'UNE VIDÉO DU TOTEHM (seau `element-media`) · 20/10/2026 ══════════════════════════════
    Wah : « la vignette de la vidéo ne s'affiche pas bien … l'affichage des médias doit être optimal ». Un
@@ -6853,6 +6883,47 @@ const SPOTLIEU=(()=>{
 })();
 
 /* La projection passe progressivement du globe au plan. Le fond et les repères partagent la même caméra. */
+/* ══ LA POSITION DES SPOTS — tools/spot_location.js ══ */
+function creerLocalisation(){
+  let dernier=null, vol=null;
+  function lecture(options){
+    return new Promise(resolve=>{
+      const service=navigator.geolocation;
+      if(!service){ resolve({code:2}); return; }
+      const timer=setTimeout(()=>resolve({code:3}),options.timeout+750);
+      const fin=r=>{ clearTimeout(timer); resolve(r); };
+      try{
+        service.getCurrentPosition(({coords})=>{
+          const {latitude:lat,longitude:lng,accuracy}=coords;
+          fin(Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180
+            ?{point:{lat,lng,accuracy}}:{code:2});
+        },e=>fin({code:e.code}),options);
+      }catch(_){ fin({code:2}); }
+    });
+  }
+  function demander({frais=false,precis=false}={}){
+    const age=dernier?Date.now()-dernier.at:Infinity;
+    if(vol) return vol;
+    if(!frais&&age<120000&&(!precis||dernier.point.accuracy<=250)) return Promise.resolve(dernier.point);
+    vol=(async()=>{
+      const a=await lecture({enableHighAccuracy:precis,timeout:precis?8000:5000,maximumAge:frais?0:120000});
+      if(a.code===1){ dernier=null; return null; }
+      let point=a.point;
+      if(!point||(!precis&&point.accuracy>5000)){
+        const b=await lecture({enableHighAccuracy:!precis,timeout:6500,maximumAge:frais?0:120000});
+        if(b.code===1){ dernier=null; return null; }
+        if(b.point&&(!point||b.point.accuracy<point.accuracy)) point=b.point;
+      }
+      if(point){ dernier={point,at:Date.now()}; return point; }
+      return !precis&&dernier&&Date.now()-dernier.at<300000?dernier.point:null;
+    })().finally(()=>{ vol=null; });
+    return vol;
+  }
+  return demander;
+}
+/* ══ fin LA POSITION DES SPOTS ══ */
+const localisationCarte=creerLocalisation(), localisationPrise=creerLocalisation();
+
 /* ══ LA CARTE DES SPOTS — tools/spot_map.js ══ */
 function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,position,groupesOuverts=()=>true}){
   const $=id=>document.getElementById(id);
@@ -7169,26 +7240,28 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   function zoomerIci(clic=false){
     if(!etat.on) return;
     interrompre(); repartition=null; note.textContent='';
-    if(!position&&!navigator.geolocation){ if(clic) note.textContent='location unavailable'; cadrerSpots(); return; }
     const s=++geoSeq; geoAttente=true;
     loc.setAttribute('aria-busy','true');
-    function centrer(coords){
-      if(!coords) { indisponible(); return; }
-      if(s!==geoSeq) return;
-      annulerPosition(); etat.centre=true;
-      ici=coord(coords.longitude,coords.latitude);
-      voler(ici.lat,ici.lng,ZOOM_VILLE,clic?750:1050);
-    }
-    function indisponible(){
+    position({frais:clic}).then(p=>{
       if(s!==geoSeq) return;
       annulerPosition();
-      if(clic) note.textContent='location unavailable';
-      cadrerSpots(); kick();
-    }
-    if(position) position().then(p=>centrer(p&&{latitude:p.lat,longitude:p.lng}),indisponible);
-    else navigator.geolocation.getCurrentPosition(({coords})=>centrer(coords),indisponible,{timeout:8000,maximumAge:0});
+      if(!p){
+        if(clic) note.textContent='location unavailable · try again';
+        cadrerSpots(); kick(); return;
+      }
+      etat.centre=true; ici=coord(p.lng,p.lat);
+      voler(ici.lat,ici.lng,ZOOM_VILLE,clic?750:1050);
+    });
   }
-  loc.addEventListener('click',()=>{ if(!geoAttente) zoomerIci(true); });
+  loc.addEventListener('click',()=>zoomerIci(true));
+
+  function monde(){
+    const initial=k<=1.005&&Math.abs(lat0-28)<.01&&Math.abs(longitude(lon0-8))<.01;
+    if(!etat.on||pique||(!geoAttente&&!trajet&&!roue&&!zoomDoigt&&!repartition&&initial)) return false;
+    interrompre(); dernierTap=null; repartition=null; etat.centre=true;
+    voler(28,8,1,620);
+    return true;
+  }
 
   function dansDisque(x,y){
     const g=geo();
@@ -7307,7 +7380,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       c.classList.remove('is-tenu'); credit.hidden=true;
     },
     maj(){ if(etat.on) situer(); },
-    rafraichir:kick,
+    rafraichir:kick, monde,
     vider(){ seq++; lieux=[]; pts=[]; repartition=null; etat.centre=false; etat.points=0; etat.groupes=0; etat.repartis=0; },
     ou:()=>pts.map(p=>[Math.round(p.x),Math.round(p.y)]),
     dans(x,y){ if(!etat.on) return false; const r=c.getBoundingClientRect(); return dansDisque(x-r.left,y-r.top); },
@@ -7324,7 +7397,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
 /* ══ fin LA CARTE DES SPOTS ══ */
 const SPMAP=creerCarteSpots({
   spots:()=>CLUBSP.items(), lieuDe:SPOTLIEU.de, couleur:melange, voir:(cle,cles)=>SPOTS.voir(cle,cles),
-  positionAuto:()=>!document.body.classList.contains('is-nspot'),
+  positionAuto:()=>!document.body.classList.contains('is-nspot'), position:localisationCarte,
   geometrie(w,h){
     const jb=$('lvjoy'), haut=118;
     const bas=Math.max(120,(jb?h-jb.getBoundingClientRect().top:96)+70);
@@ -7700,29 +7773,41 @@ function inerteBox(h,bk,opts){
   return '<div class="tb '+(PEAU[bk]||'blk-h')+'">'+t.innerHTML+'</div>';
 }
 
+/* ══ LE PASS DU SPOT — tools/spot_pass.js ══ */
 /* ══ LE PASS D'INVITATION D'UN SPOT · 23/11 ══ Wah : « pour que le membre puisse cut off facilement, il faut créer à chaque
    fois un pass invitation automatique au spot pour vérification, et qu'un membre puisse [Cut off] la personne ».
    L'abonné : son pass, créé au premier regard (`spot_pass_mine`) — son nom, le spot, un code à montrer sur place.
    Le créateur : les passes de SON spot (`spot_passes_for`), un code vérifié (`spot_pass_check`) et [Cut off] en deux gestes
    (`creator-cut-off` : l'abonnement s'arrête, le pass ne se vérifie plus). Le serveur décide de tout. */
-const PASS=(()=>{
+function creerPassSpot({sb,couperAcces,session}){
   const diag={mien:0, listes:0, verifs:0, coupes:0};
-  let arme=null, armeT=0, zc=null;
+  let arme=null, armeT=0, sequence=0, retour=null;
+  const ouvert=()=>!!($('spass')&&!$('spass').hidden);
+  function suivre(){
+    const s=++sequence, uid=session();
+    return ()=>s===sequence&&!!uid&&uid===session()&&ouvert();
+  }
   function feuille(){ let f=$('spass'); if(f) return f;
-    f=document.createElement('div'); f.id='spass'; f.hidden=true; f.setAttribute('role','dialog'); f.setAttribute('aria-modal','true');
+    f=document.createElement('div'); f.id='spass'; f.hidden=true; f.setAttribute('role','dialog'); f.setAttribute('aria-modal','true'); f.setAttribute('aria-label','Spot passes');
     f.innerHTML='<div class="sp-c"></div>'; document.body.appendChild(f);
     f.addEventListener('click',e=>{ if(e.target===f||e.target.closest('[data-sp="x"]')) fermer(); });
     window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!f.hidden){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); } },{capture:true});
     return f; }
   const carte=()=>feuille().querySelector('.sp-c');
-  function ouvrir(h){ const f=feuille(); carte().innerHTML=toucheFermer('data-sp="x"')+h; f.hidden=false;
+  function ouvrir(h){ const f=feuille(); if(f.hidden) retour=document.activeElement; carte().innerHTML=toucheFermer('data-sp="x"')+h; f.hidden=false;
     const cible=f.querySelector('button:not(.side-close),input')||f.querySelector('.side-close');
     cible?.focus({preventScroll:true}); }
-  function fermer(){ const f=$('spass'); if(f) f.hidden=true; arme=null; clearTimeout(armeT); }
+  function fermer(){
+    const f=$('spass'); if(f) f.hidden=true;
+    sequence++; arme=null; clearTimeout(armeT);
+    if(retour?.isConnected) retour.focus({preventScroll:true});
+    retour=null;
+  }
   const quand=z=>{ try{ const d=new Date(z.starts_at); return isNaN(d)?'':d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }catch(_){ return ''; } };
   async function mien(z){
-    diag.mien++; ouvrir('<p class="sp-k">pass</p><p class="sp-p">…</p>');
+    const courant=suivre(); diag.mien++; ouvrir('<p class="sp-k">pass</p><p class="sp-p">…</p>');
     const {data,error}=await sb.rpc('spot_pass_mine',{p_spot:String(z.id)});
+    if(!courant()) return;
     if(error){ console.error('[spot_pass_mine]',error.message); ouvrir('<p class="sp-k">pass</p><p class="sp-p">try again</p>'); return; }
     if(!data||!data.ok){ const w=data&&data.why;
       ouvrir('<p class="sp-k">pass</p><p class="sp-p">'+esc(({not_subscriber:'Subscribe to '+(z.creator||'this member')+' to get your pass to this spot.',banned:'This ecosystem is closed to you.',self:'This is your own spot.'})[w]||'This pass is not available.')+'</p>'); return; }
@@ -7735,8 +7820,9 @@ const PASS=(()=>{
       +'<button type="button" data-cut="'+esc(x.pseudo)+'"'+(arme===x.pseudo?' class="is-sur"':'')+'>'+(arme===x.pseudo?'cut off?':'cut off')+'</button></div>').join('')
       :'<p class="sp-p">No pass yet. A pass is created when one of your subscribers opens this spot.</p>'; }
   async function liste(z){
-    zc=z; diag.listes++; ouvrir('<p class="sp-k">passes</p><p class="sp-p">…</p>');
+    const courant=suivre(); arme=null; clearTimeout(armeT); diag.listes++; ouvrir('<p class="sp-k">passes</p><p class="sp-p">…</p>');
     const {data,error}=await sb.rpc('spot_passes_for',{p_spot:String(z.id)});
+    if(!courant()) return;
     if(error||!data||!data.ok){ if(error) console.error('[spot_passes_for]',error.message); ouvrir('<p class="sp-k">passes</p><p class="sp-p">try again</p>'); return; }
     peindre(z,data.items||[]);
   }
@@ -7752,8 +7838,9 @@ const PASS=(()=>{
   const dit=t=>{ const n=carte().querySelector('[data-sp="dit"]'); if(n) n.textContent=t||''; };
   async function verifier(z){
     const v=String(carte().querySelector('[data-sp="code"]').value||'').trim().toUpperCase(); if(!v) return;
-    diag.verifs++; dit('…');
+    const courant=suivre(); diag.verifs++; dit('…');
     const {data,error}=await sb.rpc('spot_pass_check',{p_spot:String(z.id),p_code:v});
+    if(!courant()) return;
     if(error){ console.error('[spot_pass_check]',error.message); dit('try again'); return; }
     dit(data&&data.ok?'✓ '+data.pseudo+' · valid pass':({unknown:'unknown code',cut_off:'cut off · no longer subscribed'})[data&&data.why]||'not valid');
   }
@@ -7762,13 +7849,48 @@ const PASS=(()=>{
     if(arme!==n){ arme=n; clearTimeout(armeT); armeT=setTimeout(()=>{ arme=null; peindre(z,l); },6000); peindre(z,l);
       dit(n+' loses access now, with no refund, and can never subscribe to you again.'); return; }
     clearTimeout(armeT); arme=null; b.disabled=true; dit('…');
-    const {status,d:x}=await fnAppel('creator-cut-off',{pseudo:n});
-    if(status!==200||!x||!x.ok){ dit('try again'); b.disabled=false; return; }
-    diag.coupes++; await liste(z); dit(n+' is cut off.');
+    const courant=suivre(), ok=await couperAcces(n);
+    if(!courant()) return;
+    if(!ok){ dit('try again'); b.disabled=false; return; }
+    diag.coupes++; await liste(z); if(ouvert()) dit(n+' is cut off.');
   }
-  window.__totehm_pass=()=>({...diag, ouvert:!!($('spass')&&!$('spass').hidden)});
-  return {mien, liste, fermer};
-})();
+  return {mien,liste,fermer,ouvert,etat:()=>({...diag,ouvert:ouvert()})};
+}
+/* ══ fin LE PASS DU SPOT ══ */
+const PASS=creerPassSpot({sb,session:()=>me?.id,couperAcces:async pseudo=>{
+  const {status,d}=await fnAppel('creator-cut-off',{pseudo});
+  return status===200&&!!d?.ok;
+}});
+window.__totehm_pass=()=>PASS.etat();
+/* ══ LES COMMANDES D'UN SPOT — tools/spot_card.js ══ */
+const ICONES_SPOT={
+  go:'<path d="M3 4l10-2-2 10-3-5zM8 7l-4 5"/>',
+  share:'<path d="M8 10V2m-3 3 3-3 3 3M3 7v6h10V7"/>',
+  del:'<path d="M3 4.5h10m-7-2h4m-6 2 1 9h6l1-9M7 7v4m2-4v4"/>',
+  pass:'<path d="M2 4h12v2a2 2 0 0 0 0 4v2H2v-2a2 2 0 0 0 0-4zM9 5.5v.5m0 1.5V8m0 1.5v.5"/>',
+  ics:'<path d="M3 4h10v9H3zM5.5 2.5v3m5-3v3M3 7h10m-7 3h1m2 0h1"/>'
+};
+function toucheSpot(action,id,nom){
+  const icone=ICONES_SPOT[action==='passes'?'pass':action];
+  return '<button type="button" class="spot-key" data-'+action+'="'+esc(String(id))+'">'
+    +'<span class="k2 spot-keycap" aria-hidden="true"><svg viewBox="0 0 16 16">'+icone+'</svg></span>'
+    +'<span class="spot-key-label">'+esc(nom)+'</span></button>';
+}
+function nomToucheSpot(b,nom){
+  const l=b.querySelector('.spot-key-label')||b;
+  l.textContent=nom;
+}
+function loupeSpot(){
+  return '<button type="button" class="spot-loupe" data-spot-zoom aria-pressed="false" aria-label="Bigger">'
+    +'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M7.5 10h5M10 7.5v5"/></svg></button>';
+}
+function zoomSpot(b){
+  const data=b.closest('.spot-data'), on=data.classList.toggle('is-zoom');
+  b.setAttribute('aria-pressed',String(on));
+  b.setAttribute('aria-label',on?'Smaller':'Bigger');
+  b.querySelector('path').setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5'));
+}
+/* ══ fin LES COMMANDES D'UN SPOT ══ */
 function toucheFermer(attribut){
   return '<button type="button" class="k2 k2-x side-close" data-hover-art '+attribut+' aria-label="Close">'
     +$('fold-x').querySelector('svg').outerHTML+'</button>';
@@ -7980,25 +8102,23 @@ function creerFeed(conf){
        spot, le niveau est un bouton — un tap passe au suivant (`spot_audience_set`) ; ailleurs, un mot. */
     const audT=z.mine&&!RO&&me?'<button type="button" class="sd-tag is-aud" data-spaud="'+esc(String(z.id))+'" aria-label="Who sees it">'+esc(AUD[aud]||'private')+'</button>'
       :tag(AUD[aud]||'');
-    const id=esc(String(z.id));
-    const extra=(!z.mine&&z.creator&&me?'<button type="button" data-pass="'+id+'">pass</button>':'')
-      +(z.mine&&!RO?'<button type="button" data-passes="'+id+'">passes</button><button type="button" data-del="'+id+'">delete</button>':'');
-    const data='<div class="sdata" aria-label="Where and when">'
-      +'<div class="sd-primary">'+tag(ET[z.state]||'','is-st')+tag(quand)+place+'</div>'
-      +'<details class="card-more"><summary>Details</summary><div class="sd-row">'+tag(duree(dur))+audT
+    const data='<div class="sdata spot-data" aria-label="Where and when">'+loupeSpot()
+      +'<div class="sd-row">'+tag(ET[z.state]||'','is-st')+tag(quand)+place+'</div>'
+      +'<div class="sd-row">'+tag(duree(dur))+audT
       +(aud==='private'?'':tag('location '+(z.location==='on'?'on':'off')))
       +(z.location==='on'&&z.mode?tag(z.mode==='silent'?'silent · nobody disturb me':'social · we can talk'):'')+'</div>'
-      +(z.comment?'<p class="sd-say" tabindex="0">'+esc(String(z.comment))+'</p>':'')
-      +(extra?'<span class="ssp-acts">'+extra+'</span>':'')+'</details></div>';
-    const acts=(ex?'<button type="button" data-go="'+id+'">go</button>':'')
-      +(z.state==='will'?'<button type="button" data-ics="'+id+'">calendar</button>':'')
-      +'<button type="button" data-share="'+id+'">share</button>';
+      +(z.comment?'<p class="sd-say" tabindex="0">'+esc(String(z.comment))+'</p>':'')+'</div>';
+    const acts=(ex?toucheSpot('go',z.id,'go'):'')
+      +(z.state==='will'?toucheSpot('ics',z.id,'calendar'):'')
+      +toucheSpot('share',z.id,'share')
+      +(!z.mine&&z.creator&&me?toucheSpot('pass',z.id,'pass'):'')
+      +(z.mine&&!RO?toucheSpot('passes',z.id,'passes')+toucheSpot('del',z.id,'delete'):'');
     const par=!z.mine&&z.creator?'<span class="ssp-par"><span>by</span><button type="button" class="ssp-by" data-who="'+esc(String(z.creator))+'">'+esc(String(z.creator))+'</button></span>':'';
     const box=x.id?'<div class="ssp-box" role="button" tabindex="0" data-lsh="habits|'+esc(x.id)+'">'+loupeVue(boxSpot(z))+'</div>'
                   :'<div class="ssp-box">'+loupeVue(boxSpot(z))+'</div>';
     return '<section class="lsh ssp-s'+(media?'':' is-nu')+(ici===x.cle?' is-ici':'')+'" data-lsh-k="'+esc(x.cle)+'">'
       +'<div class="ssp-c">'+(media?'<div class="ssp-m">'+media+'</div>':'')+'<div class="ssp-info">'+data
-      +((par||acts)?'<div class="ssp-row">'+par+(acts?'<span class="ssp-acts">'+acts+'</span>':'')+'</div>':'')
+      +((par||acts)?'<div class="ssp-row">'+par+(acts?'<span class="ssp-acts spot-actions">'+acts+'</span>':'')+'</div>':'')
       /* le niveau du SPOT est au-dessus (`[data-spaud]`, trois niveaux) ; celui de sa BOX se règle dans la box (16/11) */
       +box+'</div></div></section>';
   }
@@ -8398,8 +8518,8 @@ function creerFeed(conf){
      membre (`RO`), rien ne se retire. Deux gestes : le premier arme le bouton, le second retire. */
   const retirable=x=>!!(x&&me&&!RO&&(x.b==='em'||String(x.cle).startsWith('vi:')||(x.sp&&x.sp.mine)));
   const arme=b=>{ if(b.classList.contains('is-sur')) return true;
-    b.classList.add('is-sur'); b.textContent='delete?'; clearTimeout(b._sur);
-    b._sur=setTimeout(()=>{ b.classList.remove('is-sur'); b.textContent='delete'; },3000); return false; };
+    b.classList.add('is-sur'); nomToucheSpot(b,'delete?'); clearTimeout(b._sur);
+    b._sur=setTimeout(()=>{ b.classList.remove('is-sur'); nomToucheSpot(b,'delete'); },3000); return false; };
   async function retirer(x){
     if(!retirable(x)) return false;
     const cle=String(x.cle);
@@ -8487,7 +8607,7 @@ function creerFeed(conf){
   /* [delete] n'est peint que sur ce que je peux retirer (`remplir`) ; il se désarme quand on change de média. */
   function peindreDel(){
     document.querySelectorAll('#tlv [data-tlv="del"]').forEach(b=>{
-      clearTimeout(b._sur); b.classList.remove('is-sur'); b.textContent='delete'; });
+      clearTimeout(b._sur); b.classList.remove('is-sur'); nomToucheSpot(b,'delete'); });
   }
   /* Le voisin, au clavier : on fait défiler, l'aimant et l'observateur font le reste. */
   function voisinV(d){
@@ -8713,9 +8833,11 @@ function creerFeed(conf){
       if(a){ if(conf.grille&&!a.dataset.add) return sfAjouter(); choix('cap',a.dataset.add||undefined); return; }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
       /* Les gestes d'un spot : y aller (le point exact, si je le vois), le mettre au calendrier, voir son auteur. */
+      const zoom=e.target.closest('[data-spot-zoom]');
+      if(zoom){ zoomSpot(zoom); caler(zoom.closest('.ssp-s')); return; }
       const del=e.target.closest('[data-del]');
       if(del){ if(!arme(del)) return; const x=L.find(y=>y.sp&&String(y.sp.id)===String(del.dataset.del)); del.disabled=true;
-        retirer(x).then(ok=>{ if(!ok){ del.disabled=false; del.classList.remove('is-sur'); del.textContent='delete'; } }); return; }
+        retirer(x).then(ok=>{ if(!ok){ del.disabled=false; del.classList.remove('is-sur'); nomToucheSpot(del,'delete'); } }); return; }
       const sa=e.target.closest('[data-spaud]');
       if(sa){ const z=(L.find(x=>x.sp&&String(x.sp.id)===String(sa.dataset.spaud))||{}).sp; if(z) spotNiveau(sa,z); return; }
       const pa=e.target.closest('[data-pass],[data-passes]');
@@ -8745,7 +8867,7 @@ function creerFeed(conf){
     try{
       if(navigator.share){ await navigator.share({title:'TOTEHM · spot', text:texte, url:lien}); etat.partages=(etat.partages||0)+1; return; }
       await navigator.clipboard.writeText(texte+'\n'+lien); etat.partages=(etat.partages||0)+1;
-      b.textContent='link copied'; setTimeout(()=>{ if(b.isConnected) b.textContent='share'; },1800);
+      nomToucheSpot(b,'link copied'); setTimeout(()=>{ if(b.isConnected) nomToucheSpot(b,'share'); },1800);
     }catch(e){ if(e&&e.name!=='AbortError') console.error('[share]',e&&e.message||e); }
   }
   /* MES ÉLÉMENTS, pour attribuer un média : les cinq vues, dans l'ordre du Totehm. */
@@ -9020,7 +9142,12 @@ const SPOTS=(()=>{
       g.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '||e.key==='ArrowDown'){
         e.preventDefault(); e.stopPropagation(); fermerVoir(); } });
     } }
-  window.addEventListener('keydown',e=>{ if(e.key==='Escape'&&voit){ e.preventDefault(); e.stopImmediatePropagation(); fermerVoir(); } },{capture:true});
+  window.addEventListener('keydown',e=>{
+    if(e.key!=='Escape'||!ouvert||NSPOT.ouvert()||PASS.ouvert()||!$('rdr-sf').hidden||SPMAP.pique()) return;
+    if(voit){ fermerVoir(); if(!grille()) SPMAP.monde(); }
+    else if(grille()||!SPMAP.monde()) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+  },{capture:true});
   peindreMode();
   return {
     ouvrir(){
@@ -9098,7 +9225,7 @@ const VX=(()=>{
   hote().addEventListener('click',e=>{ if(qui==='spots'&&e.target.closest('#rdr-x')){ e.stopImmediatePropagation(); fermer(); } },true);
   /* Le clavier, pendant la couche : Échap ferme ; ↑ ↓ passent d'un spot à l'autre ; rien n'atteint le Totehm dessous. */
   window.addEventListener('keydown',e=>{
-    if(qui!=='spots') return;
+    if(qui!=='spots'||PASS.ouvert()) return;
     if(e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermer(); }
     else if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); e.stopImmediatePropagation(); SHS.pas(e.key==='ArrowDown'?1:-1); }
     else if(e.key==='ArrowLeft'||e.key==='ArrowRight'){ e.preventDefault(); e.stopImmediatePropagation(); }
@@ -9149,13 +9276,15 @@ function bunnyEnvoi(sb){
 }
 const VID=bunnyEnvoi(sb);
 
+/* ══ LA PRISE DE SPOT — copié de tools/spot_take.js ══ */
 /* La prise de spot suit un rail d'étapes depuis la capture facultative jusqu'à la publication.
    Now relève ma position. Later donne accès à la date, à l'adresse et à la carte.
    La visibilité de la box limite le choix d'accès et le serveur valide la publication. */
-const NSPOT=(()=>{
+function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,session,autorise,
+  audienceFixe='',connexion,avantOuvrir,apresPublier}){
   const DURS=[15,30,45,60,90,120,180];
-  const DEF='A spot is your TOTEHM Habit in action: exact place, exact time, right people, your conditions.';
   const CLUB='a habit, its why, its repulsions — the closest thing to public.';
+  const PARTAGE_BOX='Opening this Habit to my subscribers also opens its media and sub-boxes in my TOTEHM.';
   const AUD=[['private','private','me only'],['subscribers','my subscribers','only them'],['figher','figher club','every member']];
   const POURQUOI={signin:'sign in again', habit:'save this Habit first', location:'where', mode:'silent or social',
     duration:'the duration', video:'the photo or the video', position:'allow my location', too_many:'enough spots for now',
@@ -9173,7 +9302,7 @@ const NSPOT=(()=>{
   function neuf(){
     lacher(); seqPos++;
     const d=new Date(Date.now()+864e5);
-    N={etape:'media', mediaOk:false, mediaSeq:0, h:null, quand:'', media:null, path:'', aud:'', boxBusy:false, mode:'', ou:'',
+    N={etape:'media', mediaOk:false, mediaSeq:0, h:null, quand:'', media:null, path:'', aud:audienceFixe, boxBusy:false, confirmerBox:'', mode:'', ou:'',
       pt:null, ptSrc:'', ptVille:'', ptNom:'', posErr:false, posBusy:false,
       adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0,
       dur:0, mot:'', date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),
@@ -9224,12 +9353,12 @@ const NSPOT=(()=>{
   async function prendre(f){
     const t=String(f&&f.type||'').toLowerCase().split(';')[0], photo=/^image\//.test(t), video=/^video\//.test(t);
     if(!photo&&!video) return {ok:false, why:'media'};
-    const draft=N, seq=++N.mediaSeq, uid=me?.id;
+    const draft=N, seq=++N.mediaSeq, uid=session();
     let blob=f, secs=0;
     if(photo){ blob=await emReduire(f); if(!blob) return {ok:false, why:'media'}; }
     else{ if(f.size>(R.clip_max_bytes||48e6)) return {ok:false, why:'lourd'};
       secs=await duree(f); if(secs>(R.clip_seconds||33)+.5) return {ok:false, why:'long'}; }
-    if(draft!==N||seq!==N.mediaSeq||uid!==me?.id) return {ok:false};
+    if(draft!==N||seq!==N.mediaSeq||uid!==session()) return {ok:false};
     lacher(); diag.medias++;
     N.media={blob, url:URL.createObjectURL(blob), photo, secs, type:photo?'image/jpeg':t};
     return {ok:true};
@@ -9237,16 +9366,16 @@ const NSPOT=(()=>{
   async function envoyerMedia(m,uid,suivi){
     /* la vidéo chez Bunny (cinq qualités, le CDN le plus proche : elle démarre tout de suite) ; refusée → `moments` */
     if(!m.photo&&await VID.dispo()){
-      if(uid!==me?.id) return '';
+      if(uid!==session()) return '';
       try{ return await VID.envoyer(m.blob,m.secs,p=>suivi('sending… '+p+' %')); }
       catch(e){ console.error('[bunny upload]',e&&e.message||e); }
     }
     const ext=m.photo?'jpg':m.type.includes('mp4')?'mp4':m.type.includes('quicktime')?'mov':'webm';
-    if(uid!==me?.id) return '';
+    if(uid!==session()) return '';
     const path=uid+'/'+crypto.randomUUID()+'.'+ext;
     const {error}=await sb.storage.from('moments').upload(path,m.blob,{contentType:m.photo?'image/jpeg':(m.type||'video/'+ext),upsert:false});
     if(error){ console.error('[moments upload]',error.message); return ''; }
-    if(m.photo) VIGNETTE.ecrire('moments',path,m.blob);                          /* 15/11 : sa vignette, sans attendre */
+    if(m.photo) vignette(path,m.blob);                          /* 15/11 : sa vignette, sans attendre */
     return path;
   }
   /* ── LE LIEU : UN SEUL POINT (`N.pt`), d'où qu'il vienne ── La ville se déduit TOUJOURS de `cities.json`
@@ -9254,7 +9383,7 @@ const NSPOT=(()=>{
   function poser(ll,src,nom){
     const s=++seqPos;
     N.pt={lat:ll.lat, lng:ll.lng}; N.ptSrc=src; N.ptNom=nom||''; N.ptVille=''; N.posErr=false; N.posBusy=false;
-    SPMAP.epingler(N.pt);
+    carte.moteur.epingler(N.pt);
     villeDe(ll.lat,ll.lng).then(v=>{
       if(s!==seqPos) return;
       N.ptVille=v||'';
@@ -9262,15 +9391,13 @@ const NSPOT=(()=>{
     });
     peindre();
   }
-  /* la position, À CE GESTE seulement ; une réponse tardive n'écrase jamais une demande plus fraîche */
   function localiser(){
-    const s=++seqPos; N.posErr=false; N.posBusy=true;
-    if(!navigator.geolocation){ N.posBusy=false; N.posErr=true; return; }
-    navigator.geolocation.getCurrentPosition(q=>{
+    const s=++seqPos, frais=N.posErr; N.posErr=false; N.posBusy=true;
+    position({frais,precis:true}).then(pt=>{
       if(s!==seqPos) return;
-      poser({lat:q.coords.latitude, lng:q.coords.longitude},'ici','');
-    },()=>{ if(s!==seqPos) return; N.posBusy=false; N.posErr=true; peindre(); },
-      {enableHighAccuracy:true, timeout:9000, maximumAge:120000});
+      if(pt) poser(pt,'ici','');
+      else{ N.posBusy=false; N.posErr=true; peindre(); }
+    });
   }
   /* ── L'ADRESSE → UN POINT ── Nominatim (OpenStreetMap : le même fonds que les tuiles du Club). UNE requête
      par GESTE, jamais à la frappe (leur règle, et la nôtre : rien de systématique) ; chaque réponse est gardée.
@@ -9306,13 +9433,14 @@ const NSPOT=(()=>{
   /* LATER — un point posé sur la Terre : le panneau s'efface, un tap sur le globe le donne */
   function surLaCarte(){
     const p=pan(); if(!p) return;
-    if(SPOTMODE.get()!=='map') SPOTMODE.set('map');
+    carte.ouvrir();
     const draft=N;
     p.hidden=true; document.body.classList.add('rdr-pique'); diag.cartes++;
-    SPMAP.piquer(ll=>{
+    carte.moteur.piquer(ll=>{
       const revenir=()=>{
         if(draft!==N||!document.body.classList.contains('is-nspot')) return;
         document.body.classList.remove('rdr-pique');
+        carte.fermer?.();
         p.hidden=false;
         peindre();
       };
@@ -9330,21 +9458,33 @@ const NSPOT=(()=>{
   const note=t=>'<p class="ns-def ns-note-g">'+esc(t)+'</p>';
   function habitHTML(){
     if(N.h) return '<div class="sfg"><div class="sfl">my habit</div><div class="sfbx"><div class="sfb is-on" role="button" tabindex="0" data-ns="reh"'
-      +' aria-label="Change the Habit">'+boxTotehm('h',N.h,{})+'</div></div></div>';
-    const hs=(state.habits||[]).filter(h=>String(h.t||'').trim());
+      +' aria-label="Change the Habit">'+habits.box(N.h)+'</div></div></div>';
+    const liste=habits.liste(), hs=(liste||[]).filter(h=>String(habits.ref(h)||'').trim());
     return '<div class="sfg"><div class="sfl">which habit?</div><div class="sfbx">'+(hs.length
-      ?hs.map(h=>'<div class="sfb" role="button" tabindex="0" data-ns="h" data-v="'+esc(String(h.id))+'">'+boxTotehm('h',h,{})+'</div>').join('')
-      :'<p class="lv-note">write a Habit in my TOTEHM first</p>')+'</div></div>';
+      ?hs.map(h=>{
+        const cle=String(habits.id(h)), id=esc(cle);
+        if(audienceFixe&&habits.privee(h)){
+          const verrou=N.boxBusy?' disabled':'';
+          const ouvrir=N.confirmerBox===cle;
+          return '<div class="sfb is-off">'+habits.box(h)+'<div class="sfb-act">'
+            +(ouvrir?note(PARTAGE_BOX):'')+'<div class="sfr">'
+            +(ouvrir?chip('data-ns="ouvrirbox" data-v="'+id+'"'+verrou,'confirm',false)
+              +chip('data-ns="demanderbox"'+verrou,'cancel',false)
+              :chip('data-ns="demanderbox" data-v="'+id+'"'+verrou,'open the Habit box to my subscribers',false))
+            +'</div></div></div>';
+        }
+        return '<div class="sfb" role="button" tabindex="0" data-ns="h" data-v="'+id+'">'+habits.box(h)+'</div>';
+      }).join('')
+      :'<p class="lv-note">'+(liste?'write a Habit in my TOTEHM first':'reading my TOTEHM…')+'</p>')+'</div></div>';
   }
   const titre=mot=>'<h2>'+esc(mot)+'</h2>';
   const actions=html=>'<div class="take-actions">'+html+'</div>';
   const suite=()=>actions(actionPrise('data-ns="continue"','Continue',false,!termine(N.etape)));
   function mediaHTML(){
     const m=N.media;
-    const intro=titre('Take a spot')+'<p class="ns-def ns-what" data-tw>'+esc(DEF)+'</p>';
-    if(m) return intro+apercuPrise(m.url,m.type)+actions(actionPrise('data-ns="media-next"','Continue')
+    if(m) return apercuPrise(m.url,m.type)+actions(actionPrise('data-ns="media-next"','Continue')
       +actionPrise('data-ns="replace"','Retake',true)+actionPrise('data-ns="skip"','Continue without media',true));
-    return intro+'<div class="sfg"><p class="sfl">Photo or video · up to '+(R.clip_seconds||33)
+    return '<div class="sfg"><p class="sfl">Photo or video · up to '+(R.clip_seconds||33)
       +' s</p><div class="ns-cap"></div></div>'+actions(actionPrise('data-ns="skip"','Continue without media',true));
   }
   /* WHEN : deux réponses, et la date SEULEMENT si c'est « later ». */
@@ -9386,14 +9526,15 @@ const NSPOT=(()=>{
      club, demander confirmation avant de passer la box Habit en Visible to subscribers dans le TOTEHM. »
      Donc : on montre les trois, on n'en cache aucun, et le choix au-dessus du plafond ARME une confirmation
      qui dit ce qu'elle ouvre. Le serveur refuse de toute façon (`why:'box_private'`). */
-  const boxPrivee=()=>!!N.h&&AUDB.niveau('h',N.h.id)==='private';
+  const boxPrivee=()=>!!N.h&&habits.privee(N.h);
   const audHTML=()=>{
     const haut=N.aud==='subscribers'||N.aud==='figher';
-    let h=grp('who sees it',AUD.map(([v,m,s])=>chip('data-ns="aud" data-v="'+v+'"',m,N.aud===v,s)).join(''));
-    if(boxPrivee()&&haut) h+=note('this Habit box is private, so this spot cannot be seen yet. Opening it to my '
-      +'subscribers opens the box ITSELF in my TOTEHM — its media and its sub-boxes follow.')
+    const choix=audienceFixe?'<span class="sfc ns-c is-on">figher club<small>every member</small></span>'
+      :AUD.map(([v,m,s])=>chip('data-ns="aud" data-v="'+v+'"',m,N.aud===v,s)).join('');
+    let h=grp('who sees it',choix);
+    if(boxPrivee()&&haut) h+=note('This Habit box is private. '+PARTAGE_BOX)
       +'<div class="sfg"><div class="sfr">'+chip('data-ns="ouvrirbox"'+(N.boxBusy?' disabled':''),N.boxBusy?'opening…':'open the box to my subscribers',false)+'</div></div>';
-    else if(N.aud==='figher') h+=note(CLUB);
+    else if(N.aud==='figher'&&!audienceFixe) h+=note(CLUB);
     return h;
   };
   const ensHTML=()=>grp('together',chip('data-ns="mode" data-v="silent"','silent',N.mode==='silent','nobody disturb me')
@@ -9411,7 +9552,7 @@ const NSPOT=(()=>{
     const infos=[date,N.place.trim()||N.ptVille||N.ptNom.split(',')[0].trim()||'Exact location',
       (AUD.find(([v])=>v===N.aud)||[])[1],N.mode,dureeTxt(N.dur)];
     return titre('Review spot')+'<div class="take-summary">'+(N.media?apercuPrise(N.media.url,N.media.type):'')
-      +'<div class="sfbx">'+boxTotehm('h',N.h,{})+'</div><div class="sfr">'+infos.map(tag).join('')+'</div></div>'+motHTML()
+      +'<div class="sfbx">'+habits.box(N.h)+'</div><div class="sfr">'+infos.map(tag).join('')+'</div></div>'+motHTML()
       +actions(actionPrise('data-ns="go"',plan?'I will be here':'I am here',false,N.occupe||!accessible('publish')));
   }
   function peindre(){
@@ -9441,24 +9582,25 @@ const NSPOT=(()=>{
      aisément dans tous les endroits où elle apparaît, pas seulement dans le TOTEHM. » Le questionnaire est
      l'un de ces endroits : la confirmation est le tap sur CE bouton, et la note au-dessus dit que les médias
      et les sous-box suivent. Jamais l'inverse : rien ici ne fait REDESCENDRE une box. */
-  async function ouvrirLaBox(){
-    if(N.boxBusy||!N.h||!me||RO) return;
+  async function ouvrirLaBox(h){
+    if(N.boxBusy||!h||!autorise()) return;
     const draft=N;
     N.boxBusy=true; dire(''); peindre();
-    const ok=await AUDB.poser('h',N.h.id,'subscribers').catch(e=>{ console.error('[spot box]',e?.message||e); return false; });
+    const ok=await habits.ouvrir(h).catch(e=>{ console.error('[spot box]',e?.message||e); return false; });
     if(draft!==N) return;
     N.boxBusy=false;
-    if(!ok) dire('the box did not open · try again');
+    if(ok) N.confirmerBox='';
+    else N.note='the box did not open · try again';
     peindre();
   }
   /* ── LA PUBLICATION : le serveur dit oui ou pourquoi ── Le point est TOUJOURS exact (`p_location:'on'`), donc
      `p_mode` est toujours rempli : c'est ce que le serveur exige d'un spot dont le lieu est précis. */
   async function publier(){
-    if(N.occupe||!me||RO||N.etape!=='publish') return;
+    if(N.occupe||!autorise()||N.etape!=='publish') return;
     const manque=ETAPES.slice(0,-1).find(([id])=>!termine(id));
     if(manque){ aller(manque[0]); return; }
-    const draft=N, plan=N.quand==='later', uid=me.id;
-    const courant=()=>draft===N&&uid===me?.id;
+    const draft=N, plan=N.quand==='later', uid=session();
+    const courant=()=>draft===N&&uid===session();
     const suivre=t=>{ if(courant()) dire(t); };
     const fin=t=>{ if(courant()){ N.occupe=false; diag.refus++; dire(t); peindre(); } };
     let id;
@@ -9470,7 +9612,7 @@ const NSPOT=(()=>{
         if(!path) return fin('media unavailable · try again');
         N.path=path;
       }
-      const commun={p_habit:srv(N.h), p_duration_min:N.dur, p_lat:N.pt.lat, p_lng:N.pt.lng, p_city:N.ptVille||null,
+      const commun={p_habit:habits.ref(N.h), p_duration_min:N.dur, p_lat:N.pt.lat, p_lng:N.pt.lng, p_city:N.ptVille||null,
         p_comment:N.mot.trim()||null, p_mode:N.mode, p_location:'on', p_audience:N.aud};
       const corps=plan
         ?Object.assign({}, commun, {p_starts_at:new Date(N.date+'T'+N.time).toISOString(),
@@ -9480,8 +9622,8 @@ const NSPOT=(()=>{
       let {data,error}=await sb.rpc(fn,corps);
       if(!courant()) return;
       /* Une Habit toute neuve peut attendre son enregistrement. */
-      if(!error&&data&&data.why==='habit'){
-        await cloudSave();
+      if(habits.sauver&&!error&&data?.why==='habit'){
+        await habits.sauver();
         if(!courant()) return;
         ({data,error}=await sb.rpc(fn,corps));
       }
@@ -9511,17 +9653,24 @@ const NSPOT=(()=>{
     if(!courant()) return;
     diag.publies++;
     fermer();
-    CLUBSP.montrer(plan?'future':'now');
-    loadHabitSpaces().then(()=>renderZone());
-    if(pasMedia){ const s=$('rdr-say'); if(s) s.textContent='announced · the media did not go'; }
+    apresPublier(plan?'future':'now',pasMedia);
   }
   function ouvrir(x,dejaPris=false){
-    const p=pan(); if(!p||!me||RO||N.occupe) return false;
+    const p=pan(); if(!p||N.occupe) return false;
+    if(!autorise()){ connexion?.(); return false; }
     if(CAP.dans(p)) CAP.fermer();
-    if(SPMAP.pique()) SPMAP.piquer(null);
+    if(carte.moteur.pique()) carte.moteur.piquer(null);
     neuf(); lireRegles(); VID.dispo();
-    if(x) N.h=habByT(String(x))||(state.habits||[]).find(h=>String(h.t||'').trim()===String(x).trim())||null;
-    SPOTS.fermerVoir(); SPGRID.finOrdre(); SHS.sf&&SHS.sf(false);
+    const draft=N;
+    const choisir=()=>habits.trouver?.(String(x))||(habits.liste()||[])
+      .find(h=>String(habits.ref(h)).trim()===String(x).trim())||null;
+    if(x) N.h=choisir();
+    habits.charger?.().then(()=>{
+      if(draft!==N) return;
+      if(x&&!N.h&&(N.etape==='media'||N.etape==='habit')) N.h=choisir();
+      if(N.etape==='habit') peindre();
+    });
+    avantOuvrir();
     p.hidden=false; document.body.classList.add('is-nspot'); diag.ouverts++;
     delete p.dataset.etapePrise;
     if(!dejaPris) peindre();
@@ -9529,14 +9678,15 @@ const NSPOT=(()=>{
   }
   function fermer(){
     const p=pan(); if(!p) return;
-    if(SPMAP.pique()) SPMAP.piquer(null);
     document.body.classList.remove('is-nspot','rdr-pique');
+    if(carte.moteur.pique()) carte.moteur.piquer(null);
+    carte.fermer?.();
     if(CAP.dans(p)) CAP.fermer();
-    p.hidden=true; p.innerHTML=''; SPMAP.epingler(null); neuf();
+    p.hidden=true; p.innerHTML=''; carte.moteur.epingler(null); neuf();
   }
   /* Changer de temps ou de lieu REND le lieu : « now » reprend ma position, « elsewhere » repart de l'adresse. */
   function oublierLieu(){ seqPos++; N.adrSeq++; N.pt=null; N.ptSrc=''; N.ptVille=''; N.ptNom=''; N.posErr=false;
-    N.posBusy=false; N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr=''; N.place=''; SPMAP.epingler(null); }
+    N.posBusy=false; N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr=''; N.place=''; carte.moteur.epingler(null); }
   { const p=pan(); if(p){
     p.addEventListener('click',e=>{
       const t=e.target.closest('[data-ns]'); if(!t) return;
@@ -9559,11 +9709,12 @@ const NSPOT=(()=>{
         return;
       }
       if(c==='h'){
-        N.h=(state.habits||[]).find(h=>String(h.id)===String(v))||null;
+        N.h=(habits.liste()||[]).find(h=>String(habits.id(h))===String(v))||null;
+        N.confirmerBox='';
         if(N.h) aller('when');
         return;
       }
-      if(c==='reh'){ N.h=null; N.aud=''; }
+      if(c==='reh'){ N.h=null; N.aud=audienceFixe; }
       else if(c==='quand'){
         if(N.quand!==v){ N.quand=v; oublierLieu(); N.ou=''; }
         if(v==='now'){
@@ -9578,7 +9729,9 @@ const NSPOT=(()=>{
       else if(c==='carte') return surLaCarte();
       else if(c==='replace'){ ++N.mediaSeq; N.mediaOk=false; lacher(); }
       /* le plafond de la box : un tap de plus, et il DIT ce qu'il ouvre (`audHTML`) */
-      else if(c==='ouvrirbox') return void ouvrirLaBox();
+      else if(c==='demanderbox'){ N.confirmerBox=v||''; N.note=''; }
+      else if(c==='ouvrirbox') return void ouvrirLaBox(v
+        ?(habits.liste()||[]).find(h=>String(habits.id(h))===v):N.h);
       else if(c==='aud'){ N.aud=v; N.note=''; }
       else if(c==='mode'){ N.mode=v; return aller('duration'); }
       else if(c==='dur'){ N.dur=+v; return aller('publish'); }
@@ -9608,10 +9761,10 @@ const NSPOT=(()=>{
       else if(k==='date'||k==='time'||k==='dur') p.querySelector('[data-ns="continue"]')?.click();
     });
   } }
-  { const b=$('rdr-pique'); if(b) b.addEventListener('click',()=>SPMAP.piquer(null)); }
+  { const b=$('rdr-pique'); if(b) b.addEventListener('click',()=>carte.moteur.piquer(null)); }
   window.addEventListener('keydown',e=>{
     if(e.key!=='Escape') return;
-    if(SPMAP.pique()){ e.preventDefault(); e.stopImmediatePropagation(); SPMAP.piquer(null); return; }
+    if(carte.moteur.pique()){ e.preventDefault(); e.stopImmediatePropagation(); carte.moteur.piquer(null); return; }
     const p=pan(); if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); if(!N.occupe) fermer(); }
   },{capture:true});
   /* 25/11 — la PRISE RAPIDE : le média est déjà pris, le questionnaire s'ouvre dessus */
@@ -9629,7 +9782,22 @@ const NSPOT=(()=>{
   return {ouvrir, fermer, prise, ouvert:()=>document.body.classList.contains('is-nspot'),
           etat:()=>Object.assign({ouvert:document.body.classList.contains('is-nspot'), habit:!!N.h, etape:N.etape, quand:N.quand, media:!!N.media,
             aud:N.aud, ou:N.ou, mode:N.mode, pt:!!N.pt, ptSrc:N.ptSrc, hits:N.hits.length, dur:N.dur}, diag)};
-})();
+}
+/* ══ fin LA PRISE DE SPOT ══ */
+const NSPOT=creerPriseSpot({
+  sb,VID,CAP,villeDe,position:localisationPrise,vignette:(path,blob)=>VIGNETTE.ecrire('moments',path,blob),
+  carte:{moteur:SPMAP,ouvrir:()=>{ if(SPOTMODE.get()!=='map') SPOTMODE.set('map'); }},
+  habits:{liste:()=>state.habits||[],id:h=>h.id,ref:h=>srv(h),trouver:x=>habByT(x),
+    box:h=>boxTotehm('h',h,{}),privee:h=>AUDB.niveau('h',h.id)==='private',
+    ouvrir:h=>AUDB.poser('h',h.id,'subscribers'),sauver:()=>cloudSave()},
+  session:()=>me?.id,autorise:()=>!!me&&!RO,
+  avantOuvrir:()=>{ SPOTS.fermerVoir(); SPGRID.finOrdre(); SHS.sf(false); },
+  apresPublier:(quand,pasMedia)=>{
+    CLUBSP.montrer(quand);
+    loadHabitSpaces().then(()=>renderZone());
+    if(pasMedia){ const s=$('rdr-say'); if(s) s.textContent='announced · the media did not go'; }
+  }
+});
 window.__totehm_nspot=()=>NSPOT.etat();
 window.__totehm_rdr=()=>Object.assign(SPOTS.etat(),{club:CLUBSP.etat()});
 /* Où sont les carrés de la carte (pour viser au test) : des nombres, jamais un nom. */
@@ -10175,7 +10343,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-27-grilles-club';
+const BUILD='2026-11-27-radar-prises';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────

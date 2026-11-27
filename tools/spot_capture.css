@@ -1,0 +1,75 @@
+/* ══ LES ÉTAPES DE PRISE — copié de tools/spot_capture.css ══ */
+/* ── LA CAPTURE (PHOTO · VIDEO · IMPORT) : une feuille ancrée EN HAUT (le clavier mange le bas), qui naît de
+   l'élément (`--cx/--cy`) et y retourne. Sur ordinateur, la caméra de l'appareil (getUserMedia) ; au doigt,
+   l'appareil photo natif. ── */
+#cap{position:fixed;inset:0;z-index:240;display:flex;align-items:flex-start;justify-content:center;
+  background:rgba(0,0,0,.72);opacity:0;visibility:hidden;transition:opacity .28s ease,visibility 0s linear .32s}
+#cap.is-on{opacity:1;visibility:visible;transition:opacity .28s ease}
+#cap-in{margin-top:max(56px,9dvh);width:min(92vw,440px);display:flex;flex-direction:column;align-items:stretch;gap:12px;
+  background:#000;border-radius:14px;padding:16px;transform-origin:var(--cx,50%) var(--cy,0px);
+  transform:scale(.6);opacity:0;transition:transform .34s var(--gate-ease),opacity .25s ease}
+#cap.is-on #cap-in{transform:none;opacity:1}
+/* 27/10 — en ligne : la même feuille, DANS le panneau qui l'a demandée (la suite du geste, pas une fenêtre de plus) */
+#cap-in.is-inline{margin-top:0;width:min(92vw,420px);padding:0;background:none;border-radius:0;transform:none;opacity:1}
+#cap-row{display:flex;gap:8px}
+.cap-b{flex:1;min-width:0;min-height:66px;border:0;border-bottom:2px solid var(--rail-color);border-radius:0;padding:12px 6px;
+  background:#15151b;color:#e4e4ed;cursor:pointer;touch-action:manipulation;transition:transform .12s,background .14s;
+  font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.cap-b:active{transform:translateY(3px);background:#262634}
+.cap-b svg{width:24px;height:24px}
+.cap-b:disabled{opacity:.45;cursor:default}
+.cap-b:focus-visible,#cap-x:focus-visible,#cap-shot:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#cap-cam{position:relative;width:100%;aspect-ratio:3/4;max-height:48dvh;background:#000;overflow:hidden}
+#cap-cam.hide{display:none}
+#cap-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#cap-shot{position:absolute;left:50%;bottom:14px;width:58px;height:58px;margin-left:-29px;border-radius:50%;border:0;
+  background:#fff;box-shadow:inset 0 0 0 4px #000,0 0 0 2px #fff;cursor:pointer}
+#cap-shot.is-rec{background:#e0453f}
+#cap-t{position:absolute;left:10px;top:10px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.14em;color:#fff;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:10px}
+#cap-t:empty{display:none}
+#cap-x,#prise-x{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right))}
+#cap-row[hidden],#cap-back[hidden],#prise .cap-b[hidden]{display:none}
+#cap-back{align-self:center}
+#cap-note:empty{display:none}
+/* Les inscriptions et le trait reprennent le rail du Refine. Une seule étape est montée. */
+.lsh-sf:has(>.take-rail){background:#000}
+.lsh-sf:has(>.take-rail)>.side-close{margin-bottom:12px}
+.lsh-sf:has(>.take-rail)>.side-close:disabled{opacity:.4}
+.take-rail{width:min(100%,420px);flex:none}
+.take-rail.is-spot{width:min(100%,600px)}
+.take-rail button{font-size:10px;letter-spacing:.06em}
+.take-rail button[aria-current="step"]{border-color:#a7a7ba;background:#272740;color:#fff}
+.take-rail button.is-done{border-color:var(--rail-color);color:#d8d8e1}
+.take-rail button:disabled{color:#777783;cursor:default}
+@media(max-width:580px){.take-rail.is-spot{grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr))}}
+.take-stage{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(100%,460px);flex:none;padding-top:10px;outline:0}
+.take-stage h2{margin:0;color:#f6f6fa;text-align:center;
+  font:700 14px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase}
+.take-stage>.sfg{gap:8px}
+.take-stage :is(.sfg,.sf-cap,#cap-in.is-inline){max-width:100%}
+.lsh-sf .take-stage .sfl{color:#a6a6b3;font-size:10px}
+.take-stage .sfc.is-on{border-radius:0;background:#28283d;box-shadow:inset 0 -2px var(--rail-color)}
+.take-stage :is(.ns-hit,.ns-in,[data-ns="find"]){min-height:40px;border-radius:0}
+.take-stage>.lv-note:empty{display:none}
+.take-stage .ns-c{min-height:42px;border-radius:0}
+.take-stage .sfr{gap:7px}
+.take-stage .ns-c:active,.take-primary:active{transform:translateY(2px)}
+.take-primary{min-height:44px;width:min(100%,280px);padding:10px 13px;border:0;border-bottom:2px solid var(--rail-color);
+  border-radius:0;background:#22222e;color:#fff;cursor:pointer;touch-action:manipulation;
+  font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
+.take-primary:disabled{opacity:.4;cursor:default}
+.take-secondary{min-height:40px;padding:7px 10px;border:0;background:none;color:#c6c6d0;cursor:pointer;
+  font:700 10px/1.4 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+:is(.take-primary,.take-secondary):focus-visible{outline:1px solid #fff;outline-offset:3px}
+.take-preview{margin:0;width:min(100%,360px);display:flex;flex-direction:column;gap:7px;align-items:center}
+.take-preview :is(img,video){display:block;max-width:100%;max-height:min(35dvh,330px);object-fit:contain;background:#09090b}
+.take-preview audio{max-width:100%}
+.take-preview figcaption{color:#b0b0bd;max-width:100%;overflow-wrap:anywhere;text-align:center;font:400 10px/1.5 'Space Mono',monospace}
+.take-summary{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+.take-summary .sfr{justify-content:center;row-gap:0}
+.take-summary .ns-tag{padding:4px 6px;background:#16161f;color:#d7d7e0}
+.take-actions{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;flex-wrap:wrap}
+.take-stage.is-entering{animation:take-in .2s ease both}
+@keyframes take-in{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.take-stage.is-entering{animation:none}.cap-b{transition:none}}
+/* ══ fin LES ÉTAPES DE PRISE ══ */
