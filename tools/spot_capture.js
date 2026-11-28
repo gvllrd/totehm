@@ -34,8 +34,14 @@ function rendrePrise(p,croix,rail,etape,contenu){
   const actif=p.contains(document.activeElement)?document.activeElement:null;
   const cible=actif&&actif.dataset;
   p.dataset.etapePrise=etape;
-  p.innerHTML=toucheFermer(croix)+rail+'<div class="take-stage'+(phase?' is-entering':'')+'" tabindex="-1">'+contenu+'</div>';
+  p.innerHTML=toucheFermer(croix)+rail+'<div class="take-stage'+(phase?' is-entering':'')
+    +'" role="group" tabindex="-1">'+contenu+'</div>';
   const stage=p.querySelector('.take-stage');
+  const onglet=p.querySelector('.take-rail [aria-current="step"]');
+  if(onglet){
+    onglet.id=p.id+'-current-step';
+    stage.setAttribute('aria-labelledby',onglet.id);
+  }
   if(phase){ p.scrollTop=0; stage.focus({preventScroll:true}); }
   else if(cible){
     const k=cible.nsi||cible.ns||cible.sf;

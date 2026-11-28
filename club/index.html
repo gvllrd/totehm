@@ -70,7 +70,8 @@ body::before{content:'';position:fixed;left:0;right:0;top:0;height:calc(112px + 
 body.rdr-grid::before,body.is-scrolled::before{opacity:1}
 .rd-top{position:relative;height:100dvh;min-height:340px}
 #canvas,.rd-map{position:absolute;inset:0;width:100%;height:100%}
-#canvas{display:block;touch-action:none}
+#canvas{display:block;pointer-events:none}
+#radar-zone{position:absolute;clip-path:circle(50%);touch-action:none}
 #rdr-choix-carte{position:fixed;inset:0;z-index:99;background:#000}
 #rdr-pique{position:absolute;top:calc(18px + var(--top));left:50%;transform:translateX(-50%);white-space:nowrap;padding:8px 14px}
 .rd-map canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -754,6 +755,7 @@ body:has(.mc.is-in) #club-disc{left:auto;right:12px;transform:none;background:no
 .lsh-sf .take-stage .sfl{color:#a6a6b3;font-size:10px}
 .take-stage .sfc.is-on{border-radius:0;background:#28283d;box-shadow:inset 0 -2px var(--rail-color)}
 .take-stage :is(.ns-hit,.ns-in,[data-ns="find"]){min-height:40px;border-radius:0}
+@media(pointer:coarse){.take-stage .ns-in{font-size:16px}}
 .take-stage>.lv-note:empty{display:none}
 .take-stage .ns-c{min-height:42px;border-radius:0}
 .take-stage .sfr{gap:7px}
@@ -913,6 +915,7 @@ you are a member.</p>
 <section class="view is-on" id="v-radar" aria-label="Radar">
   <div class="rd-top">
     <canvas id="canvas" aria-hidden="true"></canvas>
+    <div id="radar-zone" aria-hidden="true"></div>
     <div class="empty hide" id="radar-empty" role="status"></div>
     <div id="radar-tools" role="group" aria-label="Radar controls">
       <button id="cmp" class="chip" type="button" aria-label="Compass">000° N<br>turn the ring</button>
@@ -945,7 +948,7 @@ you are a member.</p>
 
 <section class="view" id="v-grid" aria-label="Spots grid"><div id="rdr-g-f"></div></section>
 
-<aside id="rdr-sf" class="sf" role="dialog" aria-label="Spots: filters" hidden></aside>
+<aside id="rdr-sf" class="sf" role="dialog" aria-modal="true" aria-label="Spots: filters" hidden></aside>
 <aside id="rdr-new" class="sf" role="dialog" aria-label="Add a spot" hidden></aside>
 <aside id="detail" role="dialog" aria-modal="true" aria-label="Spot"></aside>
 <div id="cap" role="dialog" aria-modal="true" aria-label="Photo, video or file" aria-hidden="true">
@@ -1105,7 +1108,7 @@ const sb = createClient(SB_URL, SB_ANON);
 const $ = id => document.getElementById(id);
 const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
 const COM = 'https://www.totehm.com';
-const BUILD = '2026-11-27-radar-spots';
+const BUILD = '2026-11-28-club-parcours';
 
 /* ══ AUDIENCE — 13/10 : trois niveaux, une pastille. COPIÉ tel quel depuis tools/audience_ui.js
    (jamais importé). PRIVATE = moi · FIGHER CLUB = les membres · MY SUBSCRIBERS = mes abonnés ;
@@ -1343,11 +1346,11 @@ async function lieuDe(z){
 
 /* ══ L'ÉTAT ══ */
 const VIDE_CONNECT = 'connect with my TOTEHM to see the spots around me';
-let me = null, PSEUDO = null, POS = null;
+let me = null, PSEUDO = null, POS = null, positionRadarAt = 0;
 let DETAIL=null, DETAIL_RETOUR=null;
 const store = { get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(_){} } };
 
-/* Map et Grid lisent les mêmes spots. Le choix tient entre deux visites. */
+/* Radar et Grid lisent les mêmes spots. Le Radar ouvre chaque visite. */
 const MODES = ['radar', 'grid'];
 const MODE = (() => {
   let m = 'radar';
@@ -1365,7 +1368,7 @@ const CLUBSP = (() => {
   const PER = ['past','now','future'];
   const st = { pers:['now','past','future'], p:{}, items:[], total:0, more:false, seq:0, charge:false, lu:false,
                err:'', at:0, srv:{intentions:[], type:'all', scope:'world', mode:'all', akin:'', exact:false, rayon:50} };
-  let reglage = 0, lecture = null;
+  let reglage = 0, lecture = null, origine = null, relance = 0;
   const abon = [];
   const prevenir = () => abon.forEach(f => { try{ f(); }catch(e){ console.error('[clubsp]', e && e.message || e); } });
   function filtres(){
@@ -1384,7 +1387,12 @@ const CLUBSP = (() => {
        rien à lire, la vue le DIT (mesuré en production le 10/11 : cinq lectures vides par visite). */
     if(!me){ ++st.seq; lecture?.abort(); st.charge = false; st.items = []; st.total = 0; st.more = false; st.err = 'signin'; st.lu = true; prevenir();
       if(!VITRINE.length) lireVitrine(); return; }
+    if(st.srv.scope==='near'&&!POS){
+      if(st.err!=='location'){ st.err='location'; prevenir(); }
+      return;
+    }
     const s = ++st.seq, uid = me.id, f = filtres();
+    const point=f.scope==='near'?(suite?origine?.point:POS):null;
     lecture?.abort();
     const requete = lecture = new AbortController();
     st.charge = true;
@@ -1394,7 +1402,7 @@ const CLUBSP = (() => {
     const lectures = await Promise.all(pers.map(per => {
       const q = st.p[per] || {};
       return sb.rpc('club_spots', { p_period:per, p_filters:f,
-        p_lat:f.scope === 'near' ? POS.lat : null, p_lng:f.scope === 'near' ? POS.lng : null,
+        p_lat:point?.lat??null, p_lng:point?.lng??null,
         p_limit:MODE.get()==='radar'?60:20, p_offset:suite ? (q.off | 0) : 0, p_as_of:suite ? (q.asOf || null) : null }).abortSignal(requete.signal).then(r => ({ per, ...r }));
     }));
     if(s !== st.seq || me?.id !== uid) return;
@@ -1406,7 +1414,7 @@ const CLUBSP = (() => {
     if(non){ st.err = (non.data && non.data.why) || 'refused'; if(!suite){ st.items = []; st.total = 0; st.more = false; } prevenir(); return; }
     const l = [].concat(...lectures.map(r => Array.isArray(r.data.items) ? r.data.items : []));
     st.err = ''; st.lu = true; st.at = Date.now();
-    if(!suite) st.p = {};
+    if(!suite){ st.p = {}; origine = point ? {point,at:st.at} : null; }
     lectures.forEach(r => {
       const d = r.data, q = st.p[r.per], off = d.next_offset | 0;
       st.p[r.per] = { off, asOf:d.as_of || q?.asOf || null, more:!!(d.has_more || d.more) && off > (q?.off || 0), total:d.total | 0 };
@@ -1418,11 +1426,22 @@ const CLUBSP = (() => {
     prevenir();
   }
   const NOMS = { now:'now', past:'past', future:'future' }, ORDRE = ['now','past','future'];
-  const vider = () => { st.items = []; st.total = 0; st.more = false; st.p = {}; };
+  const vider = () => {
+    st.items = []; st.total = 0; st.more = false; st.p = {}; origine=null;
+    clearTimeout(relance); relance=0;
+  };
+  const origineBougee=()=>st.srv.scope==='near'&&origine&&POS&&hav(origine.point,POS)>=300;
   return {
     lire:()=>{ st.p = {}; return lire(false); },
     ouvrir(){ if(!st.lu || Date.now() - st.at > 60000){ st.p = {}; lire(false); } },
     suite:()=>lire(true),
+    recaler(){
+      if(relance||!origineBougee()) return;
+      relance=setTimeout(()=>{
+        relance=0;
+        if(radarVisible()&&origineBougee()) lire(false);
+      },Math.max(0,origine.at+15000-Date.now()));
+    },
     /* un temps de plus, ou de moins — comme une intention ; il en reste toujours un */
     periode(p){ if(!PER.includes(p)) return;
       if(st.pers.includes(p)){ if(st.pers.length === 1) return; st.pers = st.pers.filter(x => x !== p); }
@@ -1470,7 +1489,10 @@ const CLUBSP = (() => {
   };
 })();
 async function position(frais=false){
-  POS=await localisationClub({frais});
+  if(!frais&&POS&&Date.now()-positionRadarAt<60000) return true;
+  POS=await localisationClub({frais:frais||!!POS});
+  positionRadarAt=Date.now();
+  if(POS&&geoRadar==='failed'){ geoRadar='ready'; dire(''); }
   return !!POS;
 }
 
@@ -1662,7 +1684,7 @@ async function urlMoments(p){
 }
 
 /* ══ LE RADAR — les spots du Club à leur distance et à leur relèvement ══ */
-const RAD = { raf:0, W:0, H:0, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[], lieux:[], seq:0,
+const RAD = { raf:0, W:0, H:0, compact:false, dpr:1, cx:0, cy:0, rpx:0, tx:0, ty:0, tr:0, range:1000, pts:[], lieux:[], seq:0,
               head:0, headTo:null, turn:null, last:0, dirty:null, centre:null, z:1, pinch:null };
 try{ const v = parseFloat(localStorage.getItem('figher_portee')); if(v >= .05 && v <= 40) RAD.z = v; }catch(_){}
 const norm360 = d => ((d % 360) + 360) % 360, norm180 = d => ((d + 540) % 360) - 180;
@@ -1676,19 +1698,27 @@ let geoRadar='';
 const CMP = { on:false, src:null, target:0, last:0, timer:0,
               available:typeof DeviceOrientationEvent !== 'undefined' && matchMedia('(pointer:coarse)').matches };
 const centre = () => POS || RAD.centre;
+const radarVisible=()=>!document.hidden&&MODE.get()==='radar'&&$('v-radar').scrollTop<RAD.H
+  &&!document.body.matches('.is-nspot,.is-sf,.is-detail,.is-dc');
 function radarSize(){
   const c = $('canvas'), dpr = Math.min(2, devicePixelRatio || 1);
   const w=c.clientWidth, h=c.clientHeight;
   if(!w||!h) return;
-  if(RAD.W!==w||RAD.H!==h||RAD.dpr!==dpr){
+  const redimensionne=RAD.W!==w||RAD.H!==h||RAD.dpr!==dpr;
+  if(redimensionne){
     RAD.W=w; RAD.H=h; RAD.dpr=dpr; c.width=w*dpr; c.height=h*dpr; RAD.dirty=null;
   }
   const bar=$('rdr-flt').getBoundingClientRect().bottom;
-  const left=31, right=RAD.W-31, top=bar+78, bottom=Math.max(top+85,RAD.H-146);
-  RAD.tx = (left + right) / 2; RAD.ty = (top + bottom) / 2;
-  RAD.tr = Math.max(40, Math.min(right - left, Math.max(60, bottom - top)) / 2 * .92);
-  if(!RAD.rpx){ RAD.cx = RAD.tx; RAD.cy = RAD.ty; RAD.rpx = RAD.tr; }
-  const em = $('radar-empty'); em.style.top = Math.round(RAD.ty) + 'px';
+  RAD.compact=h<500&&w>h;
+  const top=RAD.compact?35:bar+78, bottom=RAD.compact?h-32:Math.max(top+85,h-175);
+  RAD.tx=RAD.compact?w*.73:w/2;
+  RAD.ty=(top+bottom)/2;
+  RAD.tr=Math.max(40,Math.min(2*(w-RAD.tx-31),bottom-top)*.46);
+  if(redimensionne){ RAD.cx=RAD.tx; RAD.cy=RAD.ty; RAD.rpx=RAD.tr; }
+  const em=$('radar-empty');
+  em.style.top=Math.round(RAD.ty)+'px';
+  em.style.left=Math.round(RAD.tx-RAD.tr)+'px';
+  em.style.right=Math.round(w-RAD.tx-RAD.tr)+'px';
 }
 function radarAuto(){
   const c = centre(); if(!c) return 1000;
@@ -1762,8 +1792,7 @@ function draw(t){
   RAD.raf = 0;
   /* Un panneau ouvert ou un spot ouvert : le radar s'ARRÊTE — rien à montrer derrière, et la batterie
      du téléphone n'a pas à tourner pour ça. Il repart à la fermeture (`radarOn`). */
-  if(document.hidden || MODE.get() !== 'radar' || $('v-radar').scrollTop > RAD.H) return;
-  if(document.body.matches('.is-nspot,.is-sf,.is-detail,.is-dc')) return;
+  if(!radarVisible()){ syncPositionRadar(); return; }
   const moving = Math.abs(RAD.tx - RAD.cx) + Math.abs(RAD.ty - RAD.cy) + Math.abs(RAD.tr - RAD.rpx) > 1 || RAD.turn || RAD.headTo !== null;
   const fps = moving ? 60 : 15;
   if(t - RAD.last < 1000 / fps - 1){ RAD.raf = requestAnimationFrame(draw); return; }
@@ -1772,15 +1801,24 @@ function draw(t){
     RAD[now] = Math.abs(RAD[target] - RAD[now]) < .04 ? RAD[target] : RAD[now] + (RAD[target] - RAD[now]) * blend;
   if(CMP.on){ const delta = norm180(CMP.target - RAD.head); RAD.head = norm360(RAD.head + delta * .15); }
   else if(RAD.headTo !== null){ const delta = norm180(RAD.headTo - RAD.head); RAD.head = norm360(RAD.head + delta * .16); if(Math.abs(delta) < .1) RAD.headTo = null; }
-  const tools = $('radar-tools');
+  const tools=$('radar-tools'), zone=$('radar-zone');
   const ecart=Math.max(90,RAD.rpx*.83);
-  const pos=[RAD.cx-ecart,RAD.cx+ecart,RAD.cy+RAD.rpx+32,RAD.cy-RAD.rpx-68].map(n=>n.toFixed(1)+'px');
-  const layout = pos.join('|');
-  if(tools._layout !== layout){ tools._layout = layout; tools.classList.add('is-placed');
-    $('cmp').style.left = pos[0]; $('cmp').style.top = pos[2];
-    $('rdr-here').style.left = pos[1]; $('rdr-here').style.top = pos[2];
-    $('rdr-down').style.left = RAD.cx.toFixed(1) + 'px'; $('rdr-down').style.top = pos[2];
-    const zm = $('rdr-zoom'); if(zm){ zm.style.left = RAD.cx.toFixed(1) + 'px'; zm.style.top = pos[3]; } }
+  const cxOutils=RAD.compact?RAD.W*.26:RAD.cx;
+  const yOutils=RAD.compact?RAD.cy+12:RAD.cy+RAD.rpx+32;
+  const ecartOutils=RAD.compact?57:ecart;
+  const yListe=RAD.compact?RAD.cy+68:yOutils;
+  const yZoom=RAD.compact?RAD.cy-39:RAD.cy-RAD.rpx-68;
+  const rHit=RAD.rpx+32;
+  const layout=[cxOutils,yOutils,ecartOutils,yListe,yZoom,RAD.cx,RAD.cy,rHit].map(n=>n.toFixed(1)).join('|');
+  if(tools._layout!==layout){
+    tools._layout=layout; tools.classList.add('is-placed');
+    const placer=(id,x,y)=>Object.assign($(id).style,{left:x+'px',top:y+'px'});
+    placer('cmp',cxOutils-ecartOutils,yOutils);
+    placer('rdr-here',cxOutils+ecartOutils,yOutils);
+    placer('rdr-down',cxOutils,yListe);
+    placer('rdr-zoom',cxOutils,yZoom);
+    Object.assign(zone.style,{left:(RAD.cx-rHit)+'px',top:(RAD.cy-rHit)+'px',width:2*rHit+'px',height:2*rHit+'px'});
+  }
   { const b = $('rdr-span'); if(b){ const t = fmtDist(RAD.range); if(b.textContent !== t) b.textContent = t; } }
   paintCmp();
   const x = $('canvas').getContext('2d'), { dpr, cx, cy, rpx } = RAD;
@@ -1827,7 +1865,10 @@ function draw(t){
   }
   RAD.raf = requestAnimationFrame(draw);
 }
-function radarOn(){ radarSize(); if(!RAD.raf) RAD.raf = requestAnimationFrame(draw); }
+function radarOn(){
+  radarSize(); syncPositionRadar();
+  if(radarVisible()&&!RAD.raf) RAD.raf=requestAnimationFrame(draw);
+}
 function compassOff(){ if(CMP.src) removeEventListener(CMP.src, onOrient); CMP.on = false; CMP.src = null; clearTimeout(CMP.timer); }
 function onOrient(e){
   let h = typeof e.webkitCompassHeading === 'number' ? e.webkitCompassHeading : e.absolute && typeof e.alpha === 'number' ? 360 - e.alpha : null;
@@ -1847,19 +1888,45 @@ async function releverPosition(frais=false){
   if(geoRadar==='loading') return;
   const cle=$('rdr-here');
   geoRadar='loading'; cle.setAttribute('aria-busy','true');
+  syncPositionRadar();
   if(frais) dire('');
   const ok=await position(frais);
   geoRadar=ok?'ready':'failed'; cle.removeAttribute('aria-busy');
   if(ok&&frais){ compassOff(); RAD.headTo=0; }
   if(!ok) dire('Location unavailable · tap the position key to retry');
   await situer();
+  if(ok) CLUBSP.recaler();
   if(MODE.get()==='grid') GRID.maj();
+}
+let vigieRadar=null, seqVigie=0;
+function syncPositionRadar(){
+  const gps=navigator.geolocation;
+  if(geoRadar!=='ready'||!POS||!radarVisible()){
+    if(vigieRadar!==null){ seqVigie++; gps?.clearWatch(vigieRadar); vigieRadar=null; }
+    return;
+  }
+  if(vigieRadar!==null||!gps?.watchPosition) return;
+  const s=++seqVigie;
+  vigieRadar=gps.watchPosition(({coords})=>{
+    if(s!==seqVigie||!radarVisible()||!POS) return;
+    const {latitude:lat,longitude:lng,accuracy}=coords;
+    if(!Number.isFinite(lat)||!Number.isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180) return;
+    const point={lat,lng,accuracy}, seuil=Math.max(25,Math.min(120,(accuracy||0)*.5));
+    positionRadarAt=Date.now();
+    if(hav(POS,point)<seuil&&accuracy>=POS.accuracy/2){ CLUBSP.recaler(); return; }
+    POS=point; RAD.range=radarRange();
+    LISTE.peindre(); CLUBSP.recaler();
+  },e=>{
+    if(s!==seqVigie||e.code!==1) return;
+    POS=null; geoRadar='failed'; syncPositionRadar();
+    dire('Location unavailable · tap the position key to retry'); situer();
+  },{maximumAge:0,timeout:15000});
 }
 $('rdr-here').onclick=()=>releverPosition(true);
 {
-  const cv = $('canvas');
+  const cv = $('radar-zone');
   /* le repère du radar : le canevas DÉFILE avec la vue, ses coordonnées sont les siennes */
-  const ici = e => { const r = cv.getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; };
+  const ici = e => { const r = $('canvas').getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; };
   cv.addEventListener('pointerdown', e => {
     const q = ici(e), d = Math.hypot(q.x - RAD.cx, q.y - RAD.cy);
     if(d < RAD.rpx - 18 || d > RAD.rpx + 35) return;
@@ -1890,8 +1957,8 @@ $('rdr-here').onclick=()=>releverPosition(true);
 /* ══ LA PORTÉE SE RÈGLE · 12/11 ══════════════════════════════════════════════════════════════════════
    Deux boutons (× 1,6 par tap), deux doigts sur le disque, la molette sur l'ordinateur. L'anneau garde SA
    priorité : son `pointerdown` s'arrête net (`stopImmediatePropagation`), donc tourner n'est jamais zoomer. */
-{ const cv = $('canvas'), pz = new Map();
-  const ici = e => { const r = cv.getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; };
+{ const cv = $('radar-zone'), pz = new Map();
+  const ici = e => { const r = $('canvas').getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; };
   const dedans = q => Math.hypot(q.x - RAD.cx, q.y - RAD.cy) <= RAD.rpx + 12;
   cv.addEventListener('pointerdown', e => {
     if(!dedans(ici(e))) return;
@@ -1921,7 +1988,8 @@ addEventListener('resize', () => radarOn());
 $('v-radar').addEventListener('scroll', () => {
   const y = $('v-radar').scrollTop;
   document.body.classList.toggle('is-scrolled', y > 40);
-  if(y <= RAD.H) radarOn();
+  if(y<RAD.H) radarOn();
+  else syncPositionRadar();
 }, { passive:true });
 $('rdr-down').onclick = () => $('rdr-list').scrollIntoView({ behavior:matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth', block:'start' });
 
@@ -1970,6 +2038,7 @@ const localisationClub=creerLocalisation(), localisationPrise=creerLocalisation(
 function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,position,groupesOuverts=()=>true}){
   const $=id=>document.getElementById(id);
   const D=Math.PI/180, TERRE_KM=6371, ZOOM_VILLE=TERRE_KM/14, ZOOM_MAX=4096, ZOOM_PLAN=6;
+  const SEUIL_GLISSE=6, DELAI_TUILE=15000;
   const etat={on:false, terres:0, points:0, groupes:0, repartis:0, villes:0, sans:0, zoom:1, centre:false, position:false};
   let terre=null, terreP=null, lon0=8, lat0=28, k=1, tenu=null, pinch=null, pts=[], lieux=[], seq=0, rq=0, pique=null, epingle=null;
   let geoSeq=0, geoAttente=false, ici=null, dernierTap=null, trajet=null, roue=null, zoomDoigt=null, repartition=null;
@@ -2087,12 +2156,13 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       if(fini) roue=null; else w.t=t;
     }
   }
-  function tuile(z,x,y,charger){
+  function tuile(z,x,y,charger,maintenant){
     const n=2**z, cle=z+'/'+((x%n+n)%n)+'/'+y;
     let t=tuiles.get(cle);
-    if(!t&&charger){
-      t={im:new Image(), at:null};
+    if(charger&&(!t||(t.echec!=null&&maintenant-t.echec>=DELAI_TUILE))){
+      t={im:new Image(), at:null, echec:null};
       t.im.referrerPolicy='strict-origin-when-cross-origin'; t.im.onload=()=>{ t.at=performance.now(); kick(); };
+      t.im.onerror=()=>{ t.echec=performance.now(); };
       t.im.src='https://tile.openstreetmap.org/'+cle+'.png';
       tuiles.set(cle,t);
       if(tuiles.size>180) tuiles.delete(tuiles.keys().next().value);
@@ -2106,10 +2176,10 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
     const x0=Math.floor(-dx/cote), x1=Math.ceil((w-dx)/cote)-1;
     const y0=Math.floor(-dy/cote), y1=Math.ceil((h-dy)/cote)-1;
     if(niveau!==z){ niveau=z; niveauDepuis=t; }
-    const charger=(!trajet&&!roue&&!pinch)||t-niveauDepuis>100;
+    const charger=navigator.onLine&&((!trajet&&!roue&&!pinch)||t-niveauDepuis>100);
     let peint=false, couvre=y0>=0&&y1<n, fondu=false;
     for(let y=Math.max(0,y0);y<=Math.min(n-1,y1);y++) for(let x=x0;x<=x1;x++){
-      const a=tuile(z,x,y,charger), alpha=a?.at!=null?(reduit.matches?1:borner((t-a.at)/135,0,1)):0;
+      const a=tuile(z,x,y,charger,t), alpha=a?.at!=null?(reduit.matches?1:borner((t-a.at)/135,0,1)):0;
       const l=dx+x*cote, top=dy+y*cote;
       let compte=alpha===1;
       if(alpha<1){
@@ -2299,8 +2369,8 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
 
   function monde(){
     const initial=k<=1.005&&Math.abs(lat0-28)<.01&&Math.abs(longitude(lon0-8))<.01;
-    if(!etat.on||pique||(!geoAttente&&!trajet&&!roue&&!zoomDoigt&&!repartition&&initial)) return false;
-    interrompre(); dernierTap=null; repartition=null; etat.centre=true;
+    if(!etat.on||pique||(!geoAttente&&!trajet&&!roue&&!repartition&&!ptrs.size&&initial)) return false;
+    interrompre(); relacherGeste(); dernierTap=null; repartition=null; etat.centre=true;
     voler(28,8,1,620);
     return true;
   }
@@ -2334,8 +2404,14 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   }
 
   const c=cv();
+  function relacherGeste(){
+    const ids=[...ptrs.keys()];
+    ptrs.clear(); tenu=null; pinch=null;
+    c.classList.remove('is-tenu');
+    for(const id of ids) if(c.hasPointerCapture(id)) c.releasePointerCapture(id);
+  }
   c.addEventListener('pointerdown',e=>{
-    if(e.pointerType==='mouse'&&e.button!==0) return;
+    if(!etat.on||ptrs.size>=2||(e.pointerType==='mouse'&&e.button!==0)) return;
     const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
     if(!ptrs.size&&!dansDisque(x,y)){ etat.horsDisque=(etat.horsDisque||0)+1; return; }
     interrompre(); etat.centre=true; kick();
@@ -2346,7 +2422,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,k,ancre:inverse(gx,gy,camera(geo()))};
       tenu=null; dernierTap=null; repartition=null; return;
     }
-    tenu={id:e.pointerId,x,y,x0:x,y0:y}; c.classList.add('is-tenu');
+    tenu={id:e.pointerId,x,y,bouge:false}; c.classList.add('is-tenu');
   });
   c.addEventListener('pointermove',e=>{
     if(!ptrs.has(e.pointerId)) return;
@@ -2358,18 +2434,31 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       kick(); return;
     }
     if(!tenu||tenu.id!==e.pointerId) return;
-    const g=camera(geo()), dx=x-tenu.x, dy=y-tenu.y;
-    if(Math.hypot(x-tenu.x0,y-tenu.y0)>6) repartition=null;
+    const dx=x-tenu.x, dy=y-tenu.y;
+    if(!tenu.bouge){
+      if(Math.hypot(dx,dy)<=SEUIL_GLISSE) return;
+      tenu.bouge=true; repartition=null; dernierTap=null;
+    }
+    const g=camera(geo());
     lon0=longitude(lon0-dx*360/g.echelle);
     lat0=latitude(lat0+(1-g.mix)*dy/(D*g.r)+g.mix*(latMerc(g.y-dy/g.echelle)-lat0));
     tenu.x=x; tenu.y=y; etat.tours=(etat.tours||0)+1; kick();
   });
   const relacher=e=>{
-    ptrs.delete(e.pointerId); c.classList.remove('is-tenu');
-    if(ptrs.size<2&&pinch){ pinch=null; kick(); }
+    if(!ptrs.delete(e.pointerId)) return;
+    if(pinch){
+      if(zoomDoigt) avancer(performance.now(),geo());
+      pinch=null;
+      const [id,p]=ptrs.entries().next().value;
+      tenu={id,x:p.x,y:p.y,bouge:true};
+      kick(); return;
+    }
+    c.classList.remove('is-tenu');
     if(!tenu||tenu.id!==e.pointerId) return; const tenu0=tenu; tenu=null;
     const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
-    if(e.type!=='pointerup'||Math.hypot(x-tenu0.x0,y-tenu0.y0)>6){ dernierTap=null; return; }
+    if(e.type!=='pointerup'||tenu0.bouge||Math.hypot(x-tenu0.x,y-tenu0.y)>SEUIL_GLISSE){
+      dernierTap=null; return;
+    }
     if(pique){
       const ll=inverse(x,y,camera(geo())); if(!ll) return;
       ll.lat=+ll.lat.toFixed(5); ll.lng=+ll.lng.toFixed(5);
@@ -2392,6 +2481,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   };
   c.addEventListener('pointerup',relacher);
   c.addEventListener('pointercancel',relacher);
+  c.addEventListener('lostpointercapture',relacher);
   function viserZoom(k1,x,y){
     const proche=roue&&Math.hypot(roue.x-x,roue.y-y)<2;
     const ancre=proche?roue.ancre:inverse(x,y,camera(geo()));
@@ -2400,7 +2490,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   }
   c.addEventListener('wheel',e=>{
     const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
-    if(!dansDisque(x,y)) return;
+    if(!etat.on||!dansDisque(x,y)) return;
     e.preventDefault(); e.stopPropagation();
     if(!e.deltaY) return;
     annulerPosition(); trajet=null; repartition=null; etat.centre=true;
@@ -2408,6 +2498,11 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
     viserZoom((roue?.k??k)*Math.exp(-borner(pixels,-240,240)*.005),x,y);
   },{passive:false});
   window.addEventListener('resize',kick);
+  window.addEventListener('online',()=>{
+    for(const [cle,t] of tuiles) if(t.echec!=null) tuiles.delete(cle);
+    if(etat.on&&terre?.length===0){ terreP=null; chargerTerre(); }
+    kick();
+  });
   return {
     geo,
     ouvrir(){
@@ -2417,9 +2512,9 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       situer(); kick();
     },
     fermer(){
-      etat.on=false; interrompre(); tenu=null; pinch=null; ptrs.clear();
+      etat.on=false; interrompre(); relacherGeste();
       if(rq){ cancelAnimationFrame(rq); rq=0; }
-      c.classList.remove('is-tenu'); credit.hidden=true;
+      credit.hidden=true;
     },
     maj(){ if(etat.on) situer(); },
     rafraichir:kick, monde,
@@ -2516,6 +2611,7 @@ const LISTE = (() => {
   let L = [], io = null;
   function peindre(){
     const b = $('rdr-list'); if(!b) return;
+    const actif=b.contains(document.activeElement)?document.activeElement.dataset.cle:null;
     L = CLUBSP.items();
     etat.lignes = L.length;
     if(io){ io.disconnect(); io = null; }
@@ -2525,6 +2621,7 @@ const LISTE = (() => {
     b.innerHTML = '<p class="sfl">' + (POS && CLUBSP.scope === 'near' ? 'around me' : 'the club') + ' · ' + CLUBSP.nom + '</p>'
       + L.map((z, i) => '<article class="rl" data-cle="' + esc(String(z.id)) + '" data-i="' + i + '" tabindex="0" role="button" aria-label="'
         + esc(z.habit || 'spot') + '">' + boxSpot(z, true) + ligneSpot(z) + '</article>').join('');
+    if(actif) b.querySelector('[data-cle="'+CSS.escape(actif)+'"]')?.focus({preventScroll:true});
     const der = b.querySelector('.rl:last-child');
     if(der && CLUBSP.more){ io = new IntersectionObserver(es => { if(es.some(x => x.isIntersecting)) CLUBSP.suite(); },
       { root:$('v-radar'), rootMargin:'400px 0px' }); io.observe(der); }
@@ -2633,10 +2730,17 @@ function sfPaint(){
   }
 }
 function sfOpen(open){
-  const p = $('rdr-sf'); if(!p) return;
-  p.hidden = !open; document.body.classList.toggle('is-sf', !!open);
-  if(open){ p.scrollTop = 0; mesHabits().then(() => sfPaint()); } else radarOn();
-  sfPaint(); peindreBarre();
+  const p=$('rdr-sf'); if(p.hidden===!open) return;
+  p.hidden=!open; document.body.classList.toggle('is-sf',open);
+  peindreBarre();
+  if(open){
+    p.scrollTop=0; sfPaint();
+    p.querySelector('[data-sf="close"]').focus({preventScroll:true});
+    mesHabits().then(sfPaint);
+  }else{
+    radarOn();
+    $('rdr-flt').querySelector('[data-f="sf"]')?.focus({preventScroll:true});
+  }
 }
 function sfApply(tousTemps=false){
   if(SF.ou==='near'&&!POS) SF.geo='loading';
@@ -2674,8 +2778,16 @@ function sfApply(tousTemps=false){
     if(k === 'ou'){ SF.ou = v || ''; return sfApply(); }
     if(k === 'rayon'){ SF.rayon = +v || 50; return sfApply(); }
   });
-  p.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('.sfb[data-sf]');
-    if(t && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); t.click(); } });
+  p.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){
+      const touches=[...p.querySelectorAll('button:not(:disabled),[tabindex="0"]')].filter(b=>b.getClientRects().length);
+      const bord=e.shiftKey?touches.at(-1):touches[0];
+      if(e.target===(e.shiftKey?touches[0]:touches.at(-1))){ e.preventDefault(); bord?.focus(); }
+      return;
+    }
+    const t=e.target.closest?.('.sfb[data-sf]');
+    if(t&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); t.click(); }
+  });
 }
 
 /* ══ LE PASS DU SPOT — tools/spot_pass.js ══ */
@@ -2815,8 +2927,17 @@ function mediaHTML(z){
 }
 const DETAIL_BOX=$('detail');
 const GRAB='<button type="button" class="dt-grab" aria-label="Lower the spot"><i aria-hidden="true"></i></button>';
-let dtFlux=null, dtVue=null, dtSection=null;
+let dtFlux=null, dtVue=null, dtSection=null, dtRetourEnCours=false;
 const dtSpots=new Map();
+const historiqueSpot=()=>history.state?.clubShort||'';
+
+function noterSpotHistorique(id,remplacer=false){
+  const etat={...history.state,clubShort:String(id)};
+  try{
+    if(remplacer) history.replaceState(etat,'');
+    else history.pushState(etat,'');
+  }catch(_){}
+}
 
 function ajouterShorts(spots){
   for(const z of spots){
@@ -2842,6 +2963,7 @@ async function lireShort(sec){
   dtSection=sec;
   const z=dtSpots.get(sec.dataset.cle).spot;
   DETAIL=z; sec.inert=false;
+  if(historiqueSpot()&&historiqueSpot()!==String(z.id)) noterSpotHistorique(z.id,true);
   if(!sec.firstElementChild) sec.innerHTML='<div class="dt-info">'+spotHTML(z)+'</div>';
   if(z.clip?.id||z.photo||z.video){
     if(!sec.querySelector('.portrait-media')) sec.insertAdjacentHTML('afterbegin',mediaHTML(z));
@@ -2863,7 +2985,11 @@ async function lireShort(sec){
   }
 }
 function ouvrirDetail(z){
-  if(!DETAIL) DETAIL_RETOUR=document.activeElement;
+  if(dtRetourEnCours) return;
+  if(!DETAIL){
+    DETAIL_RETOUR=document.activeElement;
+    if(!historiqueSpot()) noterSpotHistorique(z.id);
+  }
   dtVue?.disconnect(); lacherShort(dtSection); dtSection=null;
   dtSpots.clear();
   DETAIL_BOX.style.removeProperty('--dy'); DETAIL_BOX.classList.remove('is-drag');
@@ -2893,7 +3019,7 @@ function retirerShort(id){
   dtVue.unobserve(sec); dtSpots.delete(id); sec.remove();
   dtFlux.scrollTop=dtSection.offsetTop;
 }
-function fermerDetail(){
+function fermerDetail(reculer=true){
   if(!DETAIL) return;
   PASS.fermer(); dtVue?.disconnect(); dtVue=null;
   lacherShort(dtSection); dtSection=null;
@@ -2902,12 +3028,38 @@ function fermerDetail(){
   if(DETAIL_RETOUR?.isConnected) DETAIL_RETOUR.focus({preventScroll:true});
   DETAIL_RETOUR=null;
   setTimeout(()=>{ if(!DETAIL) DETAIL_BOX.innerHTML=''; },340);
+  if(reculer&&historiqueSpot()){
+    dtRetourEnCours=true;
+    history.back();
+  }
 }
 function pasShort(dir){
   const sec=dir>0?dtSection?.nextElementSibling:dtSection?.previousElementSibling;
   if(sec) dtFlux.scrollTo({top:sec.offsetTop,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
 }
 addEventListener('resize',()=>{ if(dtFlux&&dtSection) dtFlux.scrollTop=dtSection.offsetTop; });
+addEventListener('popstate',()=>{
+  dtRetourEnCours=false;
+  const id=historiqueSpot();
+  if(!id){
+    if(DETAIL&&PASS.ouvert()){
+      PASS.fermer(); noterSpotHistorique(DETAIL.id);
+    }else fermerDetail(false);
+    return;
+  }
+  if(!DETAIL&&!NSPOT.ouvert()&&!sfOuvert()&&!CD.etat().ouvert) lireSpotHistorique(id,true);
+});
+async function lireSpotHistorique(id,rejoue=false){
+  const connu=rejoue&&CLUBSP.items().find(z=>String(z.id)===id);
+  if(connu){ ouvrirDetail(connu); return; }
+  const uid=me?.id, entree=historiqueSpot();
+  const {data,error}=await sb.rpc('spot_get',{p_id:id});
+  if(uid!==me?.id||entree!==historiqueSpot()||DETAIL||NSPOT.ouvert()||sfOuvert()||CD.etat().ouvert) return;
+  if(error){ console.error('[spot_get]',error.message); return; }
+  if(!data?.ok||!data.spot) return;
+  if(data.spot.format==='space') return ssoVersDomaine(sb,'space','https://www.totehm.space/?spot='+encodeURIComponent(id),true);
+  ouvrirDetail(data.spot);
+}
 function actsSay(button, text, creator){
   const n=button.closest('.dt-info')?.querySelector('.acts-note'); if(!n) return;
   n.hidden = false;
@@ -3008,7 +3160,7 @@ addEventListener('keydown',e=>{
     return;
   }
   if(!DETAIL||PASS.ouvert()||e.target.closest?.('video,textarea,input,.sd-say')) return;
-  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+  if(!e.altKey&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
     e.preventDefault(); pasShort(e.key==='ArrowDown'||e.key==='ArrowRight'?1:-1);
   }else if(e.key==='Tab'){
     const touches=[...DETAIL_BOX.querySelectorAll('button:not(:disabled),a[href],[tabindex="0"]')].filter(b=>!b.closest('[inert]'));
@@ -3109,8 +3261,14 @@ function rendrePrise(p,croix,rail,etape,contenu){
   const actif=p.contains(document.activeElement)?document.activeElement:null;
   const cible=actif&&actif.dataset;
   p.dataset.etapePrise=etape;
-  p.innerHTML=toucheFermer(croix)+rail+'<div class="take-stage'+(phase?' is-entering':'')+'" tabindex="-1">'+contenu+'</div>';
+  p.innerHTML=toucheFermer(croix)+rail+'<div class="take-stage'+(phase?' is-entering':'')
+    +'" role="group" tabindex="-1">'+contenu+'</div>';
   const stage=p.querySelector('.take-stage');
+  const onglet=p.querySelector('.take-rail [aria-current="step"]');
+  if(onglet){
+    onglet.id=p.id+'-current-step';
+    stage.setAttribute('aria-labelledby',onglet.id);
+  }
   if(phase){ p.scrollTop=0; stage.focus({preventScroll:true}); }
   else if(cible){
     const k=cible.nsi||cible.ns||cible.sf;
@@ -3271,17 +3429,18 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
   const diag={ouverts:0, publies:0, refus:0, medias:0, cartes:0, adresses:0};
   const ETAPES=[['media','Media'],['habit','Habit'],['when','When'],['where','Where'],
     ['access','Access'],['together','Together'],['duration','Duration'],['publish','Publish']];
-  let N;
+  let N, retour=null;
   const pan=()=>$('rdr-new');
   const pad=n=>String(n).padStart(2,'0');
   const dureeTxt=d=>d<60?d+' min':d%60?Math.floor(d/60)+' h '+(d%60):(d/60)+' h';
   function lacher(){ if(N?.media) URL.revokeObjectURL(N.media.url); if(N){ N.media=null; N.path=''; } }
   function neuf(){
+    N?.adrReq?.abort();
     lacher(); seqPos++;
     const d=new Date(Date.now()+864e5);
     N={etape:'media', mediaOk:false, mediaSeq:0, h:null, quand:'', media:null, path:'', aud:audienceFixe, boxBusy:false, confirmerBox:'', mode:'', ou:'',
       pt:null, ptSrc:'', ptVille:'', ptNom:'', posErr:false, posBusy:false,
-      adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0,
+      adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0, adrReq:null,
       dur:0, mot:'', date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),
       time:pad(d.getHours())+':'+pad(d.getMinutes()), place:'', occupe:false, note:''};
   }
@@ -3380,6 +3539,12 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
      par GESTE, jamais à la frappe (leur règle, et la nôtre : rien de systématique) ; chaque réponse est gardée.
      Injoignable, le refus se VOIT et le membre garde [here] ou la carte. */
   const ADR=new Map();
+  function oublierRecherche(){
+    N.adrSeq++;
+    N.adrReq?.abort();
+    N.adrReq=null;
+    N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr='';
+  }
   async function chercherAdresse(){
     const q=N.adr.trim();
     if(q.length<3){ N.adrErr='write the address first'; return peindre(); }
@@ -3388,18 +3553,26 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     N.adrBusy=true; N.adrErr=''; N.hits=[]; N.hit=-1; peindre();
     let l=ADR.get(k);
     if(!l){
+      const actif=new AbortController();
+      N.adrReq=actif;
+      const delai=setTimeout(()=>actif.abort(),8000);
       try{
         const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q='+encodeURIComponent(q),
-          {headers:{Accept:'application/json'}, referrerPolicy:'strict-origin-when-cross-origin'});
+          {headers:{Accept:'application/json'}, referrerPolicy:'strict-origin-when-cross-origin',signal:actif.signal});
         if(!r.ok) throw new Error('http '+r.status);
         const d=await r.json();
         l=(Array.isArray(d)?d:[]).map(x=>({lat:+x.lat, lng:+x.lon, nom:String(x.display_name||'').slice(0,160)}))
           .filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&x.lat>=-90&&x.lat<=90&&x.lng>=-180&&x.lng<=180);
         ADR.set(k,l); if(ADR.size>40) ADR.delete(ADR.keys().next().value);
       }catch(e){
-        console.error('[adresse]',e&&e.message||e);
-        if(draft===N&&s===N.adrSeq){ N.adrBusy=false; N.adrErr='addresses are unreachable · use here or the map'; peindre(); }
+        if(draft===N&&s===N.adrSeq){
+          console.error('[adresse]',e?.message||e);
+          N.adrBusy=false; N.adrErr='addresses are unreachable · use here or the map'; peindre();
+        }
         return;
+      }finally{
+        clearTimeout(delai);
+        if(N.adrReq===actif) N.adrReq=null;
       }
     }
     if(draft!==N||s!==N.adrSeq) return;
@@ -3413,6 +3586,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     carte.ouvrir();
     const draft=N;
     p.hidden=true; document.body.classList.add('rdr-pique'); diag.cartes++;
+    $('rdr-pique')?.focus({preventScroll:true});
     carte.moteur.piquer(ll=>{
       const revenir=()=>{
         if(draft!==N||!document.body.classList.contains('is-nspot')) return;
@@ -3420,6 +3594,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
         carte.fermer?.();
         p.hidden=false;
         peindre();
+        p.querySelector('[data-ns="carte"]')?.focus({preventScroll:true});
       };
       if(!ll){ revenir(); return; }
       poser(ll,'carte','');
@@ -3476,7 +3651,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     let c=now?'<span class="sfc ns-c is-on">here<small>my position</small></span>'
       :chip('data-ns="ou" data-v="ici"','here',N.ou==='ici','my position')
        +chip('data-ns="ou" data-v="ailleurs"','elsewhere',N.ou==='ailleurs','an address');
-    if(N.pt) c+=tag(N.ptVille||N.ptNom.split(',')[0].trim()||'the exact point');
+    if(N.pt) c+='<span class="ns-tag" data-ns-point>'+esc(N.ptVille||N.ptNom.split(',')[0].trim()||'the exact point')+'</span>';
     else if(N.ou==='ici'||now) c+=N.posErr?tag('allow my location')+chip('data-ns="retry"','try again',false):tag('finding my place…');
     let h=grp(now?'my position':'choose a place',c);
     if(N.ou==='ailleurs') h+=adresseHTML();
@@ -3490,7 +3665,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
       +' placeholder="street, number, city" aria-label="The address" data-nsi="adr" value="'+esc(N.adr)+'">'
       +'<button type="button" class="sfc" data-ns="find"'+(N.adrBusy?' disabled':'')+'>'+(N.adrBusy?'reading…':'read it')+'</button>'
       +'</div>';
-    if(N.adrErr) h+='<p class="lv-note">'+esc(N.adrErr)+'</p>';
+    if(N.adrErr) h+='<p class="lv-note" data-ns-address-error role="status">'+esc(N.adrErr)+'</p>';
     if(N.hits.length) h+='<div class="ns-hits">'+N.hits.map((x,i)=>'<button type="button" class="ns-hit'+(N.hit===i?' is-on':'')
       +'" data-ns="hit" data-v="'+i+'">'+esc(x.nom)+'</button>').join('')+'</div>';
     h+='</div>';
@@ -3635,6 +3810,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
   function ouvrir(x,dejaPris=false){
     const p=pan(); if(!p||N.occupe) return false;
     if(!autorise()){ connexion?.(); return false; }
+    if(p.hidden&&!carte.moteur.pique()) retour=document.activeElement;
     if(CAP.dans(p)) CAP.fermer();
     if(carte.moteur.pique()) carte.moteur.piquer(null);
     neuf(); lireRegles(); VID.dispo();
@@ -3660,10 +3836,34 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     carte.fermer?.();
     if(CAP.dans(p)) CAP.fermer();
     p.hidden=true; p.innerHTML=''; carte.moteur.epingler(null); neuf();
+    if(retour!==document.body&&retour?.getClientRects().length) retour.focus({preventScroll:true});
+    retour=null;
   }
   /* Changer de temps ou de lieu REND le lieu : « now » reprend ma position, « elsewhere » repart de l'adresse. */
-  function oublierLieu(){ seqPos++; N.adrSeq++; N.pt=null; N.ptSrc=''; N.ptVille=''; N.ptNom=''; N.posErr=false;
-    N.posBusy=false; N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr=''; N.place=''; carte.moteur.epingler(null); }
+  function effacerPoint(){
+    seqPos++; N.pt=null; N.ptSrc=''; N.ptVille=''; N.ptNom=''; N.place='';
+    carte.moteur.epingler(null);
+  }
+  function oublierLieu(){
+    effacerPoint(); oublierRecherche(); N.posErr=false; N.posBusy=false;
+  }
+  function modifierAdresse(p,valeur){
+    const change=N.adr.trim()!==valeur.trim();
+    N.adr=valeur;
+    if(!change) return;
+    oublierRecherche();
+    p.querySelector('.ns-hits')?.remove();
+    p.querySelector('[data-ns-address-error]')?.remove();
+    const lire=p.querySelector('[data-ns="find"]');
+    lire.disabled=false; lire.textContent='read it';
+    // Le clavier doit rester sur l'adresse pendant la frappe.
+    if(N.ptSrc==='adresse'){
+      effacerPoint();
+      p.querySelector('[data-ns-point]')?.remove();
+      p.querySelector('[data-nsi="place"]')?.parentElement.remove();
+      actualiserSuite();
+    }
+  }
   { const p=pan(); if(p){
     p.addEventListener('click',e=>{
       const t=e.target.closest('[data-ns]'); if(!t) return;
@@ -3722,7 +3922,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
       const k=f.dataset.nsi;
       if(k==='mot') N.mot=f.value;
       else if(k==='place') N.place=f.value;
-      else if(k==='adr'){ N.adr=f.value; N.adrErr=''; }
+      else if(k==='adr') modifierAdresse(p,f.value);
       else if(k==='date'||k==='time'||k==='dur'){
         N[k]=k==='dur'?(f.valueAsNumber||0):f.value;
         if(k==='dur') p.querySelectorAll('[data-ns="dur"]').forEach(b=>{
@@ -3740,9 +3940,21 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
   } }
   { const b=$('rdr-pique'); if(b) b.addEventListener('click',()=>carte.moteur.piquer(null)); }
   window.addEventListener('keydown',e=>{
+    const p=pan(), pique=carte.moteur.pique();
+    if(e.key==='Tab'&&(pique||(p&&!p.hidden))){
+      const h=pique?$('rdr-choix-carte'):p;
+      const touches=(h?[...h.querySelectorAll('button,input,textarea,video[controls],[tabindex="0"]')]:[$('rdr-pique')])
+        .filter(b=>b?.tabIndex>=0&&!b.disabled&&b.getClientRects().length&&getComputedStyle(b).visibility!=='hidden');
+      const i=touches.indexOf(document.activeElement);
+      if(i<0||(e.shiftKey?i===0:i===touches.length-1)){
+        e.preventDefault();
+        (touches[e.shiftKey?touches.length-1:0]||p.querySelector('.take-stage'))?.focus({preventScroll:true});
+      }
+      return;
+    }
     if(e.key!=='Escape') return;
-    if(carte.moteur.pique()){ e.preventDefault(); e.stopImmediatePropagation(); carte.moteur.piquer(null); return; }
-    const p=pan(); if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); if(!N.occupe) fermer(); }
+    if(pique){ e.preventDefault(); e.stopImmediatePropagation(); carte.moteur.piquer(null); return; }
+    if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); if(!N.occupe) fermer(); }
   },{capture:true});
   /* 25/11 — la PRISE RAPIDE : le média est déjà pris, le questionnaire s'ouvre dessus */
   async function prise(f){
@@ -3825,6 +4037,7 @@ function peindreMode(){
   sel.setAttribute('aria-label',grille?'Radar view':'Grid view');
   if(grille) GRID.peindre();
   else{ radarOn(); LISTE.peindre(); }
+  if(grille) syncPositionRadar();
   document.body.classList.toggle('is-scrolled',!grille&&$('v-radar').scrollTop>40);
 }
 $('rdr-select').addEventListener('click',()=>MODE.set(MODE.get()==='grid'?'radar':'grid'));
@@ -3859,16 +4072,9 @@ async function boot(){
   paintMember(); peindreMode(); peindreBarre();
   DEMARRE = true;
   await CLUBSP.lire();
-  /* Un lien partagé (`?spot=…`) ouvre CE spot, quels que soient les filtres. */
-  const p = new URLSearchParams(location.search);
-  if(p.get('spot')){
-    const { data, error } = await sb.rpc('spot_get', { p_id:p.get('spot') });
-    if(error) console.error('[spot_get]', error.message);
-    else if(data?.ok && data.spot){
-      if(data.spot.format === 'space') return ssoVersDomaine(sb, 'space', 'https://www.totehm.space/?spot=' + encodeURIComponent(p.get('spot')), true);
-      ouvrirDetail(data.spot);
-    }
-  }
+  /* Un lien partagé ouvre ce spot, même s'il est absent de la grille. */
+  const id=historiqueSpot()||new URLSearchParams(location.search).get('spot');
+  if(id) await lireSpotHistorique(id);
 }
 sb.auth.onAuthStateChange((ev, s) => {
   if(!DEMARRE) return;
@@ -3880,7 +4086,10 @@ sb.auth.onAuthStateChange((ev, s) => {
   paintMember(); peindreMode(); CLUBSP.lire();
   if(me) sb.from('profiles').select('pseudo').eq('id', me.id).maybeSingle().then(({data}) => { PSEUDO = data?.pseudo || null; paintMember(); });
 });
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ CLUBSP.ouvrir(); radarOn(); } });
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden){ CLUBSP.ouvrir(); radarOn(); }
+  else syncPositionRadar();
+});
 boot();
 </script>
 <script>

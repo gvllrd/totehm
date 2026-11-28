@@ -13,13 +13,19 @@ const spot=(id,habit,state)=>({id,habit,state,creator:'studio',mine:true,audienc
 try{
  for(const [nom,viewport,hasTouch] of [['mobile',{width:390,height:844},true],['ordinateur',{width:1280,height:800},false]]){
   const persisted={};
+  let restituerOrdre;
+  const attenteOrdre=new Promise(resolve=>{ restituerOrdre=resolve; });
   const {pg,ctx,log}=await page(browser,{dir:'com',origin,viewport,hasTouch,
     tables:{profiles:[{pseudo:'studio'}],totehms:[{user_id:USER.id,habits:[habit('Read'),habit('Walk')],vis:'private'}]},
     rpc:{
       my_landing:{signed_in:true,pseudo:'studio'},
       my_totehm:{signed_in:true,objectives:[],repulsions:[],stories:[],visions:[]},
       element_media_list:{ok:true,items:[media('1','Read','image/jpeg','photo.jpg'),media('2','Walk','application/pdf','route.pdf'),media('3','Read','audio/mpeg','audio.mp3')]},
-      my_grid_orders:()=>({ok:true,orders:persisted}),
+      my_grid_orders:async()=>{
+        await attenteOrdre;
+        return {ok:true,orders:persisted};
+      },
+      element_media_remove:{ok:false,why:'retry'},
       grid_order_set:b=>{
         const revision=(persisted[b.p_kind]?.revision||0)+1;
         persisted[b.p_kind]={refs:b.p_refs,revision};
@@ -39,11 +45,31 @@ try{
   const cols=await pg.locator('#lv-sh-f .tlg').evaluate(e=>getComputedStyle(e).gridTemplateColumns.split(' ').length);
   ok(cols===(hasTouch?2:5)&&await pg.locator('#lv-sh-f .tlg > :first-child').getAttribute('aria-label')==='Add a media',
     nom+' · grille de médias redimensionnée avec le plus en tête');
+  const loupeGrille=pg.locator('#lv-sh-f [data-order-id="em:1"] .loupe');
+  if(hasTouch) await loupeGrille.tap(); else await loupeGrille.click();
+  ok(await loupeGrille.getAttribute('aria-pressed')==='true'&&await pg.locator('#tlv').isHidden(),
+    nom+' · la loupe de la grille agrandit la box sur place');
+  await loupeGrille.press('Space');
+  ok(await loupeGrille.getAttribute('aria-pressed')==='false',nom+' · la loupe rend la box au clavier');
   await pg.locator('#lv-sh-f [data-order-id="em:2"]').click();
   const lien=pg.getByRole('link',{name:'Open file',exact:true});
   await lien.waitFor();
   ok(!!await lien.getAttribute('href'),nom+' · un PDF s’ouvre depuis sa tuile');
+  persisted.media={refs:['em:1','em:3','em:2'],revision:1};
+  restituerOrdre();
+  await pg.waitForFunction(()=>document.querySelectorAll('#lv-sh-f [data-order-id]')[1]?.dataset.orderId==='em:3');
+  const fiche=pg.locator('#tlv .tlv-s:not([inert])');
+  await fiche.getByText('Manage media',{exact:true}).click();
+  await fiche.getByRole('button',{name:'delete',exact:true}).click();
+  await fiche.getByRole('button',{name:'delete?',exact:true}).click();
+  await fiche.getByText('Couldn’t remove this media. Try again.',{exact:true}).waitFor();
+  ok(await lien.isVisible()&&(await visibleOrders('#lv-sh-f')).includes('em:2')
+    &&log.rpc.filter(r=>r.name==='element_media_remove').map(r=>r.body.p_id).join()==='2'
+    &&!log.upload.some(r=>r.method==='DELETE'),
+    nom+' · le classement peut se charger dans le fond. Le retrait vise le PDF ouvert et un refus le laisse visible');
   await pg.locator('#tlv [data-tlv="x"]').click();
+  ok(await pg.evaluate(()=>document.activeElement.dataset.orderId==='em:2'),
+    nom+' · fermer rend le focus à la même tuile après réorganisation');
 
   await pg.click('#lv-sh-sort');
   await pg.locator('#lv-sh-f [data-order-id="em:3"]').click();

@@ -31,15 +31,30 @@ const browser=await launch();
 try{
  for(const [nom,vp,tel] of [['téléphone',{width:390,height:844},true],['ordinateur',{width:1280,height:800},false]]){
   PASSES=[{pseudo:'nia',code:'AB23CD',at:new Date(now).toISOString()}];
+  let panneCarte=!tel;
+  const tuilesEnEchec=new Set(), tuilesRelues=new Set();
   const {pg,ctx,log}=await page(browser,{dir:'com',origin:'https://www.totehm.com',viewport:vp,hasTouch:tel,rpc:RPC,
     geo:{latitude:38.75,longitude:-9.14},
-    network:url=>url.hostname==='tile.openstreetmap.org'?{status:200,contentType:'image/png',body:TUILE}:null,
+    network:url=>{
+      if(url.hostname!=='tile.openstreetmap.org') return null;
+      if(panneCarte){ tuilesEnEchec.add(url.pathname); return {status:503,body:''}; }
+      if(tuilesEnEchec.has(url.pathname)) tuilesRelues.add(url.pathname);
+      return {status:200,contentType:'image/png',body:TUILE};
+    },
     functions:{'creator-cut-off':b=>{ PASSES=PASSES.filter(x=>x.pseudo!==b.pseudo); return {ok:true,pseudo:b.pseudo}; }},
     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
   await pg.goto('https://www.totehm.com/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(900);
   await pg.click('#lvn-rt');
-  await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom>400&&window.__totehm_rdr().club.items===6);
+  await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom===455.07&&window.__totehm_rdr().club.items===6);
+  if(!tel){
+    await pg.waitForTimeout(200);
+    ok(tuilesEnEchec.size>0&&!await pg.locator('#rdr-map-credit').isVisible(),
+      nom+' · le globe garde son fond de secours si les tuiles sont indisponibles');
+    panneCarte=false;
+    await pg.evaluate(()=>window.dispatchEvent(new Event('online')));
+  }
   await pg.waitForSelector('#rdr-map-credit:not([hidden])');
+  if(!tel) ok(tuilesRelues.size>0,nom+' · le retour du réseau recharge les tuiles au même endroit');
   const requetes=log.rpc.filter(r=>r.name==='club_spots_of').map(r=>r.body);
   const carte=await pg.evaluate(()=>window.__totehm_rdr().carte);
   ok(carte.points===5&&carte.groupes===1&&carte.villes===1&&await pg.locator('#rdr-map-credit').isVisible()
@@ -62,6 +77,17 @@ try{
     for(let i=0;i<6;i++) await pg.mouse.wheel(0,240);
     await pg.waitForFunction(()=>window.__totehm_rdr().carte.zoom<1.01);
     ok(await pg.evaluate(()=>new Set(window.__zoomVu).size>12),nom+' · le dézoom du trackpad passe par des échelles intermédiaires');
+    const [sx,sy]=(await pg.evaluate(()=>window.__totehm_carte()))[0];
+    await pg.mouse.move(sx,sy);
+    await pg.mouse.down();
+    await pg.mouse.move(sx+45,sy+25,{steps:5});
+    await pg.mouse.move(sx,sy,{steps:5});
+    await pg.mouse.up();
+    await pg.waitForTimeout(180);
+    ok(await pg.evaluate(()=>{
+      const r=window.__totehm_rdr();
+      return !r.voit&&r.carte.zoom===1;
+    }),nom+' · un glissé aller-retour ne se transforme pas en appui');
   }
   await tap((await pg.evaluate(()=>window.__totehm_carte()))[0]);
   await pg.waitForFunction(nb=>{
@@ -92,6 +118,12 @@ try{
       await doigt.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:points(ecart)});
       await pg.waitForTimeout(18);
     }
+    await doigt.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[points(21)[1]]});
+    const tours=await pg.evaluate(()=>window.__totehm_rdr().carte.tours||0);
+    await doigt.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{id:1,x:x-40,y:y+28}]});
+    await pg.waitForTimeout(50);
+    ok(await pg.evaluate(n=>window.__totehm_rdr().carte.tours>n,tours),
+      nom+' · le doigt restant reprend le glissé dans le même geste');
     await doigt.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
     await pg.waitForFunction(k=>window.__totehm_rdr().carte.zoom<k*.5,zoomInitial,{timeout:4000});
     ok(true,nom+' · le pincement réduit l’échelle de la carte');
@@ -219,7 +251,8 @@ try{
   await pg.keyboard.press('Escape');await pg.waitForTimeout(800);
   const g=await pg.evaluate(()=>({voit:document.body.classList.contains('rdr-voir'),mode:window.__totehm_lv().spots.mode}));
   ok(!g.voit&&g.mode==='grid',nom+' · refermer les Shorts rend la grille → '+JSON.stringify(g));
-  ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,nom+' · aucune erreur '+log.errors.join(' | '));
+  const erreurs=log.errors.filter(e=>e.startsWith('pageerror'));
+  ok(!erreurs.length,nom+' · aucune exception JavaScript '+erreurs.join(' | '));
   await pg.context().close();
  }
 }finally{await browser.close();}

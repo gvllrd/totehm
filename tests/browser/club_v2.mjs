@@ -83,6 +83,7 @@ try{
     ok(log.functions.some(f=>f.name==='bunny-video')&&!await pg.locator('#v-shorts').count(),
       nom+' · la vidéo est signée depuis la fiche de la grille');
     if(tel){
+      await pg.waitForFunction(()=>Math.abs(document.getElementById('detail').getBoundingClientRect().top)<1);
       const doigt=await pg.context().newCDPSession(pg), x=vp.width/2;
       const glisse=(type,y)=>doigt.send('Input.dispatchTouchEvent',{type,touchPoints:y?[{x,y}]:[]});
       await glisse('touchStart',150);
@@ -105,6 +106,74 @@ try{
        nom+' · la vidéo part chez Bunny par TUS ('+(log.tus||[]).join(' · ')+') ; le spot la porte (« '+(cr&&cr.body.p_video)+' »), FIGHER CLUB');
     ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));
     await pg.context().close();
+  }
+  // Le GPS suit le déplacement au Radar, puis se met en veille en quittant la vue.
+  {
+    const appels=[], {pg,ctx,log}=await page(browser,{dir:'club',origin,hasTouch:true,rpc:rpcs(appels,false)});
+    await ctx.addInitScript(()=>{
+      const gps=navigator.geolocation, suivre=gps.watchPosition.bind(gps), arreter=gps.clearWatch.bind(gps);
+      window.suivis=0;
+      gps.watchPosition=(...args)=>{ window.suivis++; return suivre(...args); };
+      gps.clearWatch=id=>{ window.suivis--; arreter(id); };
+    });
+    await pg.route('**/cities.json',r=>r.fulfill({status:200,contentType:'application/json',
+      body:JSON.stringify({cities:[['Lisbon',38.7223,-9.1393,1,'PT']]})}));
+    await pg.goto(origin+'/');
+    const premier=id=>pg.waitForFunction(x=>document.querySelector('#rdr-list .rl')?.dataset.cle===x,id,{timeout:6000});
+    await premier('pres');
+    ok(await pg.evaluate(()=>window.suivis===1),'le Radar n’a qu’un suivi GPS actif');
+    await ctx.setGeolocation({latitude:38.8,longitude:-9.2});
+    await premier('loin');
+    ok(appels.length===3&&appels.every(a=>a.p_lat===null&&a.p_lng===null),
+      'les spots se réordonnent après un déplacement dans le Radar, les requêtes mondiales restent sans coordonnées');
+    await pg.click('#rdr-select');
+    await pg.waitForFunction(()=>window.suivis===0);
+    await ctx.setGeolocation({latitude:38.7223,longitude:-9.1393});
+    await pg.click('#rdr-select');
+    await premier('pres');
+    ok(await pg.evaluate(()=>window.suivis===1),'le suivi GPS reprend en revenant au Radar');
+    await pg.click('#rdr-flt button');
+    await pg.waitForFunction(()=>window.suivis===0);
+    await pg.click('#rdr-sf [data-sf="etape"][data-v="where"]');
+    await pg.click('#rdr-sf [data-sf="ou"][data-v="near"]');
+    await pg.waitForFunction(()=>window.__totehm_club().ou==='near'&&!window.__totehm_club().club.charge);
+    await pg.click('#rdr-sf [data-sf="close"]');
+    await pg.waitForFunction(()=>window.suivis===1);
+    await pg.clock.setFixedTime(new Date(Date.now()+20000));
+    const nouvelleZone=pg.waitForResponse(r=>r.url().endsWith('/club_spots')&&r.request().postDataJSON().p_lat===38.8);
+    await ctx.setGeolocation({latitude:38.8,longitude:-9.2});
+    await nouvelleZone;
+    await premier('loin');
+    await pg.waitForFunction(()=>!window.__totehm_club().club.charge);
+    ok(appels.slice(-3).every(a=>a.p_filters.scope==='near'&&a.p_lat===38.8&&a.p_lng===-9.2),
+      'le périmètre Near me suit le déplacement avec une lecture groupée des temps');
+
+    const doigt=await ctx.newCDPSession(pg);
+    const geste=(type,y)=>doigt.send('Input.dispatchTouchEvent',{type,touchPoints:y?[{x:10,y}]:[]});
+    await pg.waitForFunction(()=>document.elementFromPoint(10,716)?.closest('#v-radar'));
+    await geste('touchStart',716);
+    for(const y of [667,617,552,472,405,344,282]){
+      await geste('touchMove',y);
+      await pg.waitForTimeout(20);
+    }
+    await geste('touchEnd');
+    await pg.waitForFunction(()=>document.getElementById('v-radar').scrollTop>100,null,{timeout:3000});
+    ok(true,'glisser hors du cadran défile vers la liste au toucher');
+
+    for(const viewport of [{width:320,height:568},{width:667,height:375}]){
+      await pg.setViewportSize(viewport);
+      await pg.evaluate(()=>document.getElementById('v-radar').scrollTo({top:0,behavior:'instant'}));
+      const accessible=await pg.waitForFunction(()=>{
+        const b=document.getElementById('rdr-down'), r=b.getBoundingClientRect();
+        const m=document.getElementById('rdr-mode').getBoundingClientRect();
+        return document.getElementById('v-radar').scrollTop===0&&r.bottom<innerHeight
+          &&(innerWidth>innerHeight?r.right<m.left:r.bottom<m.top)
+          &&b===document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+      },null,{timeout:3000});
+      ok(await accessible.jsonValue(),viewport.width+' × '+viewport.height+' · Spots et SELECT ont deux zones entièrement distinctes');
+    }
+    ok(!erreurs(log).length,'suivi et formats compacts · aucune erreur');
+    await ctx.close();
   }
   // ══ 2 bis · RIEN PRÈS DE MOI : tout le Club, et ça se DIT ; Bunny pas prêt : le seau `moments` ══
   { const appels=[];

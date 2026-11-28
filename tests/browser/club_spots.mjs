@@ -88,7 +88,18 @@ try{
   await pg.screenshot({path:OUT+'/club_grid_'+(tel?'tel':'ordi')+'.png'});
 
   // ══ 3 · LE FILTRE : une Habit choisie ouvre ses PARENTES ══
-  await clic(pg,'#rdr-flt button:last-child'); await pg.waitForTimeout(500);
+  const toucheRefine=pg.locator('#rdr-flt [data-f="sf"]');
+  await toucheRefine.click();
+  const actifFiltre=()=>pg.evaluate(()=>document.activeElement.dataset.sf);
+  const debut=await actifFiltre();
+  await pg.keyboard.press('Shift+Tab');
+  const fin=await actifFiltre();
+  await pg.keyboard.press('Tab');
+  ok(debut==='close'&&fin==='all'&&await actifFiltre()==='close',
+     nom+' · Refine reçoit immédiatement le focus et garde Tab dans le panneau');
+  await pg.keyboard.press('Escape');
+  ok(await toucheRefine.evaluate(b=>b===document.activeElement),nom+' · Échap rend le focus à Refine');
+  await toucheRefine.click(); await pg.waitForTimeout(500);
   const f0=await pg.evaluate(()=>({l:[...document.querySelectorAll('#rdr-sf .sf-nav button')].map(e=>e.textContent),
     h:[...document.querySelectorAll('#rdr-sf [data-sf="habit"] .v-name')].map(e=>e.textContent)}));
   /* le FILTRE, lui, garde toutes mes Habits : il cherche les spots des AUTRES par parenté — le niveau de MA
@@ -235,11 +246,20 @@ try{
   const ap=await pg.evaluate(()=>({detail:!!window.__totehm_club().detail, dy:document.getElementById('detail').style.getPropertyValue('--dy')}));
   ok(parseFloat(suit)>100&&!ap.detail&&!ap.dy,
      nom+' · on la descend au doigt : elle SUIT ('+suit+'), puis elle s\'en va sans rien laisser posé');
-  await pg.$eval('#rdr-g-f .tl[data-cle="a"]',e=>e.click());
+  const tuileShort=pg.locator('#rdr-g-f .tl[data-cle="a"]');
+  await tuileShort.click();
   await pg.waitForFunction(()=>window.__totehm_club().detail,null,{timeout:6000}).catch(()=>{});
-  await pg.waitForTimeout(400);
-  await pg.keyboard.press('Escape'); await pg.waitForTimeout(500);
-  ok(!(await etat(pg)).detail,nom+' · « précédent » referme le spot');
+  await pg.goBack();
+  await pg.waitForFunction(()=>window.__totehm_club?.().detail===false);
+  ok(pg.url()===origin+'/'&&(await etat(pg)).mode==='grid'
+    &&await tuileShort.evaluate(t=>t===document.activeElement),
+    nom+' · Retour navigateur referme le spot et retrouve sa tuile dans Grid');
+  await pg.goForward();
+  await pg.waitForFunction(()=>window.__totehm_club?.().detail);
+  ok(await actif.getAttribute('data-cle')==='a',nom+' · Avancer rouvre le même spot');
+  await pg.keyboard.press('Escape');
+  await pg.waitForFunction(()=>!history.state?.clubShort&&!window.__totehm_club().detail);
+  ok((await etat(pg)).mode==='grid',nom+' · Échap ferme le spot sans laisser une étape d’historique ouverte');
   ok(!erreurs(log).length,nom+' · aucune erreur '+erreurs(log).join(' | '));
   await pg.context().close();
  }

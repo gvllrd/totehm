@@ -38,8 +38,14 @@ try{
   const {pg,log}=await page(browser,{dir:'com',origin,viewport:vp,hasTouch:tel,rpc:RPC,
     tables:{profiles:[{pseudo:'wahigher'}],totehms:[{user_id:UID,habits:STEPS,vis:'private'}]}});
   await pg.route('**/cities.json',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(VILLES)}));
-  let geocodes=0;
-  await pg.route('**nominatim.openstreetmap.org/**',r=>{geocodes++;r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(ADRESSES)});});
+  let geocodes=0, finRetard, annoncerRetard;
+  const retardCommence=new Promise(ok=>{ annoncerRetard=ok; });
+  await pg.route('**nominatim.openstreetmap.org/**',async r=>{
+    geocodes++;
+    if(new URL(r.request().url()).searchParams.get('q')==='ancienne adresse')
+      await new Promise(ok=>{ finRetard=ok; annoncerRetard(); });
+    await r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(ADRESSES)});
+  });
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.click('#lvn-lf');await vers(pg,'g');
   await pg.getByRole('button',{name:'Add a media',exact:true}).click();
@@ -51,7 +57,13 @@ try{
   await pg.getByRole('button',{name:'Add a spot',exact:true}).click();
   await pg.waitForSelector('#rdr-new .ns-cap .cap-b');
   ok((await lv(pg)).vue==='d',nom+' · la touche Spot ouvre la prise dans la vue de droite');
-  await pg.click('#rdr-new [data-ns="close"]');
+  await pg.locator('#rdr-new [data-ns="skip"]').focus();
+  await pg.keyboard.press('Tab');
+  ok(await pg.locator('#rdr-new [data-ns="close"]').evaluate(b=>b===document.activeElement),
+    nom+' · Tab reste dans la prise et revient sur la croix');
+  await pg.keyboard.press('Escape');
+  ok(await pg.getByRole('button',{name:'Add a spot',exact:true}).evaluate(b=>b===document.activeElement),
+    nom+' · Échap rend le focus à la touche qui a ouvert la prise');
 
   // ══ 1 · NOW, depuis le « + » de la MAP ══
   const plus=pg.getByRole('button',{name:'Add a spot',exact:true});
@@ -188,6 +200,18 @@ try{
   await pg.locator('#rdr-new .ns-tag').filter({hasText:'Porto'}).waitFor({timeout:8000});
   ok(await pg.evaluate(()=>window.__totehm_nspot().ptSrc)==='adresse'&&await etape(pg)==='where',
     nom+' · l’adresse pose le point et la ville vient de cities.json');
+  const adresse=pg.locator('#rdr-new [data-nsi="adr"]');
+  await adresse.fill('ancienne adresse');
+  ok(await suite.isDisabled()&&!(await pg.locator('#rdr-new .ns-hit').count())&&await adresse.evaluate(b=>b===document.activeElement),
+    nom+' · éditer l’adresse retire le point périmé et garde le focus dans le champ');
+  await clic(pg,'#rdr-new [data-ns="find"]');
+  await retardCommence;
+  await adresse.fill('nouvelle adresse');
+  finRetard();
+  await pg.waitForTimeout(150);
+  ok(await suite.isDisabled()&&!(await pg.locator('#rdr-new .ns-hit').count())
+    &&await pg.locator('#rdr-new [data-ns="find"]').isEnabled(),
+    nom+' · une réponse en retard ne remplace pas la nouvelle adresse');
   // ── le même geste, sur la Terre ──
   await clic(pg,'#rdr-new [data-ns="carte"]');await pg.waitForTimeout(700);
   const pq=await pg.evaluate(()=>({cache:document.getElementById('rdr-new').hidden, pique:document.body.classList.contains('rdr-pique'),

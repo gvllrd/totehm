@@ -16,17 +16,18 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
   const diag={ouverts:0, publies:0, refus:0, medias:0, cartes:0, adresses:0};
   const ETAPES=[['media','Media'],['habit','Habit'],['when','When'],['where','Where'],
     ['access','Access'],['together','Together'],['duration','Duration'],['publish','Publish']];
-  let N;
+  let N, retour=null;
   const pan=()=>$('rdr-new');
   const pad=n=>String(n).padStart(2,'0');
   const dureeTxt=d=>d<60?d+' min':d%60?Math.floor(d/60)+' h '+(d%60):(d/60)+' h';
   function lacher(){ if(N?.media) URL.revokeObjectURL(N.media.url); if(N){ N.media=null; N.path=''; } }
   function neuf(){
+    N?.adrReq?.abort();
     lacher(); seqPos++;
     const d=new Date(Date.now()+864e5);
     N={etape:'media', mediaOk:false, mediaSeq:0, h:null, quand:'', media:null, path:'', aud:audienceFixe, boxBusy:false, confirmerBox:'', mode:'', ou:'',
       pt:null, ptSrc:'', ptVille:'', ptNom:'', posErr:false, posBusy:false,
-      adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0,
+      adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0, adrReq:null,
       dur:0, mot:'', date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),
       time:pad(d.getHours())+':'+pad(d.getMinutes()), place:'', occupe:false, note:''};
   }
@@ -125,6 +126,12 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
      par GESTE, jamais à la frappe (leur règle, et la nôtre : rien de systématique) ; chaque réponse est gardée.
      Injoignable, le refus se VOIT et le membre garde [here] ou la carte. */
   const ADR=new Map();
+  function oublierRecherche(){
+    N.adrSeq++;
+    N.adrReq?.abort();
+    N.adrReq=null;
+    N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr='';
+  }
   async function chercherAdresse(){
     const q=N.adr.trim();
     if(q.length<3){ N.adrErr='write the address first'; return peindre(); }
@@ -133,18 +140,26 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     N.adrBusy=true; N.adrErr=''; N.hits=[]; N.hit=-1; peindre();
     let l=ADR.get(k);
     if(!l){
+      const actif=new AbortController();
+      N.adrReq=actif;
+      const delai=setTimeout(()=>actif.abort(),8000);
       try{
         const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q='+encodeURIComponent(q),
-          {headers:{Accept:'application/json'}, referrerPolicy:'strict-origin-when-cross-origin'});
+          {headers:{Accept:'application/json'}, referrerPolicy:'strict-origin-when-cross-origin',signal:actif.signal});
         if(!r.ok) throw new Error('http '+r.status);
         const d=await r.json();
         l=(Array.isArray(d)?d:[]).map(x=>({lat:+x.lat, lng:+x.lon, nom:String(x.display_name||'').slice(0,160)}))
           .filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&x.lat>=-90&&x.lat<=90&&x.lng>=-180&&x.lng<=180);
         ADR.set(k,l); if(ADR.size>40) ADR.delete(ADR.keys().next().value);
       }catch(e){
-        console.error('[adresse]',e&&e.message||e);
-        if(draft===N&&s===N.adrSeq){ N.adrBusy=false; N.adrErr='addresses are unreachable · use here or the map'; peindre(); }
+        if(draft===N&&s===N.adrSeq){
+          console.error('[adresse]',e?.message||e);
+          N.adrBusy=false; N.adrErr='addresses are unreachable · use here or the map'; peindre();
+        }
         return;
+      }finally{
+        clearTimeout(delai);
+        if(N.adrReq===actif) N.adrReq=null;
       }
     }
     if(draft!==N||s!==N.adrSeq) return;
@@ -158,6 +173,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     carte.ouvrir();
     const draft=N;
     p.hidden=true; document.body.classList.add('rdr-pique'); diag.cartes++;
+    $('rdr-pique')?.focus({preventScroll:true});
     carte.moteur.piquer(ll=>{
       const revenir=()=>{
         if(draft!==N||!document.body.classList.contains('is-nspot')) return;
@@ -165,6 +181,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
         carte.fermer?.();
         p.hidden=false;
         peindre();
+        p.querySelector('[data-ns="carte"]')?.focus({preventScroll:true});
       };
       if(!ll){ revenir(); return; }
       poser(ll,'carte','');
@@ -221,7 +238,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     let c=now?'<span class="sfc ns-c is-on">here<small>my position</small></span>'
       :chip('data-ns="ou" data-v="ici"','here',N.ou==='ici','my position')
        +chip('data-ns="ou" data-v="ailleurs"','elsewhere',N.ou==='ailleurs','an address');
-    if(N.pt) c+=tag(N.ptVille||N.ptNom.split(',')[0].trim()||'the exact point');
+    if(N.pt) c+='<span class="ns-tag" data-ns-point>'+esc(N.ptVille||N.ptNom.split(',')[0].trim()||'the exact point')+'</span>';
     else if(N.ou==='ici'||now) c+=N.posErr?tag('allow my location')+chip('data-ns="retry"','try again',false):tag('finding my place…');
     let h=grp(now?'my position':'choose a place',c);
     if(N.ou==='ailleurs') h+=adresseHTML();
@@ -235,7 +252,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
       +' placeholder="street, number, city" aria-label="The address" data-nsi="adr" value="'+esc(N.adr)+'">'
       +'<button type="button" class="sfc" data-ns="find"'+(N.adrBusy?' disabled':'')+'>'+(N.adrBusy?'reading…':'read it')+'</button>'
       +'</div>';
-    if(N.adrErr) h+='<p class="lv-note">'+esc(N.adrErr)+'</p>';
+    if(N.adrErr) h+='<p class="lv-note" data-ns-address-error role="status">'+esc(N.adrErr)+'</p>';
     if(N.hits.length) h+='<div class="ns-hits">'+N.hits.map((x,i)=>'<button type="button" class="ns-hit'+(N.hit===i?' is-on':'')
       +'" data-ns="hit" data-v="'+i+'">'+esc(x.nom)+'</button>').join('')+'</div>';
     h+='</div>';
@@ -380,6 +397,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
   function ouvrir(x,dejaPris=false){
     const p=pan(); if(!p||N.occupe) return false;
     if(!autorise()){ connexion?.(); return false; }
+    if(p.hidden&&!carte.moteur.pique()) retour=document.activeElement;
     if(CAP.dans(p)) CAP.fermer();
     if(carte.moteur.pique()) carte.moteur.piquer(null);
     neuf(); lireRegles(); VID.dispo();
@@ -405,10 +423,34 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     carte.fermer?.();
     if(CAP.dans(p)) CAP.fermer();
     p.hidden=true; p.innerHTML=''; carte.moteur.epingler(null); neuf();
+    if(retour!==document.body&&retour?.getClientRects().length) retour.focus({preventScroll:true});
+    retour=null;
   }
   /* Changer de temps ou de lieu REND le lieu : « now » reprend ma position, « elsewhere » repart de l'adresse. */
-  function oublierLieu(){ seqPos++; N.adrSeq++; N.pt=null; N.ptSrc=''; N.ptVille=''; N.ptNom=''; N.posErr=false;
-    N.posBusy=false; N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr=''; N.place=''; carte.moteur.epingler(null); }
+  function effacerPoint(){
+    seqPos++; N.pt=null; N.ptSrc=''; N.ptVille=''; N.ptNom=''; N.place='';
+    carte.moteur.epingler(null);
+  }
+  function oublierLieu(){
+    effacerPoint(); oublierRecherche(); N.posErr=false; N.posBusy=false;
+  }
+  function modifierAdresse(p,valeur){
+    const change=N.adr.trim()!==valeur.trim();
+    N.adr=valeur;
+    if(!change) return;
+    oublierRecherche();
+    p.querySelector('.ns-hits')?.remove();
+    p.querySelector('[data-ns-address-error]')?.remove();
+    const lire=p.querySelector('[data-ns="find"]');
+    lire.disabled=false; lire.textContent='read it';
+    // Le clavier doit rester sur l'adresse pendant la frappe.
+    if(N.ptSrc==='adresse'){
+      effacerPoint();
+      p.querySelector('[data-ns-point]')?.remove();
+      p.querySelector('[data-nsi="place"]')?.parentElement.remove();
+      actualiserSuite();
+    }
+  }
   { const p=pan(); if(p){
     p.addEventListener('click',e=>{
       const t=e.target.closest('[data-ns]'); if(!t) return;
@@ -467,7 +509,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
       const k=f.dataset.nsi;
       if(k==='mot') N.mot=f.value;
       else if(k==='place') N.place=f.value;
-      else if(k==='adr'){ N.adr=f.value; N.adrErr=''; }
+      else if(k==='adr') modifierAdresse(p,f.value);
       else if(k==='date'||k==='time'||k==='dur'){
         N[k]=k==='dur'?(f.valueAsNumber||0):f.value;
         if(k==='dur') p.querySelectorAll('[data-ns="dur"]').forEach(b=>{
@@ -485,9 +527,21 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
   } }
   { const b=$('rdr-pique'); if(b) b.addEventListener('click',()=>carte.moteur.piquer(null)); }
   window.addEventListener('keydown',e=>{
+    const p=pan(), pique=carte.moteur.pique();
+    if(e.key==='Tab'&&(pique||(p&&!p.hidden))){
+      const h=pique?$('rdr-choix-carte'):p;
+      const touches=(h?[...h.querySelectorAll('button,input,textarea,video[controls],[tabindex="0"]')]:[$('rdr-pique')])
+        .filter(b=>b?.tabIndex>=0&&!b.disabled&&b.getClientRects().length&&getComputedStyle(b).visibility!=='hidden');
+      const i=touches.indexOf(document.activeElement);
+      if(i<0||(e.shiftKey?i===0:i===touches.length-1)){
+        e.preventDefault();
+        (touches[e.shiftKey?touches.length-1:0]||p.querySelector('.take-stage'))?.focus({preventScroll:true});
+      }
+      return;
+    }
     if(e.key!=='Escape') return;
-    if(carte.moteur.pique()){ e.preventDefault(); e.stopImmediatePropagation(); carte.moteur.piquer(null); return; }
-    const p=pan(); if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); if(!N.occupe) fermer(); }
+    if(pique){ e.preventDefault(); e.stopImmediatePropagation(); carte.moteur.piquer(null); return; }
+    if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); if(!N.occupe) fermer(); }
   },{capture:true});
   /* 25/11 — la PRISE RAPIDE : le média est déjà pris, le questionnaire s'ouvre dessus */
   async function prise(f){

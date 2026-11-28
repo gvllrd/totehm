@@ -2,6 +2,7 @@
 function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,position,groupesOuverts=()=>true}){
   const $=id=>document.getElementById(id);
   const D=Math.PI/180, TERRE_KM=6371, ZOOM_VILLE=TERRE_KM/14, ZOOM_MAX=4096, ZOOM_PLAN=6;
+  const SEUIL_GLISSE=6, DELAI_TUILE=15000;
   const etat={on:false, terres:0, points:0, groupes:0, repartis:0, villes:0, sans:0, zoom:1, centre:false, position:false};
   let terre=null, terreP=null, lon0=8, lat0=28, k=1, tenu=null, pinch=null, pts=[], lieux=[], seq=0, rq=0, pique=null, epingle=null;
   let geoSeq=0, geoAttente=false, ici=null, dernierTap=null, trajet=null, roue=null, zoomDoigt=null, repartition=null;
@@ -119,12 +120,13 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       if(fini) roue=null; else w.t=t;
     }
   }
-  function tuile(z,x,y,charger){
+  function tuile(z,x,y,charger,maintenant){
     const n=2**z, cle=z+'/'+((x%n+n)%n)+'/'+y;
     let t=tuiles.get(cle);
-    if(!t&&charger){
-      t={im:new Image(), at:null};
+    if(charger&&(!t||(t.echec!=null&&maintenant-t.echec>=DELAI_TUILE))){
+      t={im:new Image(), at:null, echec:null};
       t.im.referrerPolicy='strict-origin-when-cross-origin'; t.im.onload=()=>{ t.at=performance.now(); kick(); };
+      t.im.onerror=()=>{ t.echec=performance.now(); };
       t.im.src='https://tile.openstreetmap.org/'+cle+'.png';
       tuiles.set(cle,t);
       if(tuiles.size>180) tuiles.delete(tuiles.keys().next().value);
@@ -138,10 +140,10 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
     const x0=Math.floor(-dx/cote), x1=Math.ceil((w-dx)/cote)-1;
     const y0=Math.floor(-dy/cote), y1=Math.ceil((h-dy)/cote)-1;
     if(niveau!==z){ niveau=z; niveauDepuis=t; }
-    const charger=(!trajet&&!roue&&!pinch)||t-niveauDepuis>100;
+    const charger=navigator.onLine&&((!trajet&&!roue&&!pinch)||t-niveauDepuis>100);
     let peint=false, couvre=y0>=0&&y1<n, fondu=false;
     for(let y=Math.max(0,y0);y<=Math.min(n-1,y1);y++) for(let x=x0;x<=x1;x++){
-      const a=tuile(z,x,y,charger), alpha=a?.at!=null?(reduit.matches?1:borner((t-a.at)/135,0,1)):0;
+      const a=tuile(z,x,y,charger,t), alpha=a?.at!=null?(reduit.matches?1:borner((t-a.at)/135,0,1)):0;
       const l=dx+x*cote, top=dy+y*cote;
       let compte=alpha===1;
       if(alpha<1){
@@ -331,8 +333,8 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
 
   function monde(){
     const initial=k<=1.005&&Math.abs(lat0-28)<.01&&Math.abs(longitude(lon0-8))<.01;
-    if(!etat.on||pique||(!geoAttente&&!trajet&&!roue&&!zoomDoigt&&!repartition&&initial)) return false;
-    interrompre(); dernierTap=null; repartition=null; etat.centre=true;
+    if(!etat.on||pique||(!geoAttente&&!trajet&&!roue&&!repartition&&!ptrs.size&&initial)) return false;
+    interrompre(); relacherGeste(); dernierTap=null; repartition=null; etat.centre=true;
     voler(28,8,1,620);
     return true;
   }
@@ -366,8 +368,14 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   }
 
   const c=cv();
+  function relacherGeste(){
+    const ids=[...ptrs.keys()];
+    ptrs.clear(); tenu=null; pinch=null;
+    c.classList.remove('is-tenu');
+    for(const id of ids) if(c.hasPointerCapture(id)) c.releasePointerCapture(id);
+  }
   c.addEventListener('pointerdown',e=>{
-    if(e.pointerType==='mouse'&&e.button!==0) return;
+    if(!etat.on||ptrs.size>=2||(e.pointerType==='mouse'&&e.button!==0)) return;
     const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
     if(!ptrs.size&&!dansDisque(x,y)){ etat.horsDisque=(etat.horsDisque||0)+1; return; }
     interrompre(); etat.centre=true; kick();
@@ -378,7 +386,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,k,ancre:inverse(gx,gy,camera(geo()))};
       tenu=null; dernierTap=null; repartition=null; return;
     }
-    tenu={id:e.pointerId,x,y,x0:x,y0:y}; c.classList.add('is-tenu');
+    tenu={id:e.pointerId,x,y,bouge:false}; c.classList.add('is-tenu');
   });
   c.addEventListener('pointermove',e=>{
     if(!ptrs.has(e.pointerId)) return;
@@ -390,18 +398,31 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       kick(); return;
     }
     if(!tenu||tenu.id!==e.pointerId) return;
-    const g=camera(geo()), dx=x-tenu.x, dy=y-tenu.y;
-    if(Math.hypot(x-tenu.x0,y-tenu.y0)>6) repartition=null;
+    const dx=x-tenu.x, dy=y-tenu.y;
+    if(!tenu.bouge){
+      if(Math.hypot(dx,dy)<=SEUIL_GLISSE) return;
+      tenu.bouge=true; repartition=null; dernierTap=null;
+    }
+    const g=camera(geo());
     lon0=longitude(lon0-dx*360/g.echelle);
     lat0=latitude(lat0+(1-g.mix)*dy/(D*g.r)+g.mix*(latMerc(g.y-dy/g.echelle)-lat0));
     tenu.x=x; tenu.y=y; etat.tours=(etat.tours||0)+1; kick();
   });
   const relacher=e=>{
-    ptrs.delete(e.pointerId); c.classList.remove('is-tenu');
-    if(ptrs.size<2&&pinch){ pinch=null; kick(); }
+    if(!ptrs.delete(e.pointerId)) return;
+    if(pinch){
+      if(zoomDoigt) avancer(performance.now(),geo());
+      pinch=null;
+      const [id,p]=ptrs.entries().next().value;
+      tenu={id,x:p.x,y:p.y,bouge:true};
+      kick(); return;
+    }
+    c.classList.remove('is-tenu');
     if(!tenu||tenu.id!==e.pointerId) return; const tenu0=tenu; tenu=null;
     const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
-    if(e.type!=='pointerup'||Math.hypot(x-tenu0.x0,y-tenu0.y0)>6){ dernierTap=null; return; }
+    if(e.type!=='pointerup'||tenu0.bouge||Math.hypot(x-tenu0.x,y-tenu0.y)>SEUIL_GLISSE){
+      dernierTap=null; return;
+    }
     if(pique){
       const ll=inverse(x,y,camera(geo())); if(!ll) return;
       ll.lat=+ll.lat.toFixed(5); ll.lng=+ll.lng.toFixed(5);
@@ -424,6 +445,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   };
   c.addEventListener('pointerup',relacher);
   c.addEventListener('pointercancel',relacher);
+  c.addEventListener('lostpointercapture',relacher);
   function viserZoom(k1,x,y){
     const proche=roue&&Math.hypot(roue.x-x,roue.y-y)<2;
     const ancre=proche?roue.ancre:inverse(x,y,camera(geo()));
@@ -432,7 +454,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   }
   c.addEventListener('wheel',e=>{
     const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
-    if(!dansDisque(x,y)) return;
+    if(!etat.on||!dansDisque(x,y)) return;
     e.preventDefault(); e.stopPropagation();
     if(!e.deltaY) return;
     annulerPosition(); trajet=null; repartition=null; etat.centre=true;
@@ -440,6 +462,11 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
     viserZoom((roue?.k??k)*Math.exp(-borner(pixels,-240,240)*.005),x,y);
   },{passive:false});
   window.addEventListener('resize',kick);
+  window.addEventListener('online',()=>{
+    for(const [cle,t] of tuiles) if(t.echec!=null) tuiles.delete(cle);
+    if(etat.on&&terre?.length===0){ terreP=null; chargerTerre(); }
+    kick();
+  });
   return {
     geo,
     ouvrir(){
@@ -449,9 +476,9 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       situer(); kick();
     },
     fermer(){
-      etat.on=false; interrompre(); tenu=null; pinch=null; ptrs.clear();
+      etat.on=false; interrompre(); relacherGeste();
       if(rq){ cancelAnimationFrame(rq); rq=0; }
-      c.classList.remove('is-tenu'); credit.hidden=true;
+      credit.hidden=true;
     },
     maj(){ if(etat.on) situer(); },
     rafraichir:kick, monde,

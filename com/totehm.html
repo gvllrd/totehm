@@ -3594,6 +3594,8 @@ body.lv-b #gate-logo #gl-rail,body.lv-b #gate-logo #gl-wm{opacity:0}
 .tlv-m img[src],.tlv-m video[src],.tlv-m video[poster]{opacity:1}
 .tlv-b{display:flex;flex-direction:column;align-items:center;gap:7px;padding:0 16px;max-width:min(100%,560px)}
 .tlv-b:empty{display:none}
+.tlv-note:empty,.mf-note:empty{display:none}
+.tlv-note{margin:6px 0;padding:5px 8px;background:#15151a;color:#dddde6;text-align:center}
 .tlv-l{font:700 8.5px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
 .tlv-l i{font-style:normal}
 .view-close{width:38px;height:38px;padding:0;border:0;border-radius:9px;
@@ -3645,6 +3647,9 @@ body.is-tlv :is(#gate-asteroid,#lvjoy){opacity:0;visibility:hidden;pointer-event
 #lv-sh .tl-bx{z-index:1}
 .tl-bx .habit .h-body{padding:4px 7px 4px 8px}
 .tl-bx .v-name{font-size:10.5px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding-right:0}
+#lv-sh .tl-bx:has(.loupe) .v-name{padding-right:25px}
+#lv-sh .tl-bx .loupe{pointer-events:auto}
+#lv-sh.is-ordering .tl-bx .loupe{visibility:hidden}
 @media(min-width:700px){.tl-bx{left:9px;bottom:9px;max-width:calc(100% - 18px)}.tl-bx .v-name{font-size:12.5px}}
 .tl:focus-visible{outline:2px solid #fff;outline-offset:-2px}
 /* La box choisie, REMISE en tête des résultats, sur toute la largeur. */
@@ -3751,6 +3756,11 @@ body.papier-haut #gate-asteroid{transition:opacity .25s ease}
 .ssp-info{position:absolute;left:50%;transform:translate(-50%,var(--dy,0px));transition:transform .38s cubic-bezier(.22,.9,.3,1);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 18px);z-index:1;
   width:min(calc(100vw - 32px),520px);display:flex;flex-direction:column;gap:7px}
 .ssp-s.is-nu .ssp-info{bottom:auto;top:50%;transform:translate(-50%,-50%)}
+.tlv-b,.ssp-info{
+  max-height:calc(100% - max(10px,env(safe-area-inset-top)) - max(14px,env(safe-area-inset-bottom)) - 68px);
+  overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+}
+.ssp-info>*{flex-shrink:0}
 .ssp-box{box-shadow:0 14px 34px rgba(0,0,0,.7)}
 .ssp-box[role=button]{cursor:pointer}
 .ssp-box:focus-visible{outline:1px solid #fff;outline-offset:2px}
@@ -4055,6 +4065,7 @@ body.lv-d.rdr-voir :is(#gate-asteroid,#lvjoy,#rdr-flt){opacity:0;visibility:hidd
 .lsh-sf .take-stage .sfl{color:#a6a6b3;font-size:10px}
 .take-stage .sfc.is-on{border-radius:0;background:#28283d;box-shadow:inset 0 -2px var(--rail-color)}
 .take-stage :is(.ns-hit,.ns-in,[data-ns="find"]){min-height:40px;border-radius:0}
+@media(pointer:coarse){.take-stage .ns-in{font-size:16px}}
 .take-stage>.lv-note:empty{display:none}
 .take-stage .ns-c{min-height:42px;border-radius:0}
 .take-stage .sfr{gap:7px}
@@ -4611,6 +4622,7 @@ div:not(:has(> :not(br,wbr))):hover,
 .tl-time:hover,
 .tl-file:hover,
 .tlv-file:hover,
+.tlv-note:hover,
 .tlv-l:hover,
 .view-close:hover,
 #spass .sp-k:hover,
@@ -6217,7 +6229,7 @@ function groupeCloths(k,x,ouverte){
    est À MOI (une Habit par son TEXTE serveur — la clé de `habit_rename_links` —, le reste par son id) et lit la
    taille et le type dans le stockage. Retirer = un marquage serveur, puis le fichier effacé de MON dossier.
    Publier reste le geste de SPACE (« + a space ») et ses quatre niveaux. */
-const EMEDIA={seq:0, items:[], par:new Map(), charge:false, erreur:false};
+const EMEDIA={seq:0, items:[], par:new Map(), retraits:new Map(), charge:false, erreur:false};
 const EM_KIND={h:'h',t:'o',r:'r',w:'w',v:'v'};
 const EM_MIMES={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','video/mp4':'mp4','video/webm':'webm','video/quicktime':'mov',
   'application/pdf':'pdf','audio/mpeg':'mp3','audio/mp4':'m4a','audio/webm':'weba','audio/ogg':'ogg','text/plain':'txt'};
@@ -6280,7 +6292,8 @@ function fichiersHTML(kind,id){
       +'<button type="button" class="mf-x" data-emx="'+esc(String(m.id))+'" aria-label="Remove">&times;</button></span>').join('');
   /* 12/11 (Wah) : « à tous les [Add a media] je veux [Add a media to visualize it] » — le bouton dit ce
      qu'il DONNE (une visionneuse), pas ce qu'il range. */
-  return groupe(mots.groupe,puces+'<button type="button" class="dash" data-cap="'+esc(e.k+':'+e.ref)+'">'+mots.ajout+'</button>');
+  return groupe(mots.groupe,puces+'<button type="button" class="dash" data-cap="'+esc(e.k+':'+e.ref)+'">'+mots.ajout+'</button>'
+    +(puces?'<span class="mf-note" role="status"></span>':''));
 }
 /* Ouvrir un fichier : la fenêtre part DANS le geste (sinon le navigateur la bloque), l'URL signée la suit. */
 async function emOuvrir(id){
@@ -6291,13 +6304,28 @@ async function emOuvrir(id){
   if(w){ if(u) w.location.href=u; else w.close(); }
 }
 async function emRetirer(id){
-  if(RO||!me) return;
-  const m=EMEDIA.items.find(x=>String(x.id)===String(id)); if(!m) return;
-  const {data,error}=await sb.rpc('element_media_remove',{p_id:m.id});
-  if(error){ console.error('[element_media_remove]',error.message); return; }
-  if(!data?.ok) console.error('[element_media_remove]',data?.why);
-  if(data?.path){ const {error:er}=await sb.storage.from('element-media').remove([data.path,POSTER.cle(data.path)]); if(er) console.error('[element-media remove]',er.message); }
-  EMEDIA.items=EMEDIA.items.filter(x=>String(x.id)!==String(id)); emIndexer(); renderZone();
+  if(RO||!me) return false;
+  const cle=String(id), uid=me.id, enCours=EMEDIA.retraits.get(cle);
+  if(enCours) return enCours;
+  const m=EMEDIA.items.find(x=>String(x.id)===cle); if(!m) return false;
+  const retrait=(async()=>{
+    const {data,error}=await sb.rpc('element_media_remove',{p_id:m.id});
+    if(error||!data?.ok){ console.error('[element_media_remove]',error?.message||data?.why); return false; }
+    if(me?.id!==uid) return false;
+    EMEDIA.seq++;  /* Une lecture partie avant le retrait ne peut pas remettre le fichier dans la grille. */
+    SIGNE_EM.delete(uid+':'+m.path);
+    EMEDIA.items=EMEDIA.items.filter(x=>String(x.id)!==cle); emIndexer(); renderZone();
+    if(data.path){
+      try{
+        const {error}=await sb.storage.from('element-media').remove([data.path,POSTER.cle(data.path)]);
+        if(error) console.error('[element-media remove]',error.message);
+      }catch(e){ console.error('[element-media remove]',e?.message||e); }
+    }
+    return true;
+  })().catch(e=>{ console.error('[element_media_remove]',e?.message||e); return false; })
+    .finally(()=>{ if(EMEDIA.retraits.get(cle)===retrait) EMEDIA.retraits.delete(cle); });
+  EMEDIA.retraits.set(cle,retrait);
+  return retrait;
 }
 /* Un élément supprimé emporte ses fichiers ; une Habit renommée les garde (`element_media_rekey`). */
 function emPurger(k,ref){ if(ref) mediasDe(k,ref).slice().forEach(m=>emRetirer(m.id)); }
@@ -6380,8 +6408,14 @@ function rendrePrise(p,croix,rail,etape,contenu){
   const actif=p.contains(document.activeElement)?document.activeElement:null;
   const cible=actif&&actif.dataset;
   p.dataset.etapePrise=etape;
-  p.innerHTML=toucheFermer(croix)+rail+'<div class="take-stage'+(phase?' is-entering':'')+'" tabindex="-1">'+contenu+'</div>';
+  p.innerHTML=toucheFermer(croix)+rail+'<div class="take-stage'+(phase?' is-entering':'')
+    +'" role="group" tabindex="-1">'+contenu+'</div>';
   const stage=p.querySelector('.take-stage');
+  const onglet=p.querySelector('.take-rail [aria-current="step"]');
+  if(onglet){
+    onglet.id=p.id+'-current-step';
+    stage.setAttribute('aria-labelledby',onglet.id);
+  }
   if(phase){ p.scrollTop=0; stage.focus({preventScroll:true}); }
   else if(cible){
     const k=cible.nsi||cible.ns||cible.sf;
@@ -6928,6 +6962,7 @@ const localisationCarte=creerLocalisation(), localisationPrise=creerLocalisation
 function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,position,groupesOuverts=()=>true}){
   const $=id=>document.getElementById(id);
   const D=Math.PI/180, TERRE_KM=6371, ZOOM_VILLE=TERRE_KM/14, ZOOM_MAX=4096, ZOOM_PLAN=6;
+  const SEUIL_GLISSE=6, DELAI_TUILE=15000;
   const etat={on:false, terres:0, points:0, groupes:0, repartis:0, villes:0, sans:0, zoom:1, centre:false, position:false};
   let terre=null, terreP=null, lon0=8, lat0=28, k=1, tenu=null, pinch=null, pts=[], lieux=[], seq=0, rq=0, pique=null, epingle=null;
   let geoSeq=0, geoAttente=false, ici=null, dernierTap=null, trajet=null, roue=null, zoomDoigt=null, repartition=null;
@@ -7045,12 +7080,13 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       if(fini) roue=null; else w.t=t;
     }
   }
-  function tuile(z,x,y,charger){
+  function tuile(z,x,y,charger,maintenant){
     const n=2**z, cle=z+'/'+((x%n+n)%n)+'/'+y;
     let t=tuiles.get(cle);
-    if(!t&&charger){
-      t={im:new Image(), at:null};
+    if(charger&&(!t||(t.echec!=null&&maintenant-t.echec>=DELAI_TUILE))){
+      t={im:new Image(), at:null, echec:null};
       t.im.referrerPolicy='strict-origin-when-cross-origin'; t.im.onload=()=>{ t.at=performance.now(); kick(); };
+      t.im.onerror=()=>{ t.echec=performance.now(); };
       t.im.src='https://tile.openstreetmap.org/'+cle+'.png';
       tuiles.set(cle,t);
       if(tuiles.size>180) tuiles.delete(tuiles.keys().next().value);
@@ -7064,10 +7100,10 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
     const x0=Math.floor(-dx/cote), x1=Math.ceil((w-dx)/cote)-1;
     const y0=Math.floor(-dy/cote), y1=Math.ceil((h-dy)/cote)-1;
     if(niveau!==z){ niveau=z; niveauDepuis=t; }
-    const charger=(!trajet&&!roue&&!pinch)||t-niveauDepuis>100;
+    const charger=navigator.onLine&&((!trajet&&!roue&&!pinch)||t-niveauDepuis>100);
     let peint=false, couvre=y0>=0&&y1<n, fondu=false;
     for(let y=Math.max(0,y0);y<=Math.min(n-1,y1);y++) for(let x=x0;x<=x1;x++){
-      const a=tuile(z,x,y,charger), alpha=a?.at!=null?(reduit.matches?1:borner((t-a.at)/135,0,1)):0;
+      const a=tuile(z,x,y,charger,t), alpha=a?.at!=null?(reduit.matches?1:borner((t-a.at)/135,0,1)):0;
       const l=dx+x*cote, top=dy+y*cote;
       let compte=alpha===1;
       if(alpha<1){
@@ -7257,8 +7293,8 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
 
   function monde(){
     const initial=k<=1.005&&Math.abs(lat0-28)<.01&&Math.abs(longitude(lon0-8))<.01;
-    if(!etat.on||pique||(!geoAttente&&!trajet&&!roue&&!zoomDoigt&&!repartition&&initial)) return false;
-    interrompre(); dernierTap=null; repartition=null; etat.centre=true;
+    if(!etat.on||pique||(!geoAttente&&!trajet&&!roue&&!repartition&&!ptrs.size&&initial)) return false;
+    interrompre(); relacherGeste(); dernierTap=null; repartition=null; etat.centre=true;
     voler(28,8,1,620);
     return true;
   }
@@ -7292,8 +7328,14 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   }
 
   const c=cv();
+  function relacherGeste(){
+    const ids=[...ptrs.keys()];
+    ptrs.clear(); tenu=null; pinch=null;
+    c.classList.remove('is-tenu');
+    for(const id of ids) if(c.hasPointerCapture(id)) c.releasePointerCapture(id);
+  }
   c.addEventListener('pointerdown',e=>{
-    if(e.pointerType==='mouse'&&e.button!==0) return;
+    if(!etat.on||ptrs.size>=2||(e.pointerType==='mouse'&&e.button!==0)) return;
     const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
     if(!ptrs.size&&!dansDisque(x,y)){ etat.horsDisque=(etat.horsDisque||0)+1; return; }
     interrompre(); etat.centre=true; kick();
@@ -7304,7 +7346,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,k,ancre:inverse(gx,gy,camera(geo()))};
       tenu=null; dernierTap=null; repartition=null; return;
     }
-    tenu={id:e.pointerId,x,y,x0:x,y0:y}; c.classList.add('is-tenu');
+    tenu={id:e.pointerId,x,y,bouge:false}; c.classList.add('is-tenu');
   });
   c.addEventListener('pointermove',e=>{
     if(!ptrs.has(e.pointerId)) return;
@@ -7316,18 +7358,31 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       kick(); return;
     }
     if(!tenu||tenu.id!==e.pointerId) return;
-    const g=camera(geo()), dx=x-tenu.x, dy=y-tenu.y;
-    if(Math.hypot(x-tenu.x0,y-tenu.y0)>6) repartition=null;
+    const dx=x-tenu.x, dy=y-tenu.y;
+    if(!tenu.bouge){
+      if(Math.hypot(dx,dy)<=SEUIL_GLISSE) return;
+      tenu.bouge=true; repartition=null; dernierTap=null;
+    }
+    const g=camera(geo());
     lon0=longitude(lon0-dx*360/g.echelle);
     lat0=latitude(lat0+(1-g.mix)*dy/(D*g.r)+g.mix*(latMerc(g.y-dy/g.echelle)-lat0));
     tenu.x=x; tenu.y=y; etat.tours=(etat.tours||0)+1; kick();
   });
   const relacher=e=>{
-    ptrs.delete(e.pointerId); c.classList.remove('is-tenu');
-    if(ptrs.size<2&&pinch){ pinch=null; kick(); }
+    if(!ptrs.delete(e.pointerId)) return;
+    if(pinch){
+      if(zoomDoigt) avancer(performance.now(),geo());
+      pinch=null;
+      const [id,p]=ptrs.entries().next().value;
+      tenu={id,x:p.x,y:p.y,bouge:true};
+      kick(); return;
+    }
+    c.classList.remove('is-tenu');
     if(!tenu||tenu.id!==e.pointerId) return; const tenu0=tenu; tenu=null;
     const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
-    if(e.type!=='pointerup'||Math.hypot(x-tenu0.x0,y-tenu0.y0)>6){ dernierTap=null; return; }
+    if(e.type!=='pointerup'||tenu0.bouge||Math.hypot(x-tenu0.x,y-tenu0.y)>SEUIL_GLISSE){
+      dernierTap=null; return;
+    }
     if(pique){
       const ll=inverse(x,y,camera(geo())); if(!ll) return;
       ll.lat=+ll.lat.toFixed(5); ll.lng=+ll.lng.toFixed(5);
@@ -7350,6 +7405,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   };
   c.addEventListener('pointerup',relacher);
   c.addEventListener('pointercancel',relacher);
+  c.addEventListener('lostpointercapture',relacher);
   function viserZoom(k1,x,y){
     const proche=roue&&Math.hypot(roue.x-x,roue.y-y)<2;
     const ancre=proche?roue.ancre:inverse(x,y,camera(geo()));
@@ -7358,7 +7414,7 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
   }
   c.addEventListener('wheel',e=>{
     const r=c.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
-    if(!dansDisque(x,y)) return;
+    if(!etat.on||!dansDisque(x,y)) return;
     e.preventDefault(); e.stopPropagation();
     if(!e.deltaY) return;
     annulerPosition(); trajet=null; repartition=null; etat.centre=true;
@@ -7366,6 +7422,11 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
     viserZoom((roue?.k??k)*Math.exp(-borner(pixels,-240,240)*.005),x,y);
   },{passive:false});
   window.addEventListener('resize',kick);
+  window.addEventListener('online',()=>{
+    for(const [cle,t] of tuiles) if(t.echec!=null) tuiles.delete(cle);
+    if(etat.on&&terre?.length===0){ terreP=null; chargerTerre(); }
+    kick();
+  });
   return {
     geo,
     ouvrir(){
@@ -7375,9 +7436,9 @@ function creerCarteSpots({spots,lieuDe,couleur,voir,geometrie,positionAuto,posit
       situer(); kick();
     },
     fermer(){
-      etat.on=false; interrompre(); tenu=null; pinch=null; ptrs.clear();
+      etat.on=false; interrompre(); relacherGeste();
       if(rq){ cancelAnimationFrame(rq); rq=0; }
-      c.classList.remove('is-tenu'); credit.hidden=true;
+      credit.hidden=true;
     },
     maj(){ if(etat.on) situer(); },
     rafraichir:kick, monde,
@@ -8523,7 +8584,7 @@ function creerFeed(conf){
   async function retirer(x){
     if(!retirable(x)) return false;
     const cle=String(x.cle);
-    if(x.b==='em'){ await emRetirer(cle.slice(3)); maj(); return true; }
+    if(x.b==='em') return emRetirer(cle.slice(3));
     if(cle.startsWith('vi:')){
       const id=cle.slice(3);
       const {data,error}=await sb.rpc('vision_image_set',{p_id:id, p_path:null});
@@ -8541,10 +8602,10 @@ function creerFeed(conf){
      Une section par média du fil filtré, vide ; chacune se remplit en approchant (son média, sa box DÉTAILLÉE). La
      vidéo visible joue, la suivante se prépare (`metadata`) : la règle d'egress des spots. ↑ ↓ pour le voisin,
      Échap ou ✕ pour revenir à la grille. Elle n'existe que pour la grille (`#tlv`). */
-  const VU={i:-1};
+  const VU={i:-1, liste:[], retour:null};
   let vio=null;
   function remplir(sec,joue){
-    const j=sec?+sec.dataset.j:-1, x=L[j]; if(!x) return;
+    const j=sec?+sec.dataset.j:-1, x=VU.liste[j]; if(!x) return;
     const b=sec.querySelector('.tlv-b');
     /* PAR-DESSUS LE MÉDIA, LA BOX DÉTAILLÉE (Wah) : la box du Totehm entière — filet, nom, intentions, rythme,
        mini-boîtes —, surélevée. Plus aucune redirection vers le Totehm depuis la grille.
@@ -8553,7 +8614,7 @@ function creerFeed(conf){
        vit donc dans la MÊME rangée noire qu'un spot (`.ssp-row` + `.ssp-acts`), juste au-dessus de la box,
        et plus en bouton flottant dans un coin. Le niveau de la box se règle dans la box (16/11), pas ici. */
     if(b&&!b.firstChild) b.innerHTML=(retirable(x)
-        ?'<details class="card-more"><summary>Manage media</summary><span class="ssp-acts"><button type="button" data-tlv="del">delete</button></span></details>':'')
+        ?'<details class="card-more"><summary>Manage media</summary><span class="ssp-acts"><button type="button" data-tlv="del">delete</button></span></details><p class="tlv-note lv-note" role="status"></p>':'')
       +loupeVue(boxDe(x,false));
     const m=sec.querySelector('.tlv-m'); if(!m) return;
     let el=m.firstChild;
@@ -8587,20 +8648,29 @@ function creerFeed(conf){
   }
   function voir(i){
     const r=$('tlv'), f=r&&r.querySelector('.tlv-f'); if(!f||!L[i]) return fermerV();
+    VU.liste=L.slice(); VU.retour=document.activeElement;
     r.hidden=false; document.body.classList.add('is-tlv');
-    f.innerHTML=L.map((_,j)=>'<section class="tlv-s" data-j="'+j+'"><div class="tlv-m"></div><div class="tlv-b"></div></section>').join('');
+    f.innerHTML=VU.liste.map((_,j)=>'<section class="tlv-s" data-j="'+j+'"'+(j===i?'':' inert')+'><div class="tlv-m"></div><div class="tlv-b"></div></section>').join('');
     VU.i=i; etat.vu=i;
     f.scrollTop=i*f.clientHeight;
     remplir(f.children[i],true);
+    r.querySelector('.tlv-x').focus({preventScroll:true});
     if(vio) vio.disconnect();
     vio=new IntersectionObserver(es=>es.forEach(en=>{
       const sec=en.target, j=+sec.dataset.j;
+      if(!sec.isConnected) return;
       if(en.intersectionRatio>=.6){
-        if(VU.i!==j){ VU.i=j; etat.vu=j; peindreDel(); }
+        if(VU.i!==j){
+          const ancien=f.querySelector('[data-j="'+VU.i+'"]');
+          if(ancien?.contains(document.activeElement)) r.querySelector('.tlv-x').focus({preventScroll:true});
+          if(ancien) ancien.inert=true;
+          VU.i=j; etat.vu=j; peindreDel();
+        }
+        sec.inert=false;
         remplir(sec,true);
         if(sec.nextElementSibling) remplir(sec.nextElementSibling,false);
         if(sec.previousElementSibling) remplir(sec.previousElementSibling,false); }
-      else{ const v=sec.querySelector('video'); if(v) try{ v.pause(); }catch(_){} }
+      else sec.querySelector('video,audio')?.pause();
     }),{root:f, threshold:[0,.6]});
     f.querySelectorAll('.tlv-s').forEach(sec=>vio.observe(sec));
   }
@@ -8612,16 +8682,21 @@ function creerFeed(conf){
   /* Le voisin, au clavier : on fait défiler, l'aimant et l'observateur font le reste. */
   function voisinV(d){
     const r=$('tlv'), f=r&&r.querySelector('.tlv-f'); if(!f) return;
-    const j=Math.max(0,Math.min(L.length-1,VU.i+d)); if(j===VU.i) return;
-    f.scrollTo({top:j*f.clientHeight, behavior:RMS()?'auto':'smooth'});
+    const actif=f.querySelector('[data-j="'+VU.i+'"]');
+    const voisin=d<0?actif?.previousElementSibling:actif?.nextElementSibling;
+    if(voisin) f.scrollTo({top:voisin.offsetTop,behavior:RMS()?'auto':'smooth'});
   }
   function fermerV(){
     const r=$('tlv'); if(!r||r.hidden) return;
     if(vio){ vio.disconnect(); vio=null; }
-    r.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(_){} });
+    r.querySelectorAll('video,audio').forEach(v=>v.pause());
     const f=r.querySelector('.tlv-f'); if(f) f.innerHTML='';
+    const cle=VU.liste[VU.i]?.cle, retour=VU.retour;
+    VU.liste=[]; VU.retour=null;
     r.hidden=true; document.body.classList.remove('is-tlv'); VU.i=-1; etat.vu=-1;
     if(ext&&conf.grille){ ext=null; porter(r,null); L=[]; if(etat.on) grille(); finir(); }
+    const cible=retour?.isConnected&&retour!==document.body?retour:(cle&&bx()?.querySelector('[data-pol="'+CSS.escape(cle)+'"]'));
+    (cible||bx()?.querySelector('.tl[data-pol],.tl-add'))?.focus({preventScroll:true});
   }
   /* Ouvrir l'élément d'une boîte dans le Totehm, sur SA vue (`__totehmDeplie` est le seul chemin d'entrée). */
   function ouvrirElement(b){
@@ -8631,21 +8706,43 @@ function creerFeed(conf){
     window.__totehmDeplie(()=>{ setView(v); requestAnimationFrame(()=>ouvrir(k,id)); });
   }
   if(conf.grille){ const r=$('tlv'); if(r){
-    r.addEventListener('click',e=>{
+    r.addEventListener('click',async e=>{
       if(e.target.closest('[data-tlv="x"]')){ fermerV(); return; }
       const del=e.target.closest('[data-tlv="del"]');
-      if(del){ if(!arme(del)) return;
+      if(del){ if(del.disabled||!arme(del)) return;
         /* le bouton vit dans SA section : on retire CE média, pas « celui qui est vu » */
-        const sec=del.closest('.tlv-s'), x=L[sec?+sec.dataset.j:VU.i]; del.disabled=true;
-        retirer(x).then(ok=>{ del.disabled=false; if(ok) fermerV(); else peindreDel(); }); return; }
+        const sec=del.closest('.tlv-s'), i=+sec.dataset.j, liste=VU.liste, note=sec.querySelector('.tlv-note');
+        del.disabled=true; note.textContent='Removing…'; caler(sec);
+        const ok=await retirer(liste[i]).catch(e=>{ console.error('[media remove]',e?.message||e); return false; });
+        if(liste!==VU.liste) return;
+        if(ok){
+          if(i===VU.i){ fermerV(); return; }
+          const f=sec.parentElement, actif=f.querySelector('[data-j="'+VU.i+'"]');
+          vio?.unobserve(sec); sec.remove();
+          if(actif) f.scrollTop=actif.offsetTop;
+          return;
+        }
+        del.disabled=false; peindreDel(); note.textContent='Couldn’t remove this media. Try again.'; caler(sec); return;
+      }
       const b=e.target.closest('[data-lsh]'); if(b){ ouvrirElement(b); return; }
     });
     /* Le clavier : ↑ ↓ vont d'un média à l'autre ; ← → ne font RIEN ici (et ne changent pas de vue). */
     window.addEventListener('keydown',e=>{
       if(r.hidden) return;
       if(e.key==='Escape'){ e.preventDefault(); e.stopImmediatePropagation(); fermerV(); }
-      else if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); e.stopImmediatePropagation(); voisinV(e.key==='ArrowDown'?1:-1); }
-      else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ e.preventDefault(); e.stopImmediatePropagation(); }
+      else if(e.key==='Tab'){
+        const touches=[...r.querySelectorAll('button:not(:disabled),summary,a[href],audio[controls],video[controls]')]
+          .filter(b=>!b.closest('[inert]')&&b.getClientRects().length);
+        const i=touches.indexOf(document.activeElement);
+        if(touches.length&&(i<0||(e.shiftKey?i===0:i===touches.length-1))){
+          e.preventDefault(); touches[e.shiftKey?touches.length-1:0].focus();
+        }
+      }else if(e.key.startsWith('Arrow')){
+        e.stopImmediatePropagation();
+        if(e.target.closest?.('audio,video')) return;
+        e.preventDefault();
+        if(e.key==='ArrowDown'||e.key==='ArrowUp') voisinV(e.key==='ArrowDown'?1:-1);
+      }
     },{capture:true});
   } }
   /* ══ L'IMAGE EN HAUT · 29/10 ══ (Wah : « sur mobile, les images doivent être affichées le plus haut possible : on garde
@@ -8675,8 +8772,9 @@ function creerFeed(conf){
     etat.cales=(etat.cales|0)+1;
   }
   { const el=conf.grille?$('tlv'):sc();
-    const quand=e=>{ const t=e.target; if(t&&(t.tagName==='IMG'||t.tagName==='VIDEO'||t.matches?.('.card-more'))) caler(t.closest('.tlv-s,.lsh')); };
-    if(el){ el.addEventListener('load',quand,true); el.addEventListener('loadedmetadata',quand,true); el.addEventListener('toggle',quand,true); }
+    const quand=e=>{ const t=e.target; if(t&&(t.tagName==='IMG'||t.tagName==='VIDEO'||t.matches?.('.card-more,[data-vz]'))) caler(t.closest('.tlv-s,.lsh')); };
+    if(el){ el.addEventListener('load',quand,true); el.addEventListener('loadedmetadata',quand,true); el.addEventListener('toggle',quand,true);
+      el.addEventListener('totehm-box-zoom',quand); }
     let rt=0; window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ const r=conf.grille?$('tlv'):sc();
       if(r&&r.offsetParent!==null) r.querySelectorAll('.tlv-s,.lsh').forEach(caler); },120); }); }
   /* ══ PRÊTÉE AU TOTEHM DÉPLOYÉ · 29/10 ══ (Wah : « quand on clique sur une mini-box spot du Totehm … un résultat
@@ -8759,7 +8857,10 @@ function creerFeed(conf){
     etat.on=false; groupe=null; pause(); fermerV(); if(io){ io.disconnect(); io=null; }
     const b=bx(); if(b) b.querySelectorAll('video[data-bunny]').forEach(v=>BUNNY.lacher(v));
   }
-  function pause(){ const s=sc(); if(s) s.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(_){} }); }
+  function pause(){
+    const s=sc(); if(s) s.querySelectorAll('video').forEach(v=>v.pause());
+    if(conf.grille) $('tlv')?.querySelectorAll('video,audio').forEach(v=>v.pause());
+  }
   /* Mes médias ont changé (un import, un rechargement) : on refait le feed. Rien si la vue est fermée. */
   function maj(){ if(etat.on) peindre(); }
   function vider(){ ici=null; etat.ici=false; etat.y=0; L=[]; SF.etape='box'; sfReset(); fermerV(); const b=bx();
@@ -8771,6 +8872,7 @@ function creerFeed(conf){
      du feed). Un geste de moins de 6 px n'est pas un déplacement : c'est un tap, et il OUVRE. */
   { const s=sc(); if(s){
     s.addEventListener('pointerdown',e=>{
+      if(e.target.closest('.loupe[data-vz]')) return;
       const p=e.target.closest('[data-pol]'); if(!p||RO||ordre?.ouvert()) return;
       /* À gauche, on ne déplace pas la carte : on choisit le POINT DE FOCALISATION de l'image
          (Wah) — la référence est donc la FENÊTRE du média, pas l'écran. */
@@ -9294,17 +9396,18 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
   const diag={ouverts:0, publies:0, refus:0, medias:0, cartes:0, adresses:0};
   const ETAPES=[['media','Media'],['habit','Habit'],['when','When'],['where','Where'],
     ['access','Access'],['together','Together'],['duration','Duration'],['publish','Publish']];
-  let N;
+  let N, retour=null;
   const pan=()=>$('rdr-new');
   const pad=n=>String(n).padStart(2,'0');
   const dureeTxt=d=>d<60?d+' min':d%60?Math.floor(d/60)+' h '+(d%60):(d/60)+' h';
   function lacher(){ if(N?.media) URL.revokeObjectURL(N.media.url); if(N){ N.media=null; N.path=''; } }
   function neuf(){
+    N?.adrReq?.abort();
     lacher(); seqPos++;
     const d=new Date(Date.now()+864e5);
     N={etape:'media', mediaOk:false, mediaSeq:0, h:null, quand:'', media:null, path:'', aud:audienceFixe, boxBusy:false, confirmerBox:'', mode:'', ou:'',
       pt:null, ptSrc:'', ptVille:'', ptNom:'', posErr:false, posBusy:false,
-      adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0,
+      adr:'', hits:[], hit:-1, adrBusy:false, adrErr:'', adrSeq:0, adrReq:null,
       dur:0, mot:'', date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),
       time:pad(d.getHours())+':'+pad(d.getMinutes()), place:'', occupe:false, note:''};
   }
@@ -9403,6 +9506,12 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
      par GESTE, jamais à la frappe (leur règle, et la nôtre : rien de systématique) ; chaque réponse est gardée.
      Injoignable, le refus se VOIT et le membre garde [here] ou la carte. */
   const ADR=new Map();
+  function oublierRecherche(){
+    N.adrSeq++;
+    N.adrReq?.abort();
+    N.adrReq=null;
+    N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr='';
+  }
   async function chercherAdresse(){
     const q=N.adr.trim();
     if(q.length<3){ N.adrErr='write the address first'; return peindre(); }
@@ -9411,18 +9520,26 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     N.adrBusy=true; N.adrErr=''; N.hits=[]; N.hit=-1; peindre();
     let l=ADR.get(k);
     if(!l){
+      const actif=new AbortController();
+      N.adrReq=actif;
+      const delai=setTimeout(()=>actif.abort(),8000);
       try{
         const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q='+encodeURIComponent(q),
-          {headers:{Accept:'application/json'}, referrerPolicy:'strict-origin-when-cross-origin'});
+          {headers:{Accept:'application/json'}, referrerPolicy:'strict-origin-when-cross-origin',signal:actif.signal});
         if(!r.ok) throw new Error('http '+r.status);
         const d=await r.json();
         l=(Array.isArray(d)?d:[]).map(x=>({lat:+x.lat, lng:+x.lon, nom:String(x.display_name||'').slice(0,160)}))
           .filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&x.lat>=-90&&x.lat<=90&&x.lng>=-180&&x.lng<=180);
         ADR.set(k,l); if(ADR.size>40) ADR.delete(ADR.keys().next().value);
       }catch(e){
-        console.error('[adresse]',e&&e.message||e);
-        if(draft===N&&s===N.adrSeq){ N.adrBusy=false; N.adrErr='addresses are unreachable · use here or the map'; peindre(); }
+        if(draft===N&&s===N.adrSeq){
+          console.error('[adresse]',e?.message||e);
+          N.adrBusy=false; N.adrErr='addresses are unreachable · use here or the map'; peindre();
+        }
         return;
+      }finally{
+        clearTimeout(delai);
+        if(N.adrReq===actif) N.adrReq=null;
       }
     }
     if(draft!==N||s!==N.adrSeq) return;
@@ -9436,6 +9553,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     carte.ouvrir();
     const draft=N;
     p.hidden=true; document.body.classList.add('rdr-pique'); diag.cartes++;
+    $('rdr-pique')?.focus({preventScroll:true});
     carte.moteur.piquer(ll=>{
       const revenir=()=>{
         if(draft!==N||!document.body.classList.contains('is-nspot')) return;
@@ -9443,6 +9561,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
         carte.fermer?.();
         p.hidden=false;
         peindre();
+        p.querySelector('[data-ns="carte"]')?.focus({preventScroll:true});
       };
       if(!ll){ revenir(); return; }
       poser(ll,'carte','');
@@ -9499,7 +9618,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     let c=now?'<span class="sfc ns-c is-on">here<small>my position</small></span>'
       :chip('data-ns="ou" data-v="ici"','here',N.ou==='ici','my position')
        +chip('data-ns="ou" data-v="ailleurs"','elsewhere',N.ou==='ailleurs','an address');
-    if(N.pt) c+=tag(N.ptVille||N.ptNom.split(',')[0].trim()||'the exact point');
+    if(N.pt) c+='<span class="ns-tag" data-ns-point>'+esc(N.ptVille||N.ptNom.split(',')[0].trim()||'the exact point')+'</span>';
     else if(N.ou==='ici'||now) c+=N.posErr?tag('allow my location')+chip('data-ns="retry"','try again',false):tag('finding my place…');
     let h=grp(now?'my position':'choose a place',c);
     if(N.ou==='ailleurs') h+=adresseHTML();
@@ -9513,7 +9632,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
       +' placeholder="street, number, city" aria-label="The address" data-nsi="adr" value="'+esc(N.adr)+'">'
       +'<button type="button" class="sfc" data-ns="find"'+(N.adrBusy?' disabled':'')+'>'+(N.adrBusy?'reading…':'read it')+'</button>'
       +'</div>';
-    if(N.adrErr) h+='<p class="lv-note">'+esc(N.adrErr)+'</p>';
+    if(N.adrErr) h+='<p class="lv-note" data-ns-address-error role="status">'+esc(N.adrErr)+'</p>';
     if(N.hits.length) h+='<div class="ns-hits">'+N.hits.map((x,i)=>'<button type="button" class="ns-hit'+(N.hit===i?' is-on':'')
       +'" data-ns="hit" data-v="'+i+'">'+esc(x.nom)+'</button>').join('')+'</div>';
     h+='</div>';
@@ -9658,6 +9777,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
   function ouvrir(x,dejaPris=false){
     const p=pan(); if(!p||N.occupe) return false;
     if(!autorise()){ connexion?.(); return false; }
+    if(p.hidden&&!carte.moteur.pique()) retour=document.activeElement;
     if(CAP.dans(p)) CAP.fermer();
     if(carte.moteur.pique()) carte.moteur.piquer(null);
     neuf(); lireRegles(); VID.dispo();
@@ -9683,10 +9803,34 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
     carte.fermer?.();
     if(CAP.dans(p)) CAP.fermer();
     p.hidden=true; p.innerHTML=''; carte.moteur.epingler(null); neuf();
+    if(retour!==document.body&&retour?.getClientRects().length) retour.focus({preventScroll:true});
+    retour=null;
   }
   /* Changer de temps ou de lieu REND le lieu : « now » reprend ma position, « elsewhere » repart de l'adresse. */
-  function oublierLieu(){ seqPos++; N.adrSeq++; N.pt=null; N.ptSrc=''; N.ptVille=''; N.ptNom=''; N.posErr=false;
-    N.posBusy=false; N.adrBusy=false; N.hits=[]; N.hit=-1; N.adrErr=''; N.place=''; carte.moteur.epingler(null); }
+  function effacerPoint(){
+    seqPos++; N.pt=null; N.ptSrc=''; N.ptVille=''; N.ptNom=''; N.place='';
+    carte.moteur.epingler(null);
+  }
+  function oublierLieu(){
+    effacerPoint(); oublierRecherche(); N.posErr=false; N.posBusy=false;
+  }
+  function modifierAdresse(p,valeur){
+    const change=N.adr.trim()!==valeur.trim();
+    N.adr=valeur;
+    if(!change) return;
+    oublierRecherche();
+    p.querySelector('.ns-hits')?.remove();
+    p.querySelector('[data-ns-address-error]')?.remove();
+    const lire=p.querySelector('[data-ns="find"]');
+    lire.disabled=false; lire.textContent='read it';
+    // Le clavier doit rester sur l'adresse pendant la frappe.
+    if(N.ptSrc==='adresse'){
+      effacerPoint();
+      p.querySelector('[data-ns-point]')?.remove();
+      p.querySelector('[data-nsi="place"]')?.parentElement.remove();
+      actualiserSuite();
+    }
+  }
   { const p=pan(); if(p){
     p.addEventListener('click',e=>{
       const t=e.target.closest('[data-ns]'); if(!t) return;
@@ -9745,7 +9889,7 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
       const k=f.dataset.nsi;
       if(k==='mot') N.mot=f.value;
       else if(k==='place') N.place=f.value;
-      else if(k==='adr'){ N.adr=f.value; N.adrErr=''; }
+      else if(k==='adr') modifierAdresse(p,f.value);
       else if(k==='date'||k==='time'||k==='dur'){
         N[k]=k==='dur'?(f.valueAsNumber||0):f.value;
         if(k==='dur') p.querySelectorAll('[data-ns="dur"]').forEach(b=>{
@@ -9763,9 +9907,21 @@ function creerPriseSpot({sb,VID,CAP,villeDe,vignette,position,habits,carte,sessi
   } }
   { const b=$('rdr-pique'); if(b) b.addEventListener('click',()=>carte.moteur.piquer(null)); }
   window.addEventListener('keydown',e=>{
+    const p=pan(), pique=carte.moteur.pique();
+    if(e.key==='Tab'&&(pique||(p&&!p.hidden))){
+      const h=pique?$('rdr-choix-carte'):p;
+      const touches=(h?[...h.querySelectorAll('button,input,textarea,video[controls],[tabindex="0"]')]:[$('rdr-pique')])
+        .filter(b=>b?.tabIndex>=0&&!b.disabled&&b.getClientRects().length&&getComputedStyle(b).visibility!=='hidden');
+      const i=touches.indexOf(document.activeElement);
+      if(i<0||(e.shiftKey?i===0:i===touches.length-1)){
+        e.preventDefault();
+        (touches[e.shiftKey?touches.length-1:0]||p.querySelector('.take-stage'))?.focus({preventScroll:true});
+      }
+      return;
+    }
     if(e.key!=='Escape') return;
-    if(carte.moteur.pique()){ e.preventDefault(); e.stopImmediatePropagation(); carte.moteur.piquer(null); return; }
-    const p=pan(); if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); if(!N.occupe) fermer(); }
+    if(pique){ e.preventDefault(); e.stopImmediatePropagation(); carte.moteur.piquer(null); return; }
+    if(p&&!p.hidden){ e.preventDefault(); e.stopImmediatePropagation(); if(!N.occupe) fermer(); }
   },{capture:true});
   /* 25/11 — la PRISE RAPIDE : le média est déjà pris, le questionnaire s'ouvre dessus */
   async function prise(f){
@@ -10343,7 +10499,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-27-radar-prises';
+const BUILD='2026-11-28-parcours';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -11083,7 +11239,8 @@ document.addEventListener('click',e=>{ const l=e.target&&e.target.closest&&e.tar
   e.preventDefault(); e.stopPropagation();
   const col=l.closest('.v-col'), on=!(col&&col.classList.contains('is-zoom')); if(col) col.classList.toggle('is-zoom',on);
   l.setAttribute('aria-pressed',String(on)); l.setAttribute('aria-label',on?'Smaller':'Bigger');
-  l.querySelector('path')?.setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5')); },true);
+  l.querySelector('path')?.setAttribute('d','M15 15l6 6M7.5 10h5'+(on?'':'M10 7.5v5'));
+  l.dispatchEvent(new Event('totehm-box-zoom',{bubbles:true})); },true);
 document.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.closest&&e.target.closest('.loupe[data-vz]')) e.stopPropagation(); },true);
 /* ══ LE CLASSEMENT SE FAIT À DEUX FLÈCHES · 09/09/2026 ═══════════════
    Le glissement au doigt ne marchait pas au téléphone, et un classement
@@ -12140,7 +12297,15 @@ function cable(box){
     if(d.cap){ e.stopPropagation(); const i=d.cap.indexOf(':'), x={k:d.cap.slice(0,i), ref:d.cap.slice(i+1)};
       foldToGate(()=>{ if(lvAller) lvAller('g',()=>SH.ajouter(x)); }); return; }
     if(d.emo){ e.stopPropagation(); if(!VX.media(d.emo)) emOuvrir(d.emo); return; }
-    if(d.emx){ e.stopPropagation(); emRetirer(d.emx); return; }
+    if(d.emx){
+      e.stopPropagation(); if(el.disabled) return;
+      const note=el.closest('.mg')?.querySelector('.mf-note');
+      el.disabled=true; if(note) note.textContent='';
+      if(!await emRetirer(d.emx)&&el.isConnected){
+        el.disabled=false; if(note) note.textContent='Couldn’t remove this media. Try again.';
+      }
+      return;
+    }
     /* La loupe agrandit la boîte EN PLACE, sans l'ouvrir ni la redessiner. */
     if(d.zoom){ e.stopPropagation(); const k=d.zoom, on=!ZOOM.has(k); if(on)ZOOM.add(k); else ZOOM.delete(k);
       const col=el.closest('.v-col'); if(col)col.classList.toggle('is-zoom',on);
@@ -14056,7 +14221,7 @@ function quitter(){
   trackingControls.reset();rhythmIgnored.clear();
   roSeq++; HSPACES.seq++; HSPACES.par=new Map(); ECLOTHS.seq++; ECLOTHS.par=new Map(); visImgSeq++; VISIMG.clear(); ZOOM.clear(); COPIES.clear();
   state={habits:[],vis:'private'}; myProfile=null; cloudMode=false; LAND=null; if(lvQuitter) lvQuitter();
-  RANG.vider(); EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.charge=false; EMEDIA.erreur=false; SIGNE_EM.clear(); SH.vider(); SHS.vider(); BADGE.vider(); CAP.fermer(); PRISE.fermer();
+  RANG.vider(); EMEDIA.seq++; EMEDIA.items=[]; EMEDIA.par=new Map(); EMEDIA.retraits.clear(); EMEDIA.charge=false; EMEDIA.erreur=false; SIGNE_EM.clear(); SH.vider(); SHS.vider(); BADGE.vider(); CAP.fermer(); PRISE.fermer();
   OBJECTIVES=[]; REPULSIONS=[]; STORIES=[]; VIS=[]; OBJ={}; totehmLoaded=false; AUDB.vider();
   cacheOublier();
   closeMember();
