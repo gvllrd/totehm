@@ -51,20 +51,24 @@ try{
   ok(v.reglages&&v.dos===''&&v.res==='',quoi+' · ce n\'est pas MON verso : ni mes réglages, ni mon nom au dos du papier, aucun résultat avant Entrée');
   await pg.screenshot({path:OUT+'/members_verso_'+(tel?'tel':'ordi')+'.png'});
 
-  /* ── 2 · pas d'entre-deux : rien avant Entrée ; Entrée → UN résultat, au format de Monetize ── */
+  /* ── 2 · Une recherche explicite donne une fiche, au format de Monetize. ── */
   await pg.keyboard.type('kai');await pg.waitForTimeout(500);
   const avant=log.rpc.filter(x=>x.name==='creator_page').length;
   ok(avant===0&&(await pg.evaluate(()=>document.getElementById('mb-res').innerHTML))==='',quoi+' · taper ne lance rien : aucune liste, aucune requête');
   await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_cherche().etat==='offre',null,{timeout:6000}).catch(()=>{});
-  const o=await pg.evaluate(()=>{const r=document.getElementById('mb-res');return {titre:!!r.querySelector('.vs-t'),prix:(r.querySelector('.vs-month b')||{}).textContent,
-    sous:(r.querySelector('.vs-month i')||{}).textContent,bouton:(r.querySelector('.vs-top [data-mb="disc"]')||{}).textContent,sub:!!r.querySelector('[data-mb="sub"]'),
-    tuiles:r.querySelectorAll('.vs-n span').length,cut:(r.querySelector('.vs-cut')||{}).textContent,nom:(r.querySelector('.mbr-nom')||{}).textContent,
-    fond:getComputedStyle(r.querySelector('.vs-top')).backgroundColor};});
+  const o=await pg.evaluate(()=>{const r=document.getElementById('mb-res');return {
+    prix:r.querySelector('h2').textContent,sous:r.querySelector('.mb-result-detail').textContent,
+    actions:[...r.querySelectorAll('[data-mb]')].map(b=>b.textContent),
+    cut:r.querySelector('.mb-result-note').textContent,nom:document.getElementById('mb-q').value,
+    icones:r.querySelectorAll('button svg').length,
+    palette:r.querySelector('.mb-intentions').getAttribute('aria-label'),
+    fond:getComputedStyle(r.querySelector('.mb-result')).backgroundColor};});
   /* 23/11 (Wah) : « tu gardes seulement le prix avec la possibilité d'annuler et le bouton [Discover] » + la règle du cut off */
-  ok(!o.titre&&o.prix==='24 €'&&o.sous==='per year · stop anytime'&&o.bouton==='Discover'&&!o.sub&&o.tuiles===0
-     &&/can cut you off at any time/.test(o.cut)&&o.nom==='kai'&&o.fond==='rgb(0, 0, 0)',
-     quoi+' · Entrée → le prix (annulable), [Discover], et la règle du cut off — rien d\'autre → '+JSON.stringify(o));
+  ok(o.prix==='24 €'&&o.sous==='per year · stop anytime'&&o.actions.join()==='Discover'&&!o.icones
+     &&/can cut you off at any time/.test(o.cut)&&o.nom==='kai'&&o.fond==='rgb(0, 0, 0)'&&o.palette==='Intentions: Focus',
+     quoi+' · l’offre rassemble le prix annuel, Discover et la règle d’accès → '+JSON.stringify(o));
+  await pg.screenshot({path:OUT+'/members_offre_'+(tel?'tel':'ordi')+'.png'});
   ok(log.rpc.filter(x=>x.name==='creator_page').length===1&&!log.rpc.some(x=>x.name==='totehm_read'),quoi+' · une lecture de son offre ; son TOTEHM fermé n\'est pas lu');
   /* 18/11 (Wah : « ressors ici le Discover de la creator economy, qu'on ne trouve nulle part ») : [Discover] ouvre SA page
      d'abonnement en Discover par-dessus le verso ; s'y abonner part aussi avec `from:verso` ; refermé, le verso est là */
@@ -77,24 +81,33 @@ try{
   await cadre.locator('#cta [data-do="subscribe"]').click({timeout:8000}).catch(()=>{});await pg.waitForTimeout(800);
   const f2=log.functions.filter(x=>x.name==='creator-subscribe').at(-1);
   ok(!!f2&&f2.body.from==='verso'&&f2.body.pseudo==='kai',quoi+' · s\'abonner DANS le Discover part aussi avec `from:verso` → '+JSON.stringify(f2&&f2.body));
+  const lectures=log.rpc.filter(x=>x.name==='creator_page').length;
   await pg.click('#xo-x');
   await pg.waitForFunction(()=>!window.__totehm_xo().actif,null,{timeout:8000}).catch(()=>{});
-  await pg.waitForFunction(()=>window.__totehm_cherche().etat==='offre',null,{timeout:6000}).catch(()=>{});
-  ok((await C(pg)).ouvert&&(await C(pg)).etat==='offre',quoi+' · refermé : le verso est toujours là, son offre relue');
+  await pg.waitForFunction(()=>document.querySelector('#mb-res [data-mb="disc"]')===document.activeElement
+    &&document.getElementById('mb-res').getAttribute('aria-busy')==='false',null,{timeout:6000});
+  ok((await C(pg)).ouvert&&(await C(pg)).etat==='offre'&&log.rpc.filter(x=>x.name==='creator_page').length>lectures,
+    quoi+' · Discover refermé, la fiche et le focus reviennent pendant la relecture');
   /* taper efface le résultat : pas d'entre-deux */
   await pg.click('#mb-q');await pg.keyboard.press('End');await pg.keyboard.type('x');await pg.waitForTimeout(200);
   ok((await C(pg)).etat==='vide'&&(await pg.evaluate(()=>document.getElementById('mb-res').innerHTML))==='',quoi+' · retaper efface le résultat');
   await pg.fill('#mb-q','zz');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>window.__totehm_cherche().etat==='personne',null,{timeout:6000}).catch(()=>{});
-  ok(/No TOTEHM by that name/.test(await pg.textContent('#mb-res')),quoi+' · un nom inconnu : une ligne, rien d\'autre');
+  ok(/No TOTEHM by that name/.test(await pg.textContent('#mb-res')),quoi+' · la fiche indique le nom inconnu');
+  await pg.click('#mb-res [data-mb="editer"]');
+  ok(await pg.locator('#mb-q').evaluate(e=>e===document.activeElement&&e.selectionStart===0&&e.selectionEnd===2),
+    quoi+' · Edit name permet de corriger le nom immédiatement');
 
   /* ── 3 · abonné : mon année chez lui ; son TOTEHM est lu d'avance, ⟲ / [Open] le retourne sur SON recto ── */
   await pg.fill('#mb-q','GVA');await pg.keyboard.press('Enter');
   await pg.waitForFunction(()=>{const c=window.__totehm_cherche();return c.etat==='abonne'&&c.lu;},null,{timeout:6000}).catch(()=>{});
-  const a=await pg.evaluate(()=>({t:document.querySelector('#mb-res .vs-t').textContent,s:document.querySelector('#mb-res .vs-s').textContent,
-    q:document.getElementById('mb-q').value,ouvrir:!document.querySelector('#mb-res [data-mb="open"]').disabled,flip:getComputedStyle(document.getElementById('srch-flip')).display}));
-  ok(a.t==='Your year inside their ecosystem'&&/^renews /.test(a.s)&&a.q==='gva'&&a.ouvrir,quoi+' · abonné : « Your year inside their ecosystem », le nom remis à sa casse, [Open] prêt → '+JSON.stringify(a));
-  ok(tel?a.flip==='none':a.flip==='flex',quoi+' · ⟲ '+(tel?'n\'existe pas au téléphone (le verso est plein écran)':'se montre : son TOTEHM est lu'));
+  const a=await pg.evaluate(()=>({t:document.querySelector('#mb-res h2').textContent,s:document.querySelector('#mb-res .mb-result-detail').textContent,
+    q:document.getElementById('mb-q').value,ouvrir:!document.querySelector('#mb-res [data-mb="open"]').disabled,
+    reste:document.getElementById('mb-res').textContent,icones:document.querySelectorAll('#mb-res button svg').length,
+    flip:getComputedStyle(document.getElementById('srch-flip')).display}));
+  ok(a.t==='Subscribed'&&/^renews .*Nov 2027$/.test(a.s)&&a.q==='gva'&&a.ouvrir&&a.reste===a.t+a.s+'Open'&&!a.icones,
+    quoi+' · le résultat indique l’abonnement, son échéance et Open dès que le recto est prêt → '+JSON.stringify(a));
+  ok(a.flip==='flex',quoi+' · la touche ⟲ est disponible quand son TOTEHM est lu');
   await pg.screenshot({path:OUT+'/members_abonne_'+(tel?'tel':'ordi')+'.png'});
   if(tel) await pg.click('#mb-res [data-mb="open"]'); else await pg.click('#srch-flip');
   await pg.waitForFunction(()=>document.body.classList.contains('ro')&&!document.body.classList.contains('gate')&&!document.getElementById('srch').classList.contains('is-on'),null,{timeout:9000}).catch(()=>{});
@@ -156,13 +169,98 @@ try{
  }
 
  /* ── 7 · un ancien lien `/search` et le retour de Stripe : `?members=<nom>` ouvre le verso sur ce nom ── */
- {const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc,functions,viewport:{width:390,height:844},hasTouch:true});
+ {let lectures=0;
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...rpc,creator_page:()=>++lectures===1
+    ?{...GVA,viewer:{...GVA.viewer,subscribed:false,can_read:false}}:GVA},functions,viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm?members=gva&subscribed=1');await pg.waitForSelector('body.member');
   ok(await ouvert(pg),'`?members=gva&subscribed=1` : le verso s\'ouvre en recherche');
+  ok(await pg.locator('#mb-res h2').textContent()==='Checking access…'&&await pg.locator('#mb-res button').count()===0,
+    'retour de Stripe : la fiche attend la confirmation du serveur');
   await pg.waitForFunction(()=>{const c=window.__totehm_cherche();return c.etat==='abonne'&&c.lu;},null,{timeout:8000}).catch(()=>{});
   const s=await pg.evaluate(()=>({etat:window.__totehm_cherche().etat,q:document.getElementById('mb-q').value,url:location.search}));
   ok(s.etat==='abonne'&&s.q==='gva'&&!/members|subscribed/.test(s.url),'retour de Stripe : mon année chez gva, et l\'adresse se nettoie → '+JSON.stringify(s));
   ok(!erreurs(log).length,'retour : aucune erreur '+erreurs(log).join(' | '));
+  await pg.context().close();}
+
+ /* Les états de recherche et de lecture, y compris une réponse qui arrive après une autre saisie. */
+ {let pannes=0, lectures=0, relacher, lancee;
+  const attente=new Promise(r=>{ lancee=r; });
+  const FERME={...KAI,pseudo:'mira',palette:[],sale:{open:false}};
+  const PARTAGE={...GVA,pseudo:'alix',viewer:{...GVA.viewer,subscribed:false,can_read:true}};
+  const MOI={...FERME,pseudo:'wah',viewer:{me:true}};
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,viewport:{width:320,height:568},hasTouch:true,
+    rpc:{...rpc,
+      my_console:{signed_in:true,subscriptions:[{creator:'gva',status:'active'},{creator:'ancien',status:'canceled'}]},
+      creator_page:async b=>{
+        const n=b.p_pseudo.toLowerCase();
+        if(n==='fantome'){ await new Promise(r=>{ relacher=r; lancee(); }); return GVA; }
+        return {kai:KAI,mira:FERME,wah:MOI,alix:PARTAGE,panne:{...KAI,pseudo:'panne'},ferdinand:{...GVA,pseudo:'ferdinand'},
+          prive:{ok:false,why:'private'}}[n]||{ok:false,why:'nobody'};
+      },
+      totehm_read:b=>b.p_pseudo==='alix'?{...LU,pseudo:'alix'}:{ok:false,why:'subscribe'}},
+    network:(u,r)=>{
+      const appel=u.pathname.match(/\/rpc\/(creator_page|totehm_read)$/)?.[1];
+      if(!appel) return null;
+      const n=JSON.parse(r.postData()).p_pseudo;
+      if((appel==='creator_page'&&n==='panne'&&++pannes===1)||(appel==='totehm_read'&&n==='alix'&&++lectures===1))
+        return {status:400,contentType:'application/json',body:JSON.stringify({message:'Temporary failure'})};
+      return null;
+    }});
+  await pg.goto(origin+'/totehm');
+  await pg.waitForSelector('body.member');
+  await pg.click('#lvn-dn');
+  ok(await ouvert(pg),'écran de 320 px · le verso de recherche s’ouvre');
+  const q=pg.locator('#mb-q'), res=pg.locator('#mb-res'), action=k=>res.locator('[data-mb="'+k+'"]');
+  const etat=e=>pg.waitForFunction(e=>window.__totehm_cherche().etat===e,e,{timeout:7000});
+  async function chercher(n,e){
+    await q.fill(n); await pg.locator('#mb-go').tap(); await etat(e);
+  }
+  await res.locator('[data-mb-abo="gva"]').waitFor();
+  ok(await res.locator('[data-mb-abo]').count()===1&&await res.locator('[data-mb-abo] svg').count()===0,
+    'champ vide · seuls les noms des abonnements actifs sont proposés');
+  await chercher('https://example.com/@gva','court');
+  ok(/Use a TOTEHM name or link/.test(await res.textContent())&&!log.rpc.some(x=>x.name==='creator_page'),
+    'un lien d’un autre site demande un nom ou un lien TOTEHM');
+  await chercher('fantome','cherche'); await attente;
+  ok(await res.getAttribute('aria-busy')==='true'&&await res.locator('button').count()===0,
+    'pendant la recherche, la fiche n’affiche aucune action périmée');
+  await chercher('https://www.totehm.com/totehm?members=KAI&subscribed=1','offre');
+  relacher();
+  ok(await q.inputValue()==='kai'&&await action('disc').isVisible()&&await pg.locator('#mb-go svg').count()===0
+    &&!await pg.locator('#srch-flip').isVisible()&&!log.rpc.some(x=>x.name==='totehm_read'),
+    '[Search] accepte un lien TOTEHM et une réponse tardive ne remplace plus la fiche');
+  const cadrage=await res.locator('.mb-result').evaluate(e=>{
+    const a=e.getBoundingClientRect(), b=e.querySelector('button').getBoundingClientRect();
+    return a.left>=0&&a.right<=innerWidth&&b.height>=44&&b.right<=a.right;
+  });
+  ok(cadrage,'écran de 320 px · la fiche et sa touche restent entières');
+  await pg.screenshot({path:OUT+'/members_offre_320.png',animations:'disabled'});
+  await pg.locator('#mb-clear').tap();
+  await res.locator('[data-mb-abo="gva"]').waitFor();
+  ok(await q.inputValue()===''&&await q.evaluate(e=>e===document.activeElement),'effacer le nom retrouve mes écosystèmes');
+  await chercher('mira','ferme');
+  ok(/Subscriptions closed/.test(await res.textContent())&&await action('disc').count()===0,'les abonnements fermés ne proposent pas de Discover');
+  await chercher('prive','prive');
+  ok(/This TOTEHM is private/.test(await res.textContent())&&await action('open').count()===0,'un accès privé ne propose pas Open');
+  await chercher('panne','panne');
+  ok(/Search unavailable/.test(await res.textContent())&&await action('retry').isVisible(),'une erreur réseau propose de réessayer la recherche');
+  await action('retry').tap(); await etat('offre');
+  ok(await action('disc').isVisible(),'réessayer retrouve l’offre avec le même nom');
+  await chercher('alix','panne');
+  ok(/Couldn’t open this TOTEHM/.test(await res.textContent())&&!await pg.locator('#srch-flip').isVisible(),
+    'un recto en erreur propose de réessayer au lieu de laisser Open désactivé');
+  await action('retry').tap(); await etat('abonne');
+  ok(await res.locator('h2').textContent()==='Shared access'&&await action('open').isVisible()
+    &&await res.locator('.mb-result-detail').count()===0,
+    'un accès partagé s’ouvre dès que la lecture réussit');
+  await chercher('ferdinand','indisponible');
+  ok(/No shared views/.test(await res.textContent())&&await action('disc').count()===0&&await action('open').count()===0,
+    'un abonnement sans vue lisible propose de vérifier l’accès');
+  await chercher('wah','moi');
+  await action('mine').tap();
+  await pg.waitForFunction(()=>!document.body.classList.contains('gate')&&!document.body.classList.contains('ro')
+    &&!document.getElementById('srch').classList.contains('is-on'),null,{timeout:9000});
+  ok((await L(pg)).mode==='mine'&&!erreurs(log).length,'son propre résultat ouvre son TOTEHM');
   await pg.context().close();}
 
  /* ── 8 · 18/11 (Wah : « je ne veux pas de la bande noire en haut du TOTEHM, avec le nom et une petite flèche » · « les
@@ -220,9 +318,10 @@ try{
  /* ── 11 · 18/11 (Wah : « your subscribers play by your rules or get cut off instantly » ; ses choix : le créateur coupe
     depuis la liste de ses abonnés, sans remboursement, pour toujours) ── */
  {const DASH={ok:true,price_cents:2400,min_cents:300,month_cents:0,subscribers:1,due_cents:0,open:true};
-  const FANS={ok:true,items:[{pseudo:'kai',since:'2026-11-01T10:00:00Z',until:'2027-11-01T10:00:00Z',ending:false}]};
-  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...rpc,creator_dashboard:DASH,creator_subscribers:FANS,my_console:{signed_in:true,offer:{enabled:true,open:true}}},
-    functions:{...functions,'creator-cut-off':{ok:true,pseudo:'kai',stripe:true}},viewport:{width:390,height:844},hasTouch:true});
+  let fans=[{pseudo:'kai',since:'2026-11-01T10:00:00Z',until:'2027-11-01T10:00:00Z',ending:false}];
+  const{pg,log}=await page(browser,{dir:'com',origin,tables,rpc:{...rpc,creator_dashboard:DASH,creator_subscribers:()=>({ok:true,items:fans}),
+    my_console:{signed_in:true,offer:{enabled:true,open:true}}},
+    functions:{...functions,'creator-cut-off':()=>{ fans=[]; return {ok:true,pseudo:'kai',stripe:true}; }},viewport:{width:390,height:844},hasTouch:true});
   await pg.goto(origin+'/totehm');await pg.waitForSelector('body.member');await pg.waitForTimeout(1200);
   await pg.locator('#gate-enter').press('ArrowRight');
   await pg.waitForFunction(()=>document.getElementById('srch').classList.contains('is-open'),null,{timeout:9000}).catch(()=>{});

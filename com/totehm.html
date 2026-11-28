@@ -3298,18 +3298,48 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
    s'affiche avec le mode recherche, dans le même format que le nom du TOTEHM ; ensuite l'abonnement au même format que
    [Monetize my TOTEHM] ». Le MÊME verso, le même zoom, la même pièce que [Mine] : seul son contenu change (`is-cherche`).
    La saisie a la police, la taille, l'interlettrage et le corail de `#self-name` (le nom d'un membre est corail). */
-#mb-q,#mb-res{display:none}
-#srch.is-cherche #mb-q{display:block;width:min(420px,88vw);margin:0;padding:0;border:0;border-radius:0;outline:none;background:none;
-  font:400 clamp(19px,5vw,26px)/1.2 'Quantico',sans-serif;letter-spacing:.04em;color:#fbd5ca;caret-color:#fbd5ca;text-align:center;
-  -webkit-appearance:none;appearance:none}
+#mb-form,#mb-res{display:none}
+#srch.is-cherche #mb-form{display:grid;grid-template-columns:66px minmax(0,1fr) 66px;align-items:center;
+  gap:3px;width:min(400px,100%);border-bottom:1px solid #626286}
+#srch.is-cherche #mb-form:focus-within{border-color:#a5a5bd}
+#mb-q{grid-column:2;grid-row:1;width:100%;min-width:0;height:44px;margin:0;padding:0;
+  border:0;border-radius:0;outline:none;background:none;font:400 clamp(19px,5vw,26px)/1.2 'Quantico',sans-serif;
+  letter-spacing:.04em;color:#fbd5ca;caret-color:#fbd5ca;text-align:center;text-overflow:ellipsis;appearance:none}
 #mb-q::placeholder{color:rgba(251,213,202,.38)}
 #mb-q::selection{background:rgba(251,213,202,.24);color:#fff}
+.mb-query-key{grid-row:1;display:grid;place-items:center;height:44px;padding:0;
+  color:#d9d9eb;border:0;border-radius:7px;background:transparent;cursor:pointer;touch-action:manipulation}
+.mb-query-key[hidden]{display:none}
+.mb-query-key:disabled{opacity:.35;cursor:default}
+.mb-query-key:active:not(:disabled){background:#242446;transform:translateY(1px)}
+#mb-clear{grid-column:1;width:44px}
+#mb-clear svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:square}
+#mb-go{grid-column:3;font:700 10px/1.3 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
 #srch.is-cherche :is(#self-name,#self-mail,#vs-tabs,#vs-vide,#lv-card,#member-window){display:none!important}
-#srch.is-cherche #mb-res{display:flex;flex-direction:column;gap:2px;width:min(94vw,420px);flex:none;margin-top:8px}
+#srch.is-cherche #mb-res{display:block;width:min(400px,100%);flex:none;margin:8px 0 0;outline:none}
 #srch.is-cherche #mb-res:empty{display:none}
-#mb-res .mbr-dit{margin:0;padding:10px 2px;text-align:center}
-#mb-res .mbr-nom,#lvd .lvh-r .mbr-nom{font:400 13px/1.2 'Quantico',sans-serif;color:#fbd5ca}
-#mb-res .vs-act[disabled]{opacity:.45;cursor:default}
+#mb-annonce{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.mb-result{background:#000;border-top:2px solid #626286}
+.mb-result:has(.mb-intentions){border-top:0}
+.mb-intentions{display:flex;gap:2px;height:2px}
+.mb-intentions i{flex:1;background:var(--c)}
+.mb-result-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 16px;min-height:80px}
+.mb-result-copy{display:grid;gap:5px;min-width:0}
+.mb-result-copy h2{margin:0;color:#fff;font:700 12px/1.45 'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+.mb-result.is-offer h2{font-size:clamp(22px,7vw,29px);line-height:1.1;letter-spacing:0;overflow-wrap:anywhere}
+.mb-result-detail,.mb-result-note{margin:0;color:#bdbdca;font:400 11px/1.55 'Space Mono',monospace;overflow-wrap:anywhere}
+.mb-result-note{padding:12px 16px;border-top:1px solid #20202a}
+.mb-result .mb-action{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:10px 12px;
+  background:linear-gradient(#26262d,#17171d);box-shadow:inset 0 1px 0 #3c3c49,0 2px 0 #101015;
+  border-radius:6px;max-width:48%;white-space:normal;transition:background .15s,transform .12s,box-shadow .12s;touch-action:manipulation}
+.mb-action:active{transform:translateY(2px);box-shadow:inset 0 1px 2px #09090c}
+.mb-abo:focus-visible,.mb-action:focus-visible,.mb-query-key:focus-visible{outline:1px solid #fff;outline-offset:2px}
+#lvd .lvh-r .mbr-nom{font:400 13px/1.2 'Quantico',sans-serif;color:#fbd5ca}
+@media(max-width:360px){.mb-result-row,.mb-result-note{padding-left:12px;padding-right:12px}}
+@media(prefers-reduced-motion:no-preference){
+  #srch.is-pret .mb-result,.mb-abos{animation:mb-result-in .22s var(--gate-ease) both}
+  @keyframes mb-result-in{from{opacity:.65;transform:translateY(4px)}to{opacity:1;transform:none}}
+}
 /* ⟲ retourne le verso sur SON recto : seulement quand son TOTEHM est lu (`is-lu`) */
 #srch.is-cherche:not(.is-lu) #srch-flip{display:none}
 #self-mail{margin:-6px 0 8px;display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}
@@ -3469,11 +3499,11 @@ body.lv-b:not(.lv-membre):not(.lv-verrou) #lv-socket{opacity:0}
 .db-o .db-bar{grid-column:1/-1}
 /* MY CHAPTER (23/11) : dans la section Higher GPT, deux boutons côte à côte */
 .vs-two{display:flex;gap:6px;flex:none}
-/* ECOSYSTEMS (23/11) : mes abonnements sous la saisie du verso — chaque nom, en Quantico, dans une pièce noire */
-#mb-res .mb-abos{display:flex;flex-direction:column;align-items:center;gap:6px}
-#mb-res .mb-abos-t{margin:0 0 2px;font:400 9px/1.3 'Space Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#8a8a92}
-#mb-res .mb-abo{border:0;border-radius:10px;background:#16161b;color:#fff;cursor:pointer;padding:9px 16px;min-width:min(70vw,260px);font:400 15px/1.2 'Quantico',sans-serif}
-#mb-res .mb-abo:focus-visible{outline:1px solid #fff;outline-offset:2px}
+/* La liste personnelle reste sous la recherche quand le champ est vide. */
+.mb-abos{display:grid;gap:2px}
+.mb-abos-t{margin:0 0 8px;font:400 10px/1.4 'Space Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#d0d0e2}
+.mb-abo{min-height:46px;padding:8px 14px;border:0;background:#000;color:#fbd5ca;font:400 15px/1.3 'Quantico',sans-serif;
+  overflow-wrap:anywhere;text-align:left;cursor:pointer;touch-action:manipulation}
 .vs-in{flex:1;min-width:0;border:0;border-radius:10px;background:#1f1f24;color:#fff;caret-color:#fff;outline:none;
   font:400 14px/1.2 'Quantico',sans-serif;padding:9px 12px}
 .vs-in::placeholder{color:#8c8c96}
@@ -4575,8 +4605,10 @@ div:not(:has(> :not(br,wbr))):hover,
 #mb-offre .mbo-p:hover,
 #mb-offre .mbo-s:hover,
 #self-name:hover,
-#srch.is-cherche #mb-q:hover,
-#mb-res .mbr-nom:hover,
+#mb-q:hover,
+.mb-query-key:hover,
+.mb-result-detail:hover,
+.mb-result-note:hover,
 #lvd .lvh-r .mbr-nom:hover,
 #self-mail .mw-mail:hover,
 #lv-card #name-btn:hover,
@@ -4610,7 +4642,8 @@ div:not(:has(> :not(br,wbr))):hover,
 .db-vide:hover,
 .db-i i:hover,
 .db-o .j.is-tard:hover,
-#mb-res .mb-abos-t:hover,
+.mb-abos-t:hover,
+.mb-abo:hover,
 .lv-note.is-no:hover,
 .lv-note.is-ok:hover,
 .vs-k.vs-nom:hover,
@@ -5109,13 +5142,20 @@ setTimeout(function(){document.body.classList.remove('ses-attente');},9000);</sc
   <div id="srch-bg"></div>
   <div id="srch-ui">
     <div id="self-h"><button id="self-name" type="button" aria-label="Rename my TOTEHM"></button>
-      <!-- 18/11 · [MEMBERS] : le verso en mode RECHERCHE (`is-cherche`) — le nom tapé EST la saisie, au format du nom du TOTEHM.
-           Il existe dès le geste (iOS n'ouvre le clavier que pour une mise au point faite DANS le geste). -->
-      <input id="mb-q" maxlength="32" placeholder="a name" aria-label="A TOTEHM name" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go"></div>
+      <!-- Le champ existe dès le geste pour la mise au point sur mobile. -->
+      <form id="mb-form" role="search" aria-label="Search an ecosystem">
+        <button id="mb-clear" class="mb-query-key" type="button" aria-label="Clear name" hidden>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M4 12l8-8"/></svg>
+        </button>
+        <input id="mb-q" maxlength="200" placeholder="a name" aria-label="A TOTEHM name" aria-controls="mb-res"
+          autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+        <button id="mb-go" class="mb-query-key" type="submit" disabled>Search</button>
+      </form>
+    </div>
     <!-- Sous l'identifiant, le compte qui le porte (et l'état de la synchronisation) ; il arrive avec le reste. -->
     <p id="self-mail" class="srch-after"><span class="mw-mail" id="mw-mail"></span><span class="mw-sync" id="mw-sync"></span></p>
-    <!-- 18/11 · [MEMBERS] : UN résultat, après Entrée, au format de [Monetize my TOTEHM] (`.vs-*`) : son offre, ou mon année chez lui. -->
-    <section id="mb-res" class="srch-after" aria-live="polite" aria-label="The TOTEHM found"></section>
+    <section id="mb-res" class="srch-after" aria-label="Search result" tabindex="-1"></section>
+    <p id="mb-annonce" class="srch-after" role="status"></p>
     <!-- DEUX PARTIES : ce que je GAGNE (Monetize my TOTEHM) · Go Higher, ouverte par défaut : Higher GPT (My Chapter, la
          connexion, le partage) puis TotehmBot — plus de tableau de bord (23/11). Elles ne font que montrer ou cacher des
          blocs (`#mw-creator` · `#settings`) : chacun garde son câblage. -->
@@ -10499,7 +10539,7 @@ const sonDe=i=>SONS[i]||{kind:'',url:''};
    fois.
 
    Cette ligne coûte quatre caractères et répond en trois secondes. */
-const BUILD='2026-11-28-parcours';
+const BUILD='2026-11-28-ecosystemes-resultats';
 let open=null, ordering=false;
 
 /* ── L'IDENTITÉ D'UNE HABITUDE ───────────────────────────────────────
@@ -15452,7 +15492,8 @@ window.addEventListener('pageshow',e=>{
   /* La feuille est modale : Tab tourne dans mes réglages, jamais vers le Totehm dessous. */
   if(srch) srch.addEventListener('keydown',e=>{
     if(e.key!=='Tab'||!sOpen) return;
-    const f=Array.from(srch.querySelectorAll('input,textarea,select,button:not(:disabled),a[href]')).filter(e=>e.getClientRects().length&&!e.closest('.hide'));
+    const f=Array.from(srch.querySelectorAll('input,textarea,select,button,a[href]'))
+      .filter(e=>!e.disabled&&e.getClientRects().length&&!e.closest('.hide,[hidden],[inert]')&&getComputedStyle(e).visibility==='visible');
     if(!f.length) return;
     const i=f.indexOf(document.activeElement);
     const j=e.shiftKey ? (i<=0?f.length-1:i-1) : (i<0||i===f.length-1?0:i+1);
@@ -15461,137 +15502,270 @@ window.addEventListener('pageshow',e=>{
   /* Échap ferme mes réglages — sauf s'il annulait déjà un renommage (`#set-name`). */
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sOpen&&!e.defaultPrevented){ e.preventDefault(); if(enRecherche()) CHERCHE.fermer(); else fermerVerso(); } });
 
-  /* ══ 18/11 · [MEMBERS] : LA RECHERCHE EST SUR LE VERSO ════════════════════════════════════════════════════════════════
-     Wah : « quand l'utilisateur clique sur [Members], le verso du TOTEHM s'affiche avec le mode recherche, dans le même
-     format que le nom du TOTEHM. Ensuite l'abonnement au même format que [Monetize my TOTEHM]. Je veux la même fluidité que
-     pour [Mine]. Une fois abonné, toujours dans le verso, on retourne vers le recto et on navigue dans le TOTEHM ; on le
-     ferme, on retrouve l'atterrissage : ← ses médias, → ses spots » · « revenir à l'essentiel du web : tu entres le nom,
-     tu entres, et tu as un résultat — pas d'entre-deux ».
-     Le MÊME verso, le même zoom, la même pièce que [Mine] (`ouvrirVerso({cherche})`, `pieceVersRecto`) : seul son contenu
-     change. Le nom tapé EST la saisie (`#mb-q`) ; rien ne part avant Entrée ; Entrée → UN résultat (`creator_page` : le prix
-     et l'accès viennent du serveur), au format de Monetize (`.vs-*`). Lisible (abonné, ou partagé) : SON TOTEHM est lu
-     d'avance (`totehm_read`) ; ⟲ ou [Open] retourne le verso sur SON recto (`LV.entrer`, puis la pièce) ; la croix ramène
-     sur SON atterrissage. Une réponse tardive n'écrase jamais une frappe plus récente (`seq`). */
+  /* Un nom donne un seul résultat. L'offre et l'accès viennent du serveur.
+     Le recto se prépare seulement lorsqu'un résultat annonce un accès. */
   const CHERCHE=(()=>{
-    const q=$('mb-q'), res=$('mb-res');
+    const form=$('mb-form'), q=$('mb-q'), res=$('mb-res'), annonce=$('mb-annonce'),
+      effacer=$('mb-clear'), soumettre=$('mb-go');
     const diagC={recherches:0, trouves:0, rectos:0, fermetures:0};
-    let seq=0, d=null, lu=null, nom='', etat='vide';
-    const propre=v=>String(v||'').trim().replace(/^https?:\/\/[^/]+\//i,'').replace(/^@/,'').replace(/[/?#].*$/,'').slice(0,32);
-    const prix=s=>{ if(!s||!s.open||s.price_cents==null) return '';   /* 23/11 : 0 € est un prix (les tests) */
-      const v=(s.price_cents/100).toFixed(s.price_cents%100?2:0), c=String(s.currency||'eur').toUpperCase();
-      return c==='EUR'?v+' €':c==='USD'?'$'+v:v+' '+c; };
-    const jour=t=>{ try{ return new Date(t).toLocaleDateString(); }catch(_){ return ''; } };
-    const ligne=t=>'<p class="lv-note mbr-dit" role="status">'+esc(t)+'</p>';
-    const tuiles='<div class="vs-n"><span><b>TOTEHM</b><i>read only</i></span><span><b>media</b><i>photos · videos</i></span>'
-      +'<span><b>spots</b><i>exact point</i></span></div>';
-    function dire(t){ res.innerHTML=t?ligne(t):''; }
-    function noter(t){ const n=$('mb-say'); if(n) n.textContent=t||''; }
-    function vider(){ seq++; d=null; lu=null; nom=''; etat='vide'; res.innerHTML=''; srch.classList.remove('is-lu'); }
-    /* À l'ouverture : la saisie vierge, ou déjà un nom (le papier d'un membre retourné, un retour de Stripe). */
-    function preparer(n,retour){ vider(); q.value=n||''; if(n) trouver(n,retour); else mesEcosystemes(); }
-    /* 23/11 — ECOSYSTEMS : sans nom tapé, mes abonnements (`my_console`), un tap ouvre l'écosystème */
-    async function mesEcosystemes(){
-      const s=seq; const {data,error}=await sb.rpc('my_console');
-      if(s!==seq||etat!=='vide'||q.value.trim()) return;
-      if(error){ console.error('[my_console]',error.message); return; }
-      const l=((data&&data.subscriptions)||[]).filter(x=>x&&x.creator&&['active','trialing'].includes(x.status));
-      diagC.abos=l.length;
-      res.innerHTML=l.length?'<div class="mb-abos"><p class="mb-abos-t">My ecosystems</p>'
-        +l.map(x=>'<button type="button" class="mb-abo" data-mb-abo="'+esc(x.creator)+'">'+esc(x.creator)+'</button>').join('')+'</div>'
-        :'';   /* aucun abonnement : rien (minimalisme et mystère) */
-    }
-    async function trouver(v,retour){
-      const n=propre(v); vider(); q.value=n;
-      if(!n) return;
-      if(n.length<2){ etat='court'; dire('two letters, minimum'); return; }
-      const s=++seq; diagC.recherches++; nom=n; etat='cherche'; dire('searching…');
-      const {data,error}=await sb.rpc('creator_page',{p_pseudo:n});
-      if(s!==seq) return;
-      if(error){ console.error('[creator_page]',error.message); etat='panne'; dire('search is unreachable right now'); return; }
-      d=data||{};
-      if(!d.ok){ etat=d.why==='nobody'?'personne':'prive'; dire(d.why==='nobody'?'No TOTEHM by that name.':'This TOTEHM is private.'); return; }
-      diagC.trouves++; nom=d.pseudo||n; q.value=nom;
-      peindre();
-      const vw=d.viewer||{};
-      if(!vw.me&&(vw.subscribed||vw.can_read)) lire(s);
-      else if(retour&&!vw.me) attendre(s);
-    }
-    /* Retour de Stripe : le webhook écrit l'abonnement ; on relit pendant 12 s au plus, puis on dit ce qui est vrai. */
-    async function attendre(s){
-      noter('welcome · your subscription is being written');
-      for(let k=0;k<8;k++){
-        await new Promise(r=>setTimeout(r,1500));
-        if(s!==seq) return;
-        const {data,error}=await sb.rpc('creator_page',{p_pseudo:nom});
-        if(s!==seq) return;
-        if(error){ console.error('[creator_page]',error.message); continue; }
-        const vw=(data&&data.viewer)||{};
-        if(data&&data.ok&&(vw.subscribed||vw.can_read)){ d=data; peindre(); lire(s); return; }
+    const ANNEE=new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    let seq=0, requete=null, d=null, lu=null, nom='', etat='vide', abos=null, marque='';
+
+    /* Accepte le nom, @nom, ou l'un des liens d'écosystème déjà partagés. */
+    function propre(v){
+      let n=String(v||'').trim();
+      if(/^(?:https?:\/\/|(?:www\.)?totehm\.com\/|\/)/i.test(n)){
+        try{
+          const u=new URL(/^(?:www\.)?totehm\.com\//i.test(n)?'https://'+n:n,location.origin);
+          if(!['totehm.com','www.totehm.com'].includes(u.hostname)) return '';
+          n=u.pathname.startsWith('/@')?decodeURIComponent(u.pathname.slice(2))
+            :u.searchParams.get('members')||u.searchParams.get('ro')
+              ||(/^\/(?:search|creator)(?:\.html)?$/.test(u.pathname)?u.searchParams.get('q')||u.searchParams.get('n'):'')||'';
+        }catch(_){ return ''; }
       }
-      noter('payment received · it opens in a moment');
+      return n.trim().replace(/^@/,'').replace(/[/?#].*$/,'').slice(0,32);
     }
-    async function lire(s){
-      const {data,error}=await sb.rpc('totehm_read',{p_pseudo:nom});
-      if(s!==seq) return;
-      if(error){ console.error('[totehm_read]',error.message); return; }
-      if(data&&data.ok){ lu=data; srch.classList.add('is-lu'); peindre(); }
+    function prix(s){
+      if(!s?.open||s.price_cents==null) return '';
+      const c=Number(s.price_cents);
+      if(!Number.isFinite(c)||c<0) return '';
+      const v=(c/100).toFixed(c%100?2:0), monnaie=String(s.currency||'eur').toUpperCase();
+      return monnaie==='EUR'?v+' €':monnaie==='USD'?'$'+v:v+' '+monnaie;
     }
-    /* UN résultat, au format de Monetize : le titre et sa promesse, le chiffre, ce que ça ouvre, le geste. Le nom du
-       membre est corail (Quantico) ; le prix et le bouton restent blanc et gris. */
-    function peindre(){
-      if(!d||!d.ok) return;
-      const s=d.sale||{}, vw=d.viewer||{}, p=prix(s), N='<span class="mbr-nom">'+esc(nom)+'</span>';
-      let h;
-      if(vw.me){ etat='moi'; h=ligne('This is your TOTEHM.'); }
-      else if(vw.subscribed||vw.can_read){ etat='abonne';
-        h='<header class="vs-head"><h3 class="vs-t">'+(vw.subscribed?'Your year inside their ecosystem':'Their ecosystem is open to you')+'</h3>'
-          +'<p class="vs-s">'+(vw.subscribed&&vw.until?(vw.ending?'ends ':'renews ')+esc(jour(vw.until)):'read only · nothing of yours changes')+'</p></header>'
-          +tuiles
-          +'<div class="vs-row"><i>their TOTEHM</i><button class="vs-act" type="button" data-mb="open"'+(lu?'':' disabled')+'>Open</button></div>'; }
-      else if(p){ etat='offre';
-        /* 18/11 (Wah : « ressors ici le Discover de la creator economy, qu'on ne trouve nulle part ») : [Discover] ouvre SA
-           page d'abonnement en Discover (`/@nom`, 8 écrans), par-dessus le verso (`XO.univers`, porte 'verso') */
-        /* 23/11 (Wah) : « tu gardes seulement le prix avec la possibilité d'annuler et le bouton [Discover]. Le reste à la
-           poubelle » — et la règle dite AVANT de payer : le membre peut couper l'accès (`creator-cut-off`) d'un geste. */
-        h='<div class="vs-top"><div class="vs-month"><b>'+esc(p)+'</b><i>per year · stop anytime</i></div><button class="vs-act" type="button" data-mb="disc">Discover</button></div>'
-          +'<p class="vs-s vs-cut">Respect their rules: '+N+' can cut you off at any time.</p>'; }
-      else { etat='ferme';
-        h='<header class="vs-head"><h3 class="vs-t">Not open yet</h3><p class="vs-s">'+N+' has not opened subscriptions</p></header>'; }
-      res.innerHTML=h+'<p class="lv-note" id="mb-say" role="status"></p>';
+    function echeance(vw){
+      const date=vw.subscribed&&vw.until?new Date(vw.until):null;
+      return date&&Number.isFinite(+date)?(vw.ending?'ends ':'renews ')+ANNEE.format(date):'';
     }
-    /* Le verso se retourne sur SON recto : son TOTEHM (en lecture) remplace le mien en mémoire, sous le verso, puis la
-       pièce (ordinateur) ; au téléphone, le verso se referme et son TOTEHM se déploie — comme [Mine]. */
+    const bouton=(cmd,mot)=>'<button type="button" class="vs-act mb-action" data-mb="'+cmd+'">'+esc(mot)+'</button>';
+    function intentions(){
+      const p=Array.isArray(d?.palette)?INTS.filter(i=>d.palette.includes(i.id)):[];
+      if(!p.length) return '';
+      return '<div class="mb-intentions" role="img" aria-label="'+esc('Intentions: '+p.map(i=>i.name).join(', '))+'">'
+        +p.map(i=>'<i style="--c:'+i.color+'"></i>').join('')+'</div>';
+    }
+    function carte(titre,detail='',action='',classe='',note=''){
+      return '<article class="mb-result'+(classe?' '+classe:'')+'">'+intentions()
+        +'<div class="mb-result-row"><div class="mb-result-copy"><h2>'+esc(titre)+'</h2>'
+        +(detail?'<p class="mb-result-detail">'+esc(detail)+'</p>':'')+'</div>'+action+'</div>'
+        +(note?'<p class="mb-result-note">'+esc(note)+'</p>':'')+'</article>';
+    }
+    function commandes(){
+      effacer.hidden=!q.value;
+      soumettre.disabled=!q.value.trim();
+    }
+    function afficher(h,dit='',occupe=false,focus=false){
+      const actif=document.activeElement;
+      const rendre=h&&actif&&((focus&&form.contains(actif))||res.contains(actif));
+      const nouveau=h!==marque;
+      if(nouveau){ res.innerHTML=marque=h; }
+      res.setAttribute('aria-busy',String(occupe));
+      if(annonce.textContent!==dit) annonce.textContent=dit;
+      if(rendre&&(nouveau||focus)){
+        (res.querySelector('button:not(:disabled)')||res).focus({preventScroll:true});
+        if(actif===q&&document.activeElement===q) q.blur();
+      }
+    }
+    function resultat(et,titre,detail='',action='',focus=false){
+      etat=et;
+      afficher(carte(titre,detail,action),titre,et==='cherche'||et==='lecture'||et==='attente',focus);
+    }
+    function interrompre(){
+      seq++;
+      if(requete){ requete.abort(); requete=null; }
+    }
+    function vider(){
+      interrompre(); d=null; lu=null; nom=''; etat='vide';
+      srch.classList.remove('is-lu');
+      afficher('');
+    }
+    const courant=(s,uid)=>s===seq&&uid===me?.id&&enRecherche();
+    async function appeler(fn,args,limite=10000){
+      const controle=new AbortController();
+      requete=controle;
+      const t=setTimeout(()=>controle.abort(),limite);
+      try{
+        return await sb.rpc(fn,args).abortSignal(controle.signal);
+      }catch(error){
+        return {error};
+      }finally{
+        clearTimeout(t);
+        if(requete===controle) requete=null;
+      }
+    }
+
+    function peindreAbos(l){
+      diagC.abos=l.length;
+      afficher(l.length?'<div class="mb-abos"><p class="mb-abos-t">My ecosystems</p>'
+        +l.map(n=>'<button type="button" class="mb-abo" data-mb-abo="'+esc(n)+'">'+esc(n)+'</button>').join('')
+        +'</div>':'');
+    }
+    async function mesEcosystemes(){
+      const s=seq, uid=me?.id;
+      if(!uid||etat!=='vide'||q.value.trim()) return;
+      if(abos?.uid===uid){ peindreAbos(abos.liste); return; }
+      const {data,error}=await appeler('my_console',{});
+      if(!courant(s,uid)||etat!=='vide'||q.value.trim()) return;
+      if(error){ console.error('[my_console]',error.message); return; }
+      const items=Array.isArray(data?.subscriptions)?data.subscriptions:[];
+      const liste=[...new Set(items.filter(x=>typeof x?.creator==='string'&&x.creator&&['active','trialing'].includes(x.status)).map(x=>x.creator))];
+      abos={uid,liste}; peindreAbos(liste);
+    }
+    function preparer(n,retour){
+      abos=null;
+      if(n){ trouver(n,{retour}); return; }
+      vider(); q.value=''; commandes(); mesEcosystemes();
+    }
+
+    function resultatFerme(why,focus){
+      if(why==='nobody') resultat('personne','No TOTEHM by that name.','',bouton('editer','Edit name'),focus);
+      else if(why==='private') resultat('prive','This TOTEHM is private.','',bouton('editer','Edit name'),focus);
+      else resultat('panne','Search unavailable.','',bouton('retry','Try again'),focus);
+    }
+    async function trouver(v,{retour=false,discret=false,focus=false}={}){
+      const n=propre(v);
+      /* Fermer Discover conserve la carte pendant sa relecture et rend le clavier à son action. */
+      if(discret) interrompre();
+      else vider();
+      q.value=n||String(v||'').trim(); commandes();
+      if(!q.value){ mesEcosystemes(); return; }
+      if(n.length<2){
+        resultat('court',n?'Use at least two characters.':'Use a TOTEHM name or link.','',bouton('editer','Edit name'),focus);
+        return;
+      }
+      const s=seq, uid=me?.id;
+      nom=n; diagC.recherches++;
+      if(discret) res.setAttribute('aria-busy','true');
+      else resultat('cherche','Searching…');
+      const {data,error}=await appeler('creator_page',{p_pseudo:n});
+      if(!courant(s,uid)) return;
+      if(error){
+        console.error('[creator_page]',error.message);
+        if(discret&&d?.ok){ res.setAttribute('aria-busy','false'); return; }
+        if(retour){ confirmation(); return; }
+        resultatFerme('',focus); return;
+      }
+      if(!data?.ok){ d=null; lu=null; srch.classList.remove('is-lu'); resultatFerme(data?.why,focus); return; }
+
+      d=data; nom=d.pseudo||n; q.value=nom; commandes();
+      diagC.trouves++;
+      const vw=d.viewer||{}, p=prix(d.sale);
+      if(vw.me){
+        resultat('moi','Your TOTEHM','',bouton('mine','Open'),focus);
+      }else if(vw.subscribed||vw.can_read){
+        lire(s,uid,focus);
+      }else if(retour){
+        resultat('attente','Checking access…','','',focus);
+        attendre(s,uid,focus);
+      }else if(p){
+        etat='offre';
+        afficher(carte(p,'per year · stop anytime',bouton('disc','Discover'),'is-offer',
+          'Respect their rules. '+nom+' can cut you off at any time.'),'Subscription offer · '+p+' per year',false,focus);
+      }else{
+        resultat('ferme','Subscriptions closed.','',bouton('editer','Edit name'),focus);
+      }
+    }
+    function confirmation(){
+      resultat('confirmation','Access not confirmed yet.','',bouton('verifier','Check access'));
+    }
+    /* Retour de Stripe : le serveur confirme l'accès, y compris après une attente. */
+    async function attendre(s,uid,focus){
+      const fin=Date.now()+12000;
+      while(Date.now()<fin){
+        await new Promise(r=>setTimeout(r,1500));
+        if(!courant(s,uid)) return;
+        const delai=fin-Date.now();
+        if(delai<=0) break;
+        const {data,error}=await appeler('creator_page',{p_pseudo:nom},delai);
+        if(!courant(s,uid)) return;
+        if(error){ console.error('[creator_page]',error.message); continue; }
+        const vw=data?.viewer;
+        if(data?.ok&&(vw?.subscribed||vw?.can_read)){
+          d=data; lire(s,uid,focus); return;
+        }
+      }
+      if(courant(s,uid)) confirmation();
+    }
+    async function lire(s,uid,focus){
+      lu=null; srch.classList.remove('is-lu');
+      resultat('lecture','Opening access…','', '',focus);
+      const {data,error}=await appeler('totehm_read',{p_pseudo:nom});
+      if(!courant(s,uid)) return;
+      if(error) console.error('[totehm_read]',error.message);
+      if(data?.ok&&typeof data.pseudo==='string'&&data.pseudo.toLowerCase()===nom.toLowerCase()){
+        lu=data; srch.classList.add('is-lu');
+        const vw=d.viewer||{};
+        resultat('abonne',vw.subscribed?'Subscribed':'Shared access',echeance(vw),bouton('open','Open'),focus);
+      }else if(data?.why==='nobody'){
+        resultatFerme('nobody',focus);
+      }else if(data?.why==='subscribe'||data?.why==='private'){
+        resultat('indisponible','No shared views right now.',echeance(d.viewer||{}),bouton('retry','Check access'),focus);
+      }else{
+        resultat('panne','Couldn’t open this TOTEHM.','',bouton('retry','Try again'),focus);
+      }
+    }
+
+    /* Le verso se retourne sur le recto du membre. */
     function versRecto(){
       if(!lu||sMoving||moving) return false;
-      diagC.rectos++;
+      interrompre(); diagC.rectos++;
       LV.entrer(lu);
       if(pieceVersRecto()) return true;
       fermerVerso(()=>{ if(!open&&!moving) enter(); });
       return true;
     }
-    /* La croix : son TOTEHM lu (abonné), on retombe sur SON atterrissage — ← ses médias, → ses spots ; sinon, là d'où
-       l'on vient. Depuis son recto déployé, la croix le retourne sur ce recto. */
+    function ouvrirMine(){
+      if(sMoving||moving) return;
+      interrompre();
+      if(LV.mode()==='mine'&&pieceVersRecto()) return;
+      fermerVerso(()=>{
+        const retour=()=>LV.versMine(()=>enter());
+        if(open) foldToGate(retour); else retour();
+      });
+    }
     function fermer(){
       if(sMoving) return;
-      diagC.fermetures++;
+      interrompre(); diagC.fermetures++;
       if(lu&&!open) LV.entrer(lu);
       fermerVerso();
     }
-    q.addEventListener('input',()=>{ if(etat!=='vide') vider(); else if(res.firstChild){ seq++; res.innerHTML=''; } });   /* taper efface aussi mes écosystèmes */   /* pas d'entre-deux : rien ne s'affiche avant Entrée */
-    q.addEventListener('keydown',e=>{
-      if(e.key!=='Enter'||e.isComposing) return;
-      e.preventDefault();
-      trouver(q.value).then(()=>{ if(d&&d.ok) try{ q.blur(); }catch(_){} });   /* trouvé : le clavier se range, le résultat se voit */
+    function modifier(){
+      commandes(); vider();
+      if(!q.value) mesEcosystemes();
+    }
+    function editer(){
+      q.focus({preventScroll:true}); q.select();
+    }
+    q.addEventListener('input',modifier);
+    effacer.addEventListener('click',()=>{ q.value=''; editer(); modifier(); });
+    form.addEventListener('submit',e=>{ e.preventDefault(); if(!soumettre.disabled) trouver(q.value,{focus:true}); });
+
+    function decouvrir(){
+      if(!nom||etat!=='offre') return;
+      diagC.discover=(diagC.discover||0)+1; const n=nom;
+      XO.univers(n,()=>{
+        if(!enRecherche()||nom!==n) return;
+        res.querySelector('[data-mb="disc"]')?.focus({preventScroll:true});
+        abos=null; trouver(n,{discret:true});
+      },'verso');
+    }
+    res.addEventListener('click',e=>{
+      const a=e.target.closest('[data-mb-abo]');
+      if(a){ res.focus({preventScroll:true}); trouver(a.dataset.mbAbo,{focus:true}); return; }
+      const b=e.target.closest('[data-mb]'); if(!b) return;
+      switch(b.dataset.mb){
+        case 'open': versRecto(); break;
+        case 'mine': ouvrirMine(); break;
+        case 'disc': decouvrir(); break;
+        case 'editer': editer(); break;
+        case 'retry':
+        case 'verifier':
+          res.focus({preventScroll:true});
+          trouver(nom,{retour:b.dataset.mb==='verifier',focus:true});
+          break;
+      }
     });
-    /* [Discover] : le Discover de la creator economy (SA page d'abonnement), par-dessus le verso ; refermé, le panneau relit
-       ce qui est vrai (on a pu s'abonner dedans, dans un autre onglet…). */
-    function decouvrir(){ if(!nom) return; diagC.discover=(diagC.discover||0)+1; const n=nom;
-      XO.univers(n,()=>{ if(enRecherche()&&nom===n) trouver(n); },'verso'); }
-    res.addEventListener('click',e=>{ const a=e.target.closest('[data-mb-abo]'); if(a){ trouver(a.dataset.mbAbo); return; }
-      const b=e.target.closest('[data-mb]'); if(!b||b.disabled) return;
-      if(b.dataset.mb==='open') versRecto(); else if(b.dataset.mb==='disc') decouvrir(); });
     window.__totehm_cherche=()=>({...diagC, ouvert:enRecherche()&&sOpen, etat, nom, lu:!!lu, saisie:document.activeElement===q});
-    return {preparer, vider, trouver, versRecto, fermer, etat:()=>etat};
+    return {preparer, vider, versRecto, fermer, etat:()=>etat};
   })();
 
   if(flipLink) flipLink.addEventListener('click',e=>{

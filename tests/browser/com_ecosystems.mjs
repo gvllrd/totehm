@@ -5,9 +5,11 @@ import {launch,page,ok} from './harness.mjs';
 const origin='https://www.totehm.com', UID='11111111-1111-4111-8111-111111111111';
 const tables={profiles:[{pseudo:'wah'}],totehms:[{user_id:UID,habits:[{t:'Run the hill',t0:'Run the hill',is:['fight']}],vis:'private'}]};
 const GVA={ok:true,pseudo:'gva',palette:['flow'],sale:{open:true,price_cents:8400,currency:'eur',period:'year'},viewer:{signed_in:true,me:false,subscribed:true,until:'2027-11-18T13:02:59Z',ending:false,can_read:true}};
+const LU={ok:true,pseudo:'gva',habits:[{t:'Follow the river',t0:'Follow the river',is:['flow']}],objectives:[],objs:{},repulsions:[],stories:[],visions:[]};
 const rpc={my_landing:{signed_in:true,pseudo:'wah',visibility:'private',offer:{enabled:false},higher:{active:false},thp:false},
   figher_access:{signed_in:true,member:true}, creator_page:b=>String(b.p_pseudo).toLowerCase()==='gva'?GVA:{ok:false,why:'nobody'},
-  totehm_read:{ok:false,why:'subscribe'}, my_console:{signed_in:true,offer:{enabled:false},subscriptions:[{creator:'gva',status:'active',price_cents:8400,currency:'eur'},{creator:'old',status:'canceled'}]}};
+  totehm_read:b=>b.p_pseudo==='gva'?LU:{ok:false,why:'subscribe'},
+  my_console:{signed_in:true,offer:{enabled:false},subscriptions:[{creator:'gva',status:'active',price_cents:8400,currency:'eur'},{creator:'old',status:'canceled'}]}};
 const angle=pg=>pg.evaluate(()=>{const m=(document.getElementById('gate-card').style.transform||'').match(/rotateY\(([-\d.]+)deg\)/);return m?+m[1]:0;});
 const ouvert=pg=>pg.waitForFunction(()=>{const c=window.__totehm_cherche&&window.__totehm_cherche();return c&&c.ouvert;},null,{timeout:8000}).then(()=>true,()=>false);
 const browser=await launch();
@@ -41,9 +43,11 @@ try{
   const ab=await pg.evaluate(()=>[...document.querySelectorAll('#mb-res [data-mb-abo]')].map(b=>b.textContent));
   ok(ab.join('|')==='gva',nom+' · sans nom tapé : mes écosystèmes (abonnements actifs seulement) → '+ab.join(' · '));
   await pg.click('#mb-res [data-mb-abo="gva"]');
-  await pg.waitForFunction(()=>window.__totehm_cherche().etat==='abonne',null,{timeout:6000}).catch(()=>{});
-  ok((await pg.evaluate(()=>window.__totehm_cherche().etat))==='abonne',nom+' · un tap sur un abonnement ouvre son écosystème');
-  await pg.click('#srch-x');await pg.waitForTimeout(1500);
+  await pg.waitForFunction(()=>window.__totehm_cherche().lu,null,{timeout:6000}).catch(()=>{});
+  ok(await pg.locator('#mb-res [data-mb="open"]').isVisible(),nom+' · un tap sur un abonnement prépare son écosystème');
+  await pg.click('#mb-clear');
+  await pg.click('#srch-x');
+  await pg.waitForFunction(()=>!document.getElementById('srch').classList.contains('is-cherche'));
   await pg.keyboard.press('ArrowDown');
   ok(await ouvert(pg),nom+' · au clavier, ↓ retourne le TOTEHM sur Ecosystems d\'un coup');
   ok(!log.errors.filter(e=>e.startsWith('pageerror')).length,nom+' · aucune erreur '+log.errors.join(' | '));
