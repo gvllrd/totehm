@@ -972,6 +972,9 @@ div:not(:has(> :not(br,wbr))):hover,
   <section class="stage" id="s-pay" data-s="pay" aria-label="Deposit">
     <div class="inner">
       <div class="recap" id="pay-price"></div>
+      <!-- 28/11 (Wah : « rendre le decode gratuit pour la street ») : le nom fait retrouver l'élément à
+           quiconque a vu la pièce. On le DIT avant de payer ; `luxury-quote` pose l'accord (`public:true`). -->
+      <div class="say" id="pay-public">Anyone who types this name will read this element.</div>
       <label class="tick"><input type="checkbox" id="terms"> I read the <a href="/terms_of_sale" target="_blank" rel="noopener">Simple terms of sale</a></label>
       <button class="btn cta" id="ask" type="button">Deposit my project</button>
       <div class="say" id="refund"></div>
@@ -1981,7 +1984,7 @@ $('ask').onclick = async () => {
     brand: BRAND, product: $('product').value.trim(), city: $('city').value.trim(),
     style: STYLE ? STYLE.id : undefined, style_ref: STYLE_REF || undefined, budget_cents: BUDGET,
     box: { kind: PICK.kind, ref: PICK.ref }, name: $('nm-input').value.trim(),
-    pick: { matter: LIE.matter.slice(0, 60), shots: LIE.shots.slice(0, 24) } });
+    pick: { matter: LIE.matter.slice(0, 60), shots: LIE.shots.slice(0, 24) }, public: true });
   if(d.ok && d.id){
     n.textContent = 'opening checkout…';
     const r = await call('luxury-checkout', { quote_id: d.id });

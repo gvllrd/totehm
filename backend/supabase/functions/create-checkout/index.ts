@@ -236,8 +236,15 @@ Deno.serve(async (req) => {
     return Response.json({ error: 'stripe' }, { status: 502, headers: cors });
   }
 
-  const { error: uErr } = await sb.from('totehm_clothes').update({ stripe_session_id: session.id })
-    .eq('id', cloth.id).eq('status', 'draft');
+  // 28/11 (Wah : « rendre le decode gratuit pour la street ») : la page DIT, avant le
+  // paiement, « Anyone who types this name will read this element. » et envoie
+  // `public: true`. L'accord est posé ICI, à chaque Checkout — un brouillon repris
+  // depuis une page en cache, muette, redevient fermé : l'accord ne se présume jamais.
+  // `reveal_cloth` ouvre alors la box IMPRIMÉE à tous, jamais ce qui lui est relié.
+  const { error: uErr } = await sb.from('totehm_clothes').update({
+    stripe_session_id: session.id,
+    public_at: body.public === true ? new Date().toISOString() : null,
+  }).eq('id', cloth.id).eq('status', 'draft');
   if (uErr) console.error('[create-checkout] session id', uErr.message);
   return Response.json({ url: session.url, name }, { headers: cors });
 });

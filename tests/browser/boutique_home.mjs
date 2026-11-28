@@ -4,7 +4,7 @@ import { launch, page, ok } from './harness.mjs';
 const OUT = process.argv[2] || '.';
 const browser = await launch();
 const CLOTHS = {
-  '0.hill': { found:true, name:'0.Hill', legacy:false, level:'member', line:'streetwear', view:'habits', created_at:'2026-10-05', palette:['#E24B4A'], text:'Run the hill',
+  '0.hill': { found:true, name:'0.Hill', legacy:false, level:'public', public:true, line:'streetwear', view:'habits', created_at:'2026-10-05', palette:['#E24B4A'], text:'Run the hill',
               is:['fight'], owner:'nia', matter:null, garment:'Higher Champion Sweatshirt', size:'L', style:'Ink Realism', stage:'making', edition:3, edition_of:177, art:false,
               style_no:3, style_of:41, owner_id:'u-nia', garment_details:'82% cotton, 18% polyester', dopes:12, i_doped:false },
   '0.lock': { found:true, name:'0.Lock', legacy:false, level:'locked', line:'streetwear', view:'wisdom', created_at:'2026-10-05', palette:null, text:null, is:null, owner:null, matter:null,
@@ -88,11 +88,17 @@ await pg.screenshot({ path: OUT + '/bq_landing.png' });
 await pg.click('#decode-btn');
 await pg.waitForFunction(() => document.activeElement === document.querySelector('#decode-q'));
 await pg.waitForTimeout(700);   // le Higher finit de tourner : à 90° il n'a plus de largeur
-for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'member'], ['0.lock', /reserved/, 'locked'], ['0.old', /I stay higher/, 'full']]){
+for(const [name, re, lvl] of [['0.hill', /Run the hill/, 'public'], ['0.lock', /reserved for its owner and their subscribers/, 'locked'], ['0.old', /I stay higher/, 'full']]){
   await pg.fill('#decode-q', name); await pg.press('#decode-q', 'Enter');
   await pg.waitForFunction(n => document.querySelector('#decode-fs').classList.contains('show') && window.__totehm_boutique().decode, name);
   ok(re.test(await pg.textContent('#decode-msg')) && (await pg.evaluate(() => window.__totehm_boutique().decode.level)) === lvl, 'decode ' + lvl + ': cloth_page');
-  if(lvl === 'member'){
+  /* 28/11 (Wah : « rendre le decode gratuit pour la street ») : sans compte, la rue lit la box imprimée,
+     puis on lui vend l'écosystème — [Subscribe to <nom>] mène à SA page d'abonnement sur COM. */
+  const abo = await pg.evaluate(() => { const a = document.querySelector('#dc-read'); return a ? { href: a.getAttribute('href'), mot: a.textContent.trim() } : null; });
+  if(lvl === 'public') ok(abo && abo.href === 'https://www.totehm.com/@nia' && abo.mot === 'Subscribe to nia' && !/collectors/.test(await pg.textContent('#decode-msg')),
+    '28/11 · Decode gratuit : la box imprimée se lit sans compte, puis [Subscribe to nia] · ' + JSON.stringify(abo));
+  else ok(!abo, '28/11 · pas d\'abonnement proposé sans totehmisateur montré · ' + name);
+  if(lvl === 'public'){
     /* ══ 09/11 (Wah) · LA CARD ════════════════════════════════════════════
        « Là où se trouve l'œuvre, on trouve de l'autre côté tout ce qui s'y
        trouve derrière, comme une certification. Le format de la card doit être

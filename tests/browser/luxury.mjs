@@ -242,6 +242,10 @@ const fin = await pg.evaluate(() => { const st = document.querySelector('#s-pay'
 });
 ok(/770/.test(fin.prix) && fin.px >= 22 && /770/.test(fin.bouton) && !fin.rappel,
   'la dernière étape ne dit que le PRIX et le PAIEMENT ' + JSON.stringify(fin));
+const dit = await pg.evaluate(() => { const l = document.querySelector('#pay-public');
+  return { mot: l ? l.textContent.trim() : '', vu: !!l && l.getBoundingClientRect().height > 0 }; });
+ok(dit.mot === 'Anyone who types this name will read this element.' && dit.vu,
+  '28/11 · Decode gratuit pour la rue : la ligne est DITE avant le dépôt ' + JSON.stringify(dit));
 await pg.screenshot({ path: OUT + '/lux_pay.png' });
 await pg.click('#ask');
 await pg.waitForFunction(() => /tick the box/.test(document.querySelector('#ask-n').textContent));
@@ -258,6 +262,7 @@ ok(ASK.brand === 'Hermès' && ASK.product === 'Birkin 30' && ASK.city === 'Los A
 ok(ASK.box.kind === 'story' && ASK.box.ref === 'w1' && ASK.name === 'seabag'
    && JSON.stringify(ASK.pick) === '{"matter":[{"kind":"objectives","text":"Marathon in May"}],"shots":["em1"]}',
   '26/10 · la box et ce qui est ALLUMÉ voyagent en RÉFÉRENCES');
+ok(ASK.public === true, '28/11 · l\'accord part avec la demande (public:true) : luxury-quote le pose, jamais la page');
 ok(CHECKOUT && CHECKOUT.quote_id === 'q1', 'le Checkout suit tout de suite, sur le devis que le serveur vient d\'écrire');
 ok(!log.functions.some(f => f.name === 'sso-mint'), 'aucun pont SSO dans tout le parcours');
 log.errors = log.errors.filter(e => !/404|Failed to load/.test(e));

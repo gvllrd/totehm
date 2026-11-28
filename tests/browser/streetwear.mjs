@@ -356,8 +356,13 @@ ok(/170/.test(fin.prix) && fin.px >= 22 && fin.noeuds === 1 && !fin.visual && !f
 ok(/Order · 170 €/.test(await pg.textContent('#od-go')) && await pg.isEnabled('#od-go'), 'the order button carries the server price');
 await pg.waitForTimeout(560);
 await pg.screenshot({ path: OUT + '/sw_order.png' });
+const dit = await pg.evaluate(() => { const l = document.querySelector('#od-public'), b = document.querySelector('#od-go');
+  return { mot: l ? l.textContent.trim() : '', vu: !!l && l.getBoundingClientRect().height > 0, apres: !!l && !!b && (b.compareDocumentPosition(l) & 4) === 4 }; });
+ok(dit.mot === 'Anyone who types this name will read this element.' && dit.vu && dit.apres,
+  '28/11 · Decode gratuit pour la rue : la ligne est DITE à l\'étape du paiement, sous le bouton ' + JSON.stringify(dit));
 await pg.click('#od-go');
 await pg.waitForURL(/checkout\.stripe\.test/);
+ok(body && body.public === true, '28/11 · l\'accord part avec la commande (public:true) : create-checkout le pose, jamais la page');
 ok(body && body.garment_id === 's1' && body.box.kind === 'story' && body.box.ref === 'w1' && body.name === 'hillstreet' && body.size === 'M' && body.style_id === 'st1',
   'order sends a reference (story) and the name WITHOUT prefix (the server sets 0.)');
 ok(JSON.stringify(body.pick) === '{"matter":[{"kind":"objectives","text":"Marathon in May"}],"shots":["sp1"]}' && !body.hide,

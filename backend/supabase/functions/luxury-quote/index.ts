@@ -226,6 +226,10 @@ Deno.serve(async (req) => {
       media_path: media, media_kind, style_ref_path: styleRef || null, budget_cents: budget,
       status: "quoted", quote_cents: depot, currency: String(o.currency ?? "eur"),
       quoted_at: new Date().toISOString(),
+      // 28/11 (Wah : « rendre le decode gratuit pour la street ») : la page a DIT, avant
+      // le dépôt, « Anyone who types this name will read this element. ». Sans ce mot
+      // (une page en cache), la pièce reste fermée aux autres : l'accord ne se présume jamais.
+      public_at: body.public === true ? new Date().toISOString() : null,
     }).select("id").single();
     if (error?.code === "23505") return json({ error: "name_taken" }, 409);   // deux demandes, un nom : l'index tranche
     if (error) { console.error("[luxury-quote] insert:", error.message); return json({ error: "db" }, 500); }

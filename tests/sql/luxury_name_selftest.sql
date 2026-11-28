@@ -25,6 +25,11 @@ begin
   r:=public.reveal_cloth('0.selftestlux');
   if not coalesce((r->>'found')::boolean,false) or r->>'line'<>'luxury' or r->>'level'<>'locked' or r->>'text' is not null
      or r->>'style' is distinct from (select name from public.artistic_styles where id=st) then fails:=array_append(fails,'reveal '||coalesce(r::text,'null')); end if;
+  -- 28/11 : l'accord du propriétaire ouvre la box imprimée à tous (Decode gratuit pour la rue)
+  update public.luxury_quotes set public_at=now() where id=q;
+  r:=public.reveal_cloth('0.selftestlux');
+  if r->>'level' is distinct from 'public' or r->>'text' is distinct from 'Deep practice' or r->'matter'<>'null'::jsonb
+     then fails:=array_append(fails,'public '||coalesce(r::text,'null')); end if;
   -- son propriétaire lit tout
   perform set_config('request.jwt.claims',json_build_object('sub',u,'role','authenticated')::text,true);
   r:=public.reveal_cloth('0.SelfTestLux');

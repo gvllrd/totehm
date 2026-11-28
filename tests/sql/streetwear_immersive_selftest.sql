@@ -50,6 +50,20 @@ begin
   r := public.reveal_cloth(nm);
   if r->>'level' <> 'full' or r->>'text' <> 'Run the hill' or r->>'size' <> 'XL' or not (r->>'mine')::boolean or r->'matter' is null then fails := fails || 'reveal_full'; end if;
 
+  -- 6 bis. 28/11 — Decode gratuit pour la rue : l'accord du propriétaire (`public_at`) ouvre la box IMPRIMÉE à tous,
+  -- sans compte ; jamais ce qui lui est relié, jamais la taille ; l'auteur lit toujours tout.
+  update public.totehm_clothes set public_at = now() where id = c;
+  perform set_config('request.jwt.claims', json_build_object('role', 'anon')::text, true);
+  r := public.reveal_cloth(nm);
+  if r->>'level' is distinct from 'public' or r->>'text' is distinct from 'Run the hill' or r->'is' is distinct from '["fight"]'::jsonb
+     or r->>'size' is not null or r->'matter' <> 'null'::jsonb or (r->>'public')::boolean is not true then fails := fails || 'reveal_public'; end if;
+  perform set_config('request.jwt.claims', json_build_object('sub', o, 'role', 'authenticated')::text, true);
+  r := public.reveal_cloth(nm);
+  if r->>'level' is distinct from 'public' or r->>'size' is not null then fails := fails || 'reveal_public_member'; end if;
+  perform set_config('request.jwt.claims', json_build_object('sub', u, 'role', 'authenticated')::text, true);
+  r := public.reveal_cloth(nm);
+  if r->>'level' is distinct from 'full' or r->'matter' = 'null'::jsonb then fails := fails || 'reveal_public_owner'; end if;
+
   -- 7. l'œuvre : seulement une fois expédiée, jamais avant, jamais une pièce de test
   update public.totehm_clothes set artwork_storage_path = c::text || '/final.png' where id = c;
   if public._cloth_art_path(nm) is not null or (public.reveal_cloth(nm)->>'art')::boolean then fails := fails || 'art_early'; end if;

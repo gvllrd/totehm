@@ -117,22 +117,36 @@ begin
     if (r->'figher'->>'member')::boolean is distinct from public._is_figher(test_user) then failures := failures || 'entitlements_club_metadata'; end if;
   end loop;
 
-  -- A real paid Cloth tests the three existing read levels.
+  -- A real paid Cloth tests the read levels. 28/11 (Wah : « rendre le decode gratuit pour la street ») :
+  -- ONE rule — owner and subscribers read everything; everyone else reads the printed box only once
+  -- its owner has made it public (`public_at`). The THP + Habit tier is gone.
   insert into public.totehm_cloth_support(title, max_pieces) values('Fixture garment', 100) returning id into garment;
   insert into public.artistic_styles(name) values('Fixture style') returning id into art_style;
   insert into public.totehm_clothes(user_id, name, box_kind, box_snapshot, garment_id, style_id, size, paid_at, status)
     values(seller_user, cloth_name, 'wisdom',
       '{"text":"Private teaching","view":"wisdom","palette":["navy"],"is":["fight"],"matter":{"objectives":[{"text":"Private objective"}]}}',
       garment, art_style, 'XL', now(), 'production');
+  -- Without the owner's consent: closed to everyone but the owner and the subscribers, THP holders included.
   foreach test_user in array array[free_user, paid_user, gifted_user, seller_user, subscriber_user, email_user] loop
     perform set_config('request.jwt.claims', jsonb_build_object('sub', test_user, 'role', 'authenticated')::text, true);
     r := public.reveal_cloth(cloth_name);
-    if test_user = free_user then
-      if r->>'level' is distinct from 'locked' or r->>'text' is not null or r->'matter' <> 'null'::jsonb then failures := failures || 'free_cloth_locked'; end if;
-    elsif test_user = any(array[seller_user, subscriber_user]) then
+    if test_user = any(array[seller_user, subscriber_user]) then
       if r->>'level' is distinct from 'full' or r->>'text' is distinct from 'Private teaching' or r->'matter' = 'null'::jsonb then failures := failures || 'owner_subscriber_full'; end if;
     else
-      if r->>'level' is distinct from 'member' or r->>'text' is distinct from 'Private teaching' or r->'matter' <> 'null'::jsonb then failures := failures || 'paid_member_level'; end if;
+      if r->>'level' is distinct from 'locked' or r->>'text' is not null or r->'matter' <> 'null'::jsonb then failures := failures || ('cloth_locked_' || test_user::text); end if;
+    end if;
+  end loop;
+  -- With it: the printed box opens to all, never its linked matter nor the size.
+  update public.totehm_clothes set public_at = now() where name = cloth_name;
+  foreach test_user in array array[free_user, paid_user, gifted_user, seller_user, subscriber_user, email_user] loop
+    perform set_config('request.jwt.claims', jsonb_build_object('sub', test_user, 'role', 'authenticated')::text, true);
+    r := public.reveal_cloth(cloth_name);
+    if test_user = any(array[seller_user, subscriber_user]) then
+      if r->>'level' is distinct from 'full' or r->>'size' is distinct from 'XL' or r->'matter' = 'null'::jsonb then failures := failures || 'public_owner_subscriber_full'; end if;
+    else
+      if r->>'level' is distinct from 'public' or r->>'text' is distinct from 'Private teaching'
+         or r->'is' is distinct from '["fight"]'::jsonb or r->'matter' <> 'null'::jsonb or r->>'size' is not null
+         or (r->>'public')::boolean is not true then failures := failures || ('cloth_public_' || test_user::text); end if;
     end if;
   end loop;
 
@@ -154,7 +168,8 @@ begin
   r := public.market_view(null, null);
   if (r->>'can_buy_art')::boolean then failures := failures || 'anon_market_locked'; end if;
   r := public.reveal_cloth(cloth_name);
-  if r->>'level' is distinct from 'locked' then failures := failures || 'anon_cloth_locked'; end if;
+  if r->>'level' is distinct from 'public' or r->>'text' is distinct from 'Private teaching' or r->'matter' <> 'null'::jsonb
+     or r->>'size' is not null then failures := failures || 'anon_cloth_public'; end if;
   if has_function_privilege('anon', 'public._art_passport(uuid)', 'execute')
      or has_function_privilege('authenticated', 'public._art_passport(uuid)', 'execute')
      or not has_function_privilege('service_role', 'public._art_passport(uuid)', 'execute') then failures := failures || 'art_passport_execute_boundary'; end if;

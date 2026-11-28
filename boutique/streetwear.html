@@ -673,6 +673,9 @@ button,a.btn-sig,.btn-sig,.btn-coral,.btn-back,a.btn,.btn,.eco-text-btn{white-sp
       <div id="od-test" class="hide">test · card 4242 4242 4242 4242</div>
       <button class="btn cta" id="od-go" type="button" disabled>Order</button>
       <div class="note dim" id="od-note"></div>
+      <!-- 28/11 (Wah : « rendre le decode gratuit pour la street ») : le nom fait retrouver l'élément à
+           quiconque a vu la pièce. On le DIT avant de payer ; `create-checkout` pose l'accord (`public:true`). -->
+      <div class="blind" id="od-public">Anyone who types this name will read this element.</div>
       <div class="blind">Shipping address and payment on the secure page. Made to order: no returns, no refunds. <a href="/terms_of_sale" target="_blank" rel="noopener">Simple terms of sale</a></div>
     </div>
   </section>
@@ -1684,7 +1687,7 @@ async function order(){
     const r=await fetch(FN+'create-checkout',{method:'POST',headers:{'content-type':'application/json','apikey':SB_ANON,'authorization':'Bearer '+session.access_token},
       body:JSON.stringify({garment_id:F.support.id,box:{kind:F.el.kind,ref:F.el.ref},
         pick:{matter:F.pick.matter.slice(0,60),shots:F.pick.shots.slice(0,24)},
-        name:F.nameRaw,size:F.size,style_id:F.style.id})});
+        name:F.nameRaw,size:F.size,style_id:F.style.id,public:true})});
     status=r.status;data=await r.json().catch(()=>({}));
   }catch(e){console.error('[create-checkout]',e&&e.message||e);}
   ORDERING=false;paintOrderBtn();
